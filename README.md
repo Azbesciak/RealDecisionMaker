@@ -9,3 +9,12 @@ Simulator of real human-like decision maker, focused on pairwise comparisons
 - [Human Factors Influencing Decision Making](https://apps.dtic.mil/dtic/tr/fulltext/u2/a351910.pdf)
 - [Modeling Human and Organizational Behavior: Application to Military Simulations (1998)](https://www.nap.edu/read/6173/chapter/8)
 - [Toward a Synthesis of Cognitive Biases: How Noisy Information Processing Can Bias Human Decision Making](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.432.8763&rep=rep1&type=pdf)
+
+## Thoughts
+- DM needs to have some weighting function;
+  - Chebyshev
+  - Weighted sum
+  - Choquet's integral
+- what with incomparability? functions above can't manage it (Electre? Promethee I?)
+- how to manage "I don't want to answer" / "I don't know"
+- Need to remember - decision depends on presented alternatives now (also multiple pairs) and earlier (order is also important).
