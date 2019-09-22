@@ -5,7 +5,7 @@ import "testing"
 func TestOWAResult(t *testing.T) {
 	criteria := AlternativeWithCriteria{
 		Alternative: Alternative{"test"},
-		Criteria: map[string]Weight{
+		Criteria: Weights{
 			"1": 30,
 			"2": 10,
 			"3": 5,
@@ -27,7 +27,7 @@ func TestOWAResult(t *testing.T) {
 func TestOWAInvalidArguments(t *testing.T) {
 	criteria := AlternativeWithCriteria{
 		Alternative: Alternative{"test"},
-		Criteria: map[string]Weight{
+		Criteria: Weights{
 			"1": 30,
 			"2": 10,
 		},

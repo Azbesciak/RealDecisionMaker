@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"math"
 	"testing"
 )
 
@@ -13,13 +12,13 @@ func TestValidFunc(t *testing.T) {
 	}}
 	alternative := AlternativeWithCriteria{
 		Alternative{"Ferrari"},
-		map[string]Weight{
+		Weights{
 			"Cost":  200,
 			"Color": 10,
 		},
 	}
 	res := WeightedSum(alternative, criteria)
-	if !FloatsEquals(-190.0, float64(res.Value), 0.01) {
+	if !FloatsEquals(-190.0, res.Value, 0.01) {
 		t.Error("invalid result", res.Value)
 	}
 }
@@ -28,7 +27,7 @@ func TestMissingCriterion(t *testing.T) {
 	criteria := []WeightedCriterion{{Criterion{"Color", Gain}, 1}}
 	alternative := AlternativeWithCriteria{
 		Alternative{"Ferrari"},
-		map[string]Weight{
+		Weights{
 			"Cost": 200,
 		},
 	}
@@ -40,8 +39,4 @@ func TestMissingCriterion(t *testing.T) {
 		}
 	}()
 	WeightedSum(alternative, criteria)
-}
-
-func FloatsEquals(expected float64, actual Weight, epsilon Weight) bool {
-	return math.Abs(expected-actual) <= epsilon
 }

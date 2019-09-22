@@ -16,6 +16,23 @@ type Criterion struct {
 	Type CriterionType
 }
 
+type Identifiable interface {
+	Identifier() string
+}
+
+func (c Criterion) Identifier() string {
+	return c.Id
+}
+
+type Criteria []Criterion
+
+func (c Criteria) Len() int {
+	return len(c)
+}
+func (c Criteria) Get(index int) Identifiable {
+	return c[index]
+}
+
 func (c Criterion) multiplier() int8 {
 	if c.Type == Cost {
 		return -1
@@ -37,8 +54,9 @@ type Alternative struct {
 
 type AlternativeWithCriteria struct {
 	Alternative
-	Criteria map[string]Weight
+	Criteria Weights
 }
+type Weights map[string]Weight
 
 type AlternativeResult struct {
 	Alternative AlternativeWithCriteria
