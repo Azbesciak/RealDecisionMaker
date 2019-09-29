@@ -22,7 +22,7 @@ func TestChoquetIntegral(t *testing.T) {
 		"3":     0.4,
 	})
 	expectedWeight := 4*1 + (6-4)*0.7 + (8-6)*0.4
-	if !FloatsEquals(expectedWeight, result.Value, 0.0001) {
+	if !FloatsAreEqual(expectedWeight, result.Value, 0.0001) {
 		t.Errorf("invalid Choquet result, expected %f, got %f", expectedWeight, result.Value)
 	}
 }

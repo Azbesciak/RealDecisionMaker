@@ -45,6 +45,6 @@ type IdentifiableIterable interface {
 	Len() int
 }
 
-func FloatsEquals(expected Weight, actual Weight, epsilon Weight) bool {
+func FloatsAreEqual(expected Weight, actual Weight, epsilon Weight) bool {
 	return math.Abs(expected-actual) <= epsilon
 }

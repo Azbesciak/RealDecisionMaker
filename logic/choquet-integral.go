@@ -35,7 +35,7 @@ func computeTotalWeight(sortedCriteria *criteriaWeights, weights *Weights) Weigh
 		var j int
 		for j = i + 1; j < totalElements; j++ {
 			var nextValue = (*sortedCriteria)[j]
-			if !FloatsEquals(current.weight, nextValue.weight, 0.00001) {
+			if !FloatsAreEqual(current.weight, nextValue.weight, 0.00001) {
 				break
 			}
 		}
