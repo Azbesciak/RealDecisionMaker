@@ -70,7 +70,7 @@ func prepareWeights(weights *Weights, criteria *Criteria) *Weights {
 		splittedValues := strings.Split(k, ",")
 		identificable := ToIdentifiable(criteria)
 		if !ContainsAll(identificable, &splittedValues) {
-			panic(fmt.Errorf("%s: not all weights are present in criteria %s", k, criteria))
+			panic(fmt.Errorf("%s: not all weights are present in criteria %s", k, *criteria))
 		}
 		if v < 0 || v > 1 {
 			panic(fmt.Errorf("%s: weight must be in range [0,1], got %f", k, v))
