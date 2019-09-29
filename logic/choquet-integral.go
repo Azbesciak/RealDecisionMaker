@@ -43,7 +43,6 @@ func computeTotalWeight(sortedCriteria *criteriaWeights, weights *Weights) Weigh
 		weightKey := strings.Join(commonWeightCriteria, ",")
 		criteriaUnionWeight, ok := (*weights)[weightKey]
 
-		fmt.Println("all criteria:", *weights, weightKey)
 		if !ok {
 			panic(fmt.Errorf("weight for criteria union '%s' not found", weightKey))
 		}
