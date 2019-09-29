@@ -1,30 +1,31 @@
 package logic
 
 import (
+	"../model"
 	"fmt"
 	"sort"
 	"strings"
 )
 
-func ChoquetIntegral(alternative AlternativeWithCriteria, criteria Criteria, weights Weights) AlternativeResult {
+func ChoquetIntegral(alternative model.AlternativeWithCriteria, criteria model.Criteria, weights model.Weights) model.AlternativeResult {
 	validateAllCriteriaAreGain(&criteria)
 	resultWeights := prepareWeights(&weights, &criteria)
 	sortedCriteria := prepareCriteriaInAscendingOrder(alternative)
 	result := computeTotalWeight(sortedCriteria, resultWeights)
-	return AlternativeResult{alternative, result}
+	return model.AlternativeResult{alternative, result}
 }
 
-func validateAllCriteriaAreGain(criteria *Criteria) {
+func validateAllCriteriaAreGain(criteria *model.Criteria) {
 	for _, c := range *criteria {
-		if c.Type != Gain {
+		if c.Type != model.Gain {
 			panic(fmt.Errorf("%s: only Gain criteria acceptable for Choquet integral", c.Id))
 		}
 	}
 }
 
-func computeTotalWeight(sortedCriteria *criteriaWeights, weights *Weights) Weight {
-	var result Weight = 0
-	var previousWeight Weight = 0
+func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights) model.Weight {
+	var result model.Weight = 0
+	var previousWeight model.Weight = 0
 	totalElements := len(*sortedCriteria)
 	for i := 0; i < totalElements; {
 		commonWeightCriteria := make([]string, totalElements-i)
@@ -53,7 +54,7 @@ func computeTotalWeight(sortedCriteria *criteriaWeights, weights *Weights) Weigh
 	return result
 }
 
-func prepareCriteriaInAscendingOrder(alternative AlternativeWithCriteria) *criteriaWeights {
+func prepareCriteriaInAscendingOrder(alternative model.AlternativeWithCriteria) *criteriaWeights {
 	var sorted = make(criteriaWeights, len(alternative.Criteria))
 	i := 0
 	for k, v := range alternative.Criteria {
@@ -64,8 +65,8 @@ func prepareCriteriaInAscendingOrder(alternative AlternativeWithCriteria) *crite
 	return &sorted
 }
 
-func prepareWeights(weights *Weights, criteria *Criteria) *Weights {
-	resultWeights := make(Weights, len(*weights))
+func prepareWeights(weights *model.Weights, criteria *model.Criteria) *model.Weights {
+	resultWeights := make(model.Weights, len(*weights))
 	for k, v := range *weights {
 		splittedValues := strings.Split(k, ",")
 		identificable := ToIdentifiable(criteria)
@@ -83,7 +84,7 @@ func prepareWeights(weights *Weights, criteria *Criteria) *Weights {
 
 type criterionWeight struct {
 	criterion string
-	weight    Weight
+	weight    model.Weight
 }
 
 type criteriaWeights []criterionWeight

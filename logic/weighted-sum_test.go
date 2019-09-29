@@ -1,18 +1,19 @@
 package logic
 
 import (
+	"../model"
 	"testing"
 )
 
 func TestValidFunc(t *testing.T) {
-	criteria := []WeightedCriterion{{
-		Criterion{"Cost", Cost}, 1,
+	criteria := []model.WeightedCriterion{{
+		model.Criterion{Id: "Cost", Type: model.Cost}, 1,
 	}, {
-		Criterion{"Color", Gain}, 2,
+		model.Criterion{Id: "Color", Type: model.Gain}, 2,
 	}}
-	alternative := AlternativeWithCriteria{
-		Alternative{"Ferrari"},
-		Weights{
+	alternative := model.AlternativeWithCriteria{
+		Alternative: model.Alternative{Id: "Ferrari"},
+		Criteria: model.Weights{
 			"Cost":  200,
 			"Color": 10,
 		},
@@ -24,10 +25,10 @@ func TestValidFunc(t *testing.T) {
 }
 
 func TestMissingCriterion(t *testing.T) {
-	criteria := []WeightedCriterion{{Criterion{"Color", Gain}, 1}}
-	alternative := AlternativeWithCriteria{
-		Alternative{"Ferrari"},
-		Weights{
+	criteria := []model.WeightedCriterion{{model.Criterion{Id: "Color", Type: model.Gain}, 1}}
+	var alternative = model.AlternativeWithCriteria{
+		Alternative: model.Alternative{Id: "Ferrari"},
+		Criteria: model.Weights{
 			"Cost": 200,
 		},
 	}

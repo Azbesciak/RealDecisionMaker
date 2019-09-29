@@ -1,15 +1,18 @@
 package logic
 
-import "fmt"
+import (
+	"../model"
+	"fmt"
+)
 
-func WeightedSum(alternative AlternativeWithCriteria, criteria []WeightedCriterion) AlternativeResult {
-	var total Weight = 0
+func WeightedSum(alternative model.AlternativeWithCriteria, criteria []model.WeightedCriterion) model.AlternativeResult {
+	var total model.Weight = 0
 	for _, criterion := range criteria {
 		var value, ok = alternative.Criteria[criterion.Id]
 		if !ok {
 			panic(fmt.Errorf("criterion '%s' not found in criteria", criterion.Id))
 		}
-		total += value * Weight(criterion.multiplier())
+		total += value * model.Weight(criterion.Multiplier())
 	}
-	return AlternativeResult{Alternative: alternative, Value: total}
+	return model.AlternativeResult{Alternative: alternative, Value: total}
 }

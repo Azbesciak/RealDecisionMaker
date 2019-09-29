@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"../model"
 	"math"
 	"testing"
 )
@@ -14,7 +15,7 @@ func ContainsString(slice *[]string, value *string) bool {
 	return false
 }
 
-func ContainsByIdentity(slice *[]Identifiable, value *string) bool {
+func ContainsByIdentity(slice *[]model.Identifiable, value *string) bool {
 	for _, v := range *slice {
 		if *value == v.Identifier() {
 			return true
@@ -23,7 +24,7 @@ func ContainsByIdentity(slice *[]Identifiable, value *string) bool {
 	return false
 }
 
-func ContainsAll(slice []Identifiable, values *[]string) bool {
+func ContainsAll(slice []model.Identifiable, values *[]string) bool {
 	for _, v := range *values {
 		if !ContainsByIdentity(&slice, &v) {
 			return false
@@ -32,11 +33,11 @@ func ContainsAll(slice []Identifiable, values *[]string) bool {
 	return true
 }
 
-type ToIdentityConverter func(interface{}) Identifiable
+type ToIdentityConverter func(interface{}) model.Identifiable
 
-func ToIdentifiable(objects IdentifiableIterable) []Identifiable {
+func ToIdentifiable(objects IdentifiableIterable) []model.Identifiable {
 	var total = objects.Len()
-	var interfaceSlice = make([]Identifiable, total)
+	var interfaceSlice = make([]model.Identifiable, total)
 	for i := 0; i < total; i++ {
 		interfaceSlice[i] = objects.Get(i)
 	}
@@ -44,11 +45,11 @@ func ToIdentifiable(objects IdentifiableIterable) []Identifiable {
 }
 
 type IdentifiableIterable interface {
-	Get(index int) Identifiable
+	Get(index int) model.Identifiable
 	Len() int
 }
 
-func FloatsAreEqual(expected Weight, actual Weight, epsilon Weight) bool {
+func FloatsAreEqual(expected model.Weight, actual model.Weight, epsilon model.Weight) bool {
 	return math.Abs(expected-actual) <= epsilon
 }
 
