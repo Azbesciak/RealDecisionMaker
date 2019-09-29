@@ -96,7 +96,5 @@ func (c *criteriaWeights) Less(i, j int) bool {
 }
 
 func (c *criteriaWeights) Swap(i, j int) {
-	temp := (*c)[i]
-	(*c)[i] = (*c)[j]
-	(*c)[j] = temp
+	(*c)[i], (*c)[j] = (*c)[j], (*c)[i]
 }
