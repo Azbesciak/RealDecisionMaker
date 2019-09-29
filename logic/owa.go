@@ -8,7 +8,7 @@ import (
 func OWA(alternative AlternativeWithCriteria, weights []Weight) AlternativeResult {
 	alternativeCriteria := len(alternative.Criteria)
 	if alternativeCriteria != len(weights) {
-		panic(fmt.Sprintf("criteria and weights must have the same length, got %d and %d", alternativeCriteria, len(weights)))
+		panic(fmt.Errorf("criteria and weights must have the same length, got %d and %d", alternativeCriteria, len(weights)))
 	}
 	tmpWeights := make([]Weight, len(weights))
 	copy(tmpWeights, weights)

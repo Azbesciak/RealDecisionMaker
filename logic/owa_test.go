@@ -32,12 +32,6 @@ func TestOWAInvalidArguments(t *testing.T) {
 			"2": 10,
 		},
 	}
-	defer func() {
-		if err := recover(); err == nil {
-			t.Error("should throw error")
-		} else if err != "criteria and weights must have the same length, got 2 and 1" {
-			t.Error("Invalid error message", err)
-		}
-	}()
+	defer ExpectError(t, "criteria and weights must have the same length, got 2 and 1")()
 	OWA(criteria, []Weight{1})
 }

@@ -7,7 +7,7 @@ func WeightedSum(alternative AlternativeWithCriteria, criteria []WeightedCriteri
 	for _, criterion := range criteria {
 		var value, ok = alternative.Criteria[criterion.Id]
 		if !ok {
-			panic(fmt.Sprintf("criterion '%s' not found in criteria", criterion.Id))
+			panic(fmt.Errorf("criterion '%s' not found in criteria", criterion.Id))
 		}
 		total += value * Weight(criterion.multiplier())
 	}

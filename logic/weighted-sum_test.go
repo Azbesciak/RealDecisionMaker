@@ -31,12 +31,6 @@ func TestMissingCriterion(t *testing.T) {
 			"Cost": 200,
 		},
 	}
-	defer func() {
-		if err := recover(); err == nil {
-			t.Error("should throw error")
-		} else if err != "criterion 'Color' not found in criteria" {
-			t.Error("Invalid error message", err)
-		}
-	}()
+	defer ExpectError(t, "criterion 'Color' not found in criteria")()
 	WeightedSum(alternative, criteria)
 }

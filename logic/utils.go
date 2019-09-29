@@ -1,6 +1,9 @@
 package logic
 
-import "math"
+import (
+	"math"
+	"testing"
+)
 
 func ContainsString(slice *[]string, value *string) bool {
 	for _, v := range *slice {
@@ -47,4 +50,18 @@ type IdentifiableIterable interface {
 
 func FloatsAreEqual(expected Weight, actual Weight, epsilon Weight) bool {
 	return math.Abs(expected-actual) <= epsilon
+}
+
+func ErrorDiffers(err interface{}, message string) bool {
+	return err.(error).Error() != message
+}
+
+func ExpectError(t *testing.T, expectedMessage string) func() {
+	return func() {
+		if e := recover(); e == nil {
+			t.Errorf("expected error")
+		} else if ErrorDiffers(e, expectedMessage) {
+			t.Errorf("invalid error message, got '%s'", e)
+		}
+	}
 }

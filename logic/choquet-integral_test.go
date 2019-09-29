@@ -28,13 +28,7 @@ func TestChoquetIntegral(t *testing.T) {
 }
 
 func TestChoquetIntegral_MissingWeight(t *testing.T) {
-	defer func() {
-		if e := recover(); e == nil {
-			t.Errorf("expected error")
-		} else if x := e.(error); x.Error() != "weight for criteria union '1,2,3' not found" {
-			t.Errorf("invalid error message, got '%s'", e)
-		}
-	}()
+	defer ExpectError(t, "weight for criteria union '1,2,3' not found")()
 	ChoquetIntegral(AlternativeWithCriteria{
 		Alternative: Alternative{"lama"},
 		Criteria:    Weights{"1": 4, "2": 6, "3": 8},
