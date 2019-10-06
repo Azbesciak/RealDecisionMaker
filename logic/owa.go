@@ -6,7 +6,27 @@ import (
 	"sort"
 )
 
-func OWA(alternative model.AlternativeWithCriteria, weights []model.Weight) model.AlternativeResult {
+type OWAPreferenceFunc struct {
+}
+
+func (O *OWAPreferenceFunc) Identifier() string {
+	return "owa"
+}
+
+func (O *OWAPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
+	var weights = make([]model.Weight, len(dm.Weights))
+	i := 0
+	for _, v := range dm.Weights {
+		weights[i] = v
+		i++
+	}
+	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
+		return OWA(*alternative, weights)
+	}
+	return model.Rank(dm, prefFunc)
+}
+
+func OWA(alternative model.AlternativeWithCriteria, weights []model.Weight) *model.AlternativeResult {
 	alternativeCriteria := len(alternative.Criteria)
 	if alternativeCriteria != len(weights) {
 		panic(fmt.Errorf("criteria and weights must have the same length, got %d and %d", alternativeCriteria, len(weights)))
@@ -25,5 +45,5 @@ func OWA(alternative model.AlternativeWithCriteria, weights []model.Weight) mode
 	for i = 0; i < alternativeCriteria; i++ {
 		total += tmpCriteria[i] * tmpWeights[i]
 	}
-	return model.AlternativeResult{Alternative: alternative, Value: total}
+	return &model.AlternativeResult{Alternative: alternative, Value: total}
 }

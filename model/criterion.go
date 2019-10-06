@@ -1,5 +1,9 @@
 package model
 
+import (
+	"../utils"
+)
+
 type CriterionType string
 
 const (
@@ -18,11 +22,11 @@ func (c Criterion) Identifier() string {
 
 type Criteria []Criterion
 
-func (c Criteria) Len() int {
-	return len(c)
+func (c *Criteria) Len() int {
+	return len(*c)
 }
-func (c Criteria) Get(index int) Identifiable {
-	return c[index]
+func (c *Criteria) Get(index int) utils.Identifiable {
+	return (*c)[index]
 }
 
 func (c Criterion) Multiplier() int8 {

@@ -2,6 +2,7 @@ package logic
 
 import (
 	"../model"
+	"../utils"
 	"testing"
 )
 
@@ -12,14 +13,14 @@ func TestValidFunc(t *testing.T) {
 		model.Criterion{Id: "Color", Type: model.Gain}, 2,
 	}}
 	alternative := model.AlternativeWithCriteria{
-		Alternative: model.Alternative{Id: "Ferrari"},
+		Id: "Ferrari",
 		Criteria: model.Weights{
 			"Cost":  200,
 			"Color": 10,
 		},
 	}
 	res := WeightedSum(alternative, criteria)
-	if !FloatsAreEqual(-190.0, res.Value, 0.01) {
+	if !utils.FloatsAreEqual(-190.0, res.Value, 0.01) {
 		t.Error("invalid result", res.Value)
 	}
 }
@@ -27,11 +28,11 @@ func TestValidFunc(t *testing.T) {
 func TestMissingCriterion(t *testing.T) {
 	criteria := []model.WeightedCriterion{{model.Criterion{Id: "Color", Type: model.Gain}, 1}}
 	var alternative = model.AlternativeWithCriteria{
-		Alternative: model.Alternative{Id: "Ferrari"},
+		Id: "Ferrari",
 		Criteria: model.Weights{
 			"Cost": 200,
 		},
 	}
-	defer ExpectError(t, "criterion 'Color' not found in criteria")()
+	defer utils.ExpectError(t, "criterion 'Color' not found in criteria")()
 	WeightedSum(alternative, criteria)
 }

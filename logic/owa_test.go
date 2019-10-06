@@ -2,12 +2,13 @@ package logic
 
 import (
 	"../model"
+	"../utils"
 	"testing"
 )
 
 func TestOWAResult(t *testing.T) {
 	criteria := model.AlternativeWithCriteria{
-		Alternative: model.Alternative{Id: "test"},
+		Id: "test",
 		Criteria: model.Weights{
 			"1": 30,
 			"2": 10,
@@ -29,12 +30,12 @@ func TestOWAResult(t *testing.T) {
 
 func TestOWAInvalidArguments(t *testing.T) {
 	criteria := model.AlternativeWithCriteria{
-		Alternative: model.Alternative{Id: "test"},
+		Id: "test",
 		Criteria: model.Weights{
 			"1": 30,
 			"2": 10,
 		},
 	}
-	defer ExpectError(t, "criteria and weights must have the same length, got 2 and 1")()
+	defer utils.ExpectError(t, "criteria and weights must have the same length, got 2 and 1")()
 	OWA(criteria, []model.Weight{1})
 }

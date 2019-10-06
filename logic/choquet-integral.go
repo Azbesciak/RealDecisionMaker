@@ -2,17 +2,36 @@ package logic
 
 import (
 	"../model"
+	"../utils"
 	"fmt"
 	"sort"
 	"strings"
 )
 
-func ChoquetIntegral(alternative model.AlternativeWithCriteria, criteria model.Criteria, weights model.Weights) model.AlternativeResult {
+type ChoquetIntegralPreferenceFunc struct {
+}
+
+func (c *ChoquetIntegralPreferenceFunc) Identifier() string {
+	return "choquetIntegral"
+}
+
+func (c *ChoquetIntegralPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
+	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
+		return ChoquetIntegral(*alternative, dm.Criteria, dm.Weights)
+	}
+	return model.Rank(dm, prefFunc)
+}
+
+func ChoquetIntegral(
+	alternative model.AlternativeWithCriteria,
+	criteria model.Criteria,
+	weights model.Weights,
+) *model.AlternativeResult {
 	validateAllCriteriaAreGain(&criteria)
 	resultWeights := prepareWeights(&weights, &criteria)
 	sortedCriteria := prepareCriteriaInAscendingOrder(alternative)
 	result := computeTotalWeight(sortedCriteria, resultWeights)
-	return model.AlternativeResult{alternative, result}
+	return &model.AlternativeResult{Alternative: alternative, Value: result}
 }
 
 func validateAllCriteriaAreGain(criteria *model.Criteria) {
@@ -36,7 +55,7 @@ func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights)
 		var j int
 		for j = i + 1; j < totalElements; j++ {
 			var nextValue = (*sortedCriteria)[j]
-			if !FloatsAreEqual(current.weight, nextValue.weight, 0.00001) {
+			if !utils.FloatsAreEqual(current.weight, nextValue.weight, 0.00001) {
 				break
 			}
 		}
@@ -69,8 +88,8 @@ func prepareWeights(weights *model.Weights, criteria *model.Criteria) *model.Wei
 	resultWeights := make(model.Weights, len(*weights))
 	for k, v := range *weights {
 		splittedValues := strings.Split(k, ",")
-		identificable := ToIdentifiable(criteria)
-		if !ContainsAll(identificable, &splittedValues) {
+		identifiable := utils.ToIdentifiable(criteria)
+		if !utils.ContainsAll(identifiable, &splittedValues) {
 			panic(fmt.Errorf("%s: not all weights are present in criteria %s", k, *criteria))
 		}
 		if v < 0 || v > 1 {
