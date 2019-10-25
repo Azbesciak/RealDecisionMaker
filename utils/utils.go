@@ -14,6 +14,15 @@ func ContainsString(slice *[]string, value *string) bool {
 	return false
 }
 
+func ContainsInts(slice *[]int, value *int) bool {
+	for _, v := range *slice {
+		if v == *value {
+			return true
+		}
+	}
+	return false
+}
+
 func FloatsAreEqual(expected float64, actual float64, epsilon float64) bool {
 	return math.Abs(expected-actual) <= epsilon
 }
@@ -30,4 +39,8 @@ func ExpectError(t *testing.T, expectedMessage string) func() {
 			t.Errorf("invalid error message, got '%s'", e)
 		}
 	}
+}
+
+func IsPositive(value float64) bool {
+	return value > 0
 }

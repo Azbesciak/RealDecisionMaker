@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"math"
 	"sort"
 )
@@ -83,6 +84,14 @@ type Alternative = string
 type AlternativeWithCriteria struct {
 	Id       Alternative
 	Criteria Weights
+}
+
+func (a *AlternativeWithCriteria) CriterionValue(criterion *Criterion) Weight {
+	var value, ok = a.Criteria[criterion.Id]
+	if !ok {
+		panic(fmt.Errorf("alternative '%s' does not have value for criterion '%s'", a.Id, criterion.Id))
+	}
+	return value * Weight(criterion.Multiplier())
 }
 
 type Alternatives []Alternative

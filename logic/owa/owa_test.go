@@ -1,8 +1,8 @@
-package logic
+package owa
 
 import (
-	"../model"
-	"../utils"
+	"../../model"
+	"../../utils"
 	"testing"
 )
 

@@ -1,8 +1,8 @@
-package logic
+package choquet
 
 import (
-	"../model"
-	"../utils"
+	"../../model"
+	"../../utils"
 	"testing"
 )
 

@@ -1,8 +1,8 @@
-package logic
+package weighted_sum
 
 import (
-	"../model"
-	"../utils"
+	"../../model"
+	"../../utils"
 	"testing"
 )
 
@@ -33,6 +33,6 @@ func TestMissingCriterion(t *testing.T) {
 			"Cost": 200,
 		},
 	}
-	defer utils.ExpectError(t, "criterion 'Color' not found in criteria")()
+	defer utils.ExpectError(t, "alternative 'Ferrari' does not have value for criterion 'Color'")()
 	WeightedSum(alternative, criteria)
 }

@@ -10,3 +10,11 @@ func Rank(dm *DecisionMaker, pref AlternativeWeightFunction) *AlternativesRankin
 	}
 	return results.Ranking()
 }
+
+func ExtractWeights(dm *DecisionMaker) Weights {
+	weights, ok := dm.MethodParameters["weights"]
+	if !ok {
+		panic("weights not found")
+	}
+	return weights.(Weights)
+}

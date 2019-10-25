@@ -1,7 +1,7 @@
-package logic
+package owa
 
 import (
-	"../model"
+	"../../model"
 	"fmt"
 	"sort"
 )
@@ -14,9 +14,10 @@ func (O *OWAPreferenceFunc) Identifier() string {
 }
 
 func (O *OWAPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	var weights = make([]model.Weight, len(dm.Weights))
+	originalWeights := model.ExtractWeights(dm)
+	var weights = make([]model.Weight, len(originalWeights))
 	i := 0
-	for _, v := range dm.Weights {
+	for _, v := range weights {
 		weights[i] = v
 		i++
 	}

@@ -1,8 +1,8 @@
-package logic
+package choquet
 
 import (
-	"../model"
-	"../utils"
+	"../../model"
+	"../../utils"
 	"fmt"
 	"sort"
 	"strings"
@@ -16,8 +16,9 @@ func (c *ChoquetIntegralPreferenceFunc) Identifier() string {
 }
 
 func (c *ChoquetIntegralPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
+	weights := model.ExtractWeights(dm)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
-		return ChoquetIntegral(*alternative, dm.Criteria, dm.Weights)
+		return ChoquetIntegral(*alternative, dm.Criteria, weights)
 	}
 	return model.Rank(dm, prefFunc)
 }

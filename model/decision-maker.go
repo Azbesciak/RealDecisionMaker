@@ -13,8 +13,10 @@ type DecisionMaker struct {
 	KnownAlternatives  []AlternativeWithCriteria
 	ChoseToMake        []Alternative
 	Criteria
-	Weights
+	MethodParameters
 }
+
+type MethodParameters = map[string]interface{}
 
 func (dm *DecisionMaker) Alternative(id string) AlternativeWithCriteria {
 	for _, a := range dm.KnownAlternatives {
@@ -23,6 +25,14 @@ func (dm *DecisionMaker) Alternative(id string) AlternativeWithCriteria {
 		}
 	}
 	panic(fmt.Errorf("alternative '%s' is unknown", id))
+}
+
+func (dm *DecisionMaker) AlternativesToConsider() *[]AlternativeWithCriteria {
+	results := make([]AlternativeWithCriteria, len(dm.ChoseToMake))
+	for i, r := range dm.ChoseToMake {
+		results[i] = dm.Alternative(r)
+	}
+	return &results
 }
 
 type DecisionMakerState struct {
