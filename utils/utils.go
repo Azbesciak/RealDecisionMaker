@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/mitchellh/mapstructure"
 	"math"
 	"testing"
 )
@@ -43,4 +44,11 @@ func ExpectError(t *testing.T, expectedMessage string) func() {
 
 func IsPositive(value float64) bool {
 	return value > 0
+}
+
+func DecodeToStruct(src, target interface{}) {
+	e := mapstructure.Decode(src, target)
+	if e != nil {
+		panic(e)
+	}
 }

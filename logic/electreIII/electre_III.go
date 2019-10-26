@@ -2,6 +2,7 @@ package electreIII
 
 import (
 	. "../../model"
+	. "../../utils"
 	"fmt"
 )
 
@@ -13,7 +14,10 @@ func (e ElectreIIIPreferenceFunc) Identifier() string {
 }
 
 func (e ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
-	return ElectreIII(*dm.AlternativesToConsider(), dm.Criteria, extractElectreIIICriteria(dm), getDistillationFunc(dm))
+	criteria := *dm.AlternativesToConsider()
+	eleIIICriteria := extractElectreIIICriteria(dm)
+	distillationFunc := getDistillationFunc(dm)
+	return ElectreIII(criteria, dm.Criteria, eleIIICriteria, distillationFunc)
 }
 
 func extractElectreIIICriteria(dm *DecisionMaker) *ElectreCriteria {
@@ -21,7 +25,8 @@ func extractElectreIIICriteria(dm *DecisionMaker) *ElectreCriteria {
 	if !ok {
 		panic(fmt.Errorf("criteria for electre not found in methodParameters: %v", dm.MethodParameters))
 	}
-	electreCriteria := potentialEleCriteria.(ElectreCriteria)
+	electreCriteria := make(ElectreCriteria)
+	DecodeToStruct(potentialEleCriteria, &electreCriteria)
 	for _, criterion := range dm.Criteria {
 		electreCriterion, cOk := electreCriteria[criterion.Id]
 		if !cOk {
@@ -60,7 +65,8 @@ func getDistillationFunc(dm *DecisionMaker) *LinearFunctionParameters {
 	if !ok {
 		return &DefaultDistillationFunc
 	} else {
-		parameters := params.(LinearFunctionParameters)
+		parameters := LinearFunctionParameters{}
+		DecodeToStruct(params, &parameters)
 		return &parameters
 	}
 }

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"../utils"
 	"fmt"
 )
 
@@ -20,5 +21,7 @@ func ExtractWeights(dm *DecisionMaker) Weights {
 	if !ok {
 		panic(fmt.Errorf("weights not found"))
 	}
-	return weights.(Weights)
+	weightsParsed := make(Weights)
+	utils.DecodeToStruct(weights, &weightsParsed)
+	return weightsParsed
 }
