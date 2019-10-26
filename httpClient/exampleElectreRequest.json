@@ -1,0 +1,107 @@
+{
+  "preferenceFunction": "electreIII",
+  "knownAlternatives": [
+    {
+      "id": "ITA",
+      "criteria": {
+        "power": 90,
+        "safety": 4,
+        "cost": 600
+      }
+    },
+    {
+      "id": "BEL",
+      "criteria": {
+        "power": 58,
+        "safety": 0,
+        "cost": 200
+      }
+    },
+    {
+      "id": "GER",
+      "criteria": {
+        "power": 66,
+        "safety": 7,
+        "cost": 400
+      }
+    },
+    {
+      "id": "AUT",
+      "criteria": {
+        "power": 74,
+        "safety": 8,
+        "cost": 800
+      }
+    },
+    {
+      "id": "FRA",
+      "criteria": {
+        "power": 98,
+        "safety": 6,
+        "cost": 800
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "power",
+      "type": "gain"
+    },
+    {
+      "id": "safety",
+      "type": "gain"
+    },
+    {
+      "id": "cost",
+      "type": "cost"
+    }
+  ],
+  "choseToMake": [
+    "FRA",
+    "GER"
+  ],
+  "methodParameters": {
+    "electreCriteria": {
+      "power": {
+        "k": 3,
+        "q": {
+          "b": 4
+        },
+        "p": {
+          "b": 12
+        },
+        "v": {
+          "b": 28
+        }
+      },
+      "safety": {
+        "k": 3,
+        "q": {
+          "b": 1
+        },
+        "p": {
+          "b": 2
+        },
+        "v": {
+          "b": 8
+        }
+      },
+      "cost": {
+        "k": 4,
+        "q": {
+          "b": 100
+        },
+        "p": {
+          "b": 500
+        },
+        "v": {
+          "b": 600
+        }
+      }
+    },
+    "electreDistillation": {
+      "a": 0.1,
+      "b": 0.3
+    }
+  }
+}
