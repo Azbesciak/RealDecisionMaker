@@ -1,5 +1,9 @@
 package model
 
+import (
+	"fmt"
+)
+
 type AlternativeWeightFunction func(alternative *AlternativeWithCriteria) *AlternativeResult
 
 func Rank(dm *DecisionMaker, pref AlternativeWeightFunction) *AlternativesRanking {
@@ -14,7 +18,7 @@ func Rank(dm *DecisionMaker, pref AlternativeWeightFunction) *AlternativesRankin
 func ExtractWeights(dm *DecisionMaker) Weights {
 	weights, ok := dm.MethodParameters["weights"]
 	if !ok {
-		panic("weights not found")
+		panic(fmt.Errorf("weights not found"))
 	}
 	return weights.(Weights)
 }
