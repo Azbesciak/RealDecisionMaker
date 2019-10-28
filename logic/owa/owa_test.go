@@ -1,8 +1,8 @@
 package owa
 
 import (
-	"../../model"
-	"../../utils"
+	"github.com/Azbesciak/RealDecisionMaker/model"
+	"github.com/Azbesciak/RealDecisionMaker/utils"
 	"testing"
 )
 

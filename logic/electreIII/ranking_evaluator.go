@@ -1,7 +1,7 @@
 package electreIII
 
 import (
-	. "../../model"
+	. "github.com/Azbesciak/RealDecisionMaker/model"
 )
 
 func EvaluateRanking(ascending, descending *[]int, alternatives *[]AlternativeWithCriteria) *AlternativesRanking {

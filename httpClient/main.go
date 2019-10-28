@@ -1,12 +1,12 @@
 package main
 
 import (
-	"../logic/choquet"
-	"../logic/electreIII"
-	"../logic/owa"
-	"../logic/weighted-sum"
-	"../model"
 	"encoding/json"
+	"github.com/Azbesciak/RealDecisionMaker/logic/choquet"
+	"github.com/Azbesciak/RealDecisionMaker/logic/electreIII"
+	"github.com/Azbesciak/RealDecisionMaker/logic/owa"
+	"github.com/Azbesciak/RealDecisionMaker/logic/weighted-sum"
+	"github.com/Azbesciak/RealDecisionMaker/model"
 	"github.com/go-errors/errors"
 	"log"
 	"net/http"

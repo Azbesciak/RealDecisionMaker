@@ -1,8 +1,8 @@
 package electreIII
 
 import (
-	. "../../model"
-	. "../../testUtils"
+	. "github.com/Azbesciak/RealDecisionMaker/model"
+	. "github.com/Azbesciak/RealDecisionMaker/testUtils"
 	"testing"
 )
 

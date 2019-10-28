@@ -1,8 +1,8 @@
 package electreIII
 
 import (
-	"../../utils"
 	"fmt"
+	"github.com/Azbesciak/RealDecisionMaker/utils"
 	"sort"
 	"strings"
 )

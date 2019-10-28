@@ -1,7 +1,7 @@
 package testUtils
 
 import (
-	. "../model"
+	. "github.com/Azbesciak/RealDecisionMaker/model"
 	"reflect"
 	"testing"
 )

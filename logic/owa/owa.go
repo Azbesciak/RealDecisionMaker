@@ -1,8 +1,8 @@
 package owa
 
 import (
-	"../../model"
 	"fmt"
+	"github.com/Azbesciak/RealDecisionMaker/model"
 	"sort"
 )
 

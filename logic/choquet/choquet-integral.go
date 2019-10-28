@@ -1,9 +1,9 @@
 package choquet
 
 import (
-	"../../model"
-	"../../utils"
 	"fmt"
+	"github.com/Azbesciak/RealDecisionMaker/model"
+	"github.com/Azbesciak/RealDecisionMaker/utils"
 	"sort"
 	"strings"
 )

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"../utils"
+	"github.com/Azbesciak/RealDecisionMaker/utils"
 )
 
 type CriterionType string

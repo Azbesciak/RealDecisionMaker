@@ -1,10 +1,10 @@
 package electreIII
 
 import (
+	"github.com/Azbesciak/RealDecisionMaker/model"
 	"reflect"
 	"testing"
 )
-import "../../model"
 
 var ele1DistillationExample = AlternativesMatrix{
 	Alternatives: &model.Alternatives{"1", "2", "3", "4", "5"},

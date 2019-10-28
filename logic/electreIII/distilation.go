@@ -1,8 +1,8 @@
 package electreIII
 
 import (
-	"../../utils"
 	"fmt"
+	"github.com/Azbesciak/RealDecisionMaker/utils"
 )
 
 var DefaultDistillationFunc = LinearFunctionParameters{A: -.15, B: .3}
@@ -45,7 +45,7 @@ func rank(matrix *AlternativesMatrix, distillationFun *LinearFunctionParameters,
 	maxCred := withoutD.Max()
 	positions := make([]int, len(*matrix.Alternatives))
 	indices := make([]int, len(positions))
-	for i, _ := range indices {
+	for i := range indices {
 		indices[i] = i
 	}
 	return distillate(maxCred, position, withoutD, distillationFun, evaluateFunction, false)

@@ -1,8 +1,8 @@
 package model
 
 import (
-	"../utils"
 	"fmt"
+	"github.com/Azbesciak/RealDecisionMaker/utils"
 )
 
 type AlternativeWeightFunction func(alternative *AlternativeWithCriteria) *AlternativeResult
