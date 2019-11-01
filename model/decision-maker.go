@@ -7,13 +7,15 @@ import (
 	"strings"
 )
 
+//go:generate easytags $GOFILE json:camel
+
 type DecisionMaker struct {
-	PreferenceFunction string
-	State              DecisionMakerState
-	KnownAlternatives  []AlternativeWithCriteria
-	ChoseToMake        []Alternative
-	Criteria
-	MethodParameters
+	PreferenceFunction string                    `json:"preferenceFunction"`
+	State              DecisionMakerState        `json:"state"`
+	KnownAlternatives  []AlternativeWithCriteria `json:"knownAlternatives"`
+	ChoseToMake        []Alternative             `json:"choseToMake"`
+	Criteria           Criteria                  `json:"criteria"`
+	MethodParameters   MethodParameters          `json:"methodParameters"`
 }
 
 type MethodParameters = map[string]interface{}
@@ -36,13 +38,13 @@ func (dm *DecisionMaker) AlternativesToConsider() *[]AlternativeWithCriteria {
 }
 
 type DecisionMakerState struct {
-	Focus   int
-	Fatigue int
+	Focus   int `json:"focus"`
+	Fatigue int `json:"fatigue"`
 }
 
 type DecisionMakerChoice struct {
-	Result AlternativesRanking
-	State  DecisionMakerState
+	Result AlternativesRanking `json:"result"`
+	State  DecisionMakerState  `json:"state"`
 }
 
 type PreferenceFunction interface {
@@ -51,7 +53,7 @@ type PreferenceFunction interface {
 }
 
 type PreferenceFunctions struct {
-	Functions []PreferenceFunction
+	Functions []PreferenceFunction `json:"functions"`
 }
 
 func (pf PreferenceFunctions) Get(index int) utils.Identifiable {

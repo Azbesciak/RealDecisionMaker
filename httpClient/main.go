@@ -1,16 +1,18 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/Azbesciak/RealDecisionMaker/logic/choquet"
 	"github.com/Azbesciak/RealDecisionMaker/logic/electreIII"
 	"github.com/Azbesciak/RealDecisionMaker/logic/owa"
 	"github.com/Azbesciak/RealDecisionMaker/logic/weighted-sum"
 	"github.com/Azbesciak/RealDecisionMaker/model"
+	"github.com/gin-gonic/gin"
 	"github.com/go-errors/errors"
 	"log"
 	"net/http"
 )
+
+//go:generate easytags $GOFILE json:camel
 
 var weightedSumF = &weighted_sum.WeightedSumPreferenceFunc{}
 var owaF = &owa.OWAPreferenceFunc{}
@@ -18,26 +20,23 @@ var eleF = &electreIII.ElectreIIIPreferenceFunc{}
 var choquetF = &choquet.ChoquetIntegralPreferenceFunc{}
 var funcs = model.PreferenceFunctions{Functions: []model.PreferenceFunction{weightedSumF, owaF, eleF, choquetF}}
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
+func decideHandler(c *gin.Context) {
 	var dm model.DecisionMaker
-	err := decoder.Decode(&dm)
-	w.Header().Set("Content-Type", "application/json")
-	if err != nil {
-		writeError(err, &dm, &w)
+	if err := c.ShouldBindJSON(&dm); err != nil {
+		writeError(err, &dm, c)
 		return
 	}
 	defer func() {
 		if e := recover(); e != nil {
-			writeError(e, &dm, &w)
+			writeError(e, &dm, c)
 		}
 	}()
 	decision := dm.MakeDecision(funcs)
 	log.Printf("%#v", requestSuccess{dm, *decision})
-	writeJSON(decision, &w)
+	writeJSON(decision, c)
 }
 
-func writeError(e interface{}, dm *model.DecisionMaker, w *http.ResponseWriter) {
+func writeError(e interface{}, dm *model.DecisionMaker, c *gin.Context) {
 	log.Println(errors.Wrap(e, 1).ErrorStack())
 	switch v := e.(type) {
 	case error:
@@ -47,44 +46,25 @@ func writeError(e interface{}, dm *model.DecisionMaker, w *http.ResponseWriter) 
 		Error:   e,
 		Request: dm,
 	}
-	(*w).WriteHeader(400)
-	writeJSON(err, w)
+	c.JSON(http.StatusBadRequest, err)
 }
 
-func writeJSON(data interface{}, w *http.ResponseWriter) {
-	bytes, _ := json.Marshal(data)
-	toCamelCaseJSON(&bytes)
-	(*w).Write(bytes)
+func writeJSON(data interface{}, c *gin.Context) {
+	c.JSON(http.StatusOK, data)
 }
 
 type requestError struct {
-	Error   interface{}
-	Request interface{}
+	Error   interface{} `json:"error"`
+	Request interface{} `json:"request"`
 }
 
 type requestSuccess struct {
-	Request  interface{}
-	Response interface{}
-}
-
-func toCamelCaseJSON(jsonBytes *[]byte) {
-	length := len(*jsonBytes)
-	if length < 3 {
-		return
-	}
-	bracketObj, comma, quote := "{"[0], ","[0], "\""[0]
-	twoBefore, oneBefore := (*jsonBytes)[0], (*jsonBytes)[1]
-	for i := 2; i < length; i++ {
-		current := (*jsonBytes)[i]
-		if oneBefore == quote && (twoBefore == bracketObj || twoBefore == comma) && current <= 90 && current >= 64 {
-			(*jsonBytes)[i] = current + 32
-		}
-		twoBefore = oneBefore
-		oneBefore = current
-	}
+	Request  interface{} `json:"request"`
+	Response interface{} `json:"response"`
 }
 
 func main() {
-	http.HandleFunc("/decide", handler)
-	log.Fatal(http.ListenAndServe(":80", nil))
+	r := gin.Default()
+	r.POST("/decide", decideHandler)
+	log.Fatal(r.Run())
 }

@@ -6,9 +6,10 @@ import (
 	"sort"
 )
 
+//go:generate easytags $GOFILE json:camel
 type AlternativeResult struct {
-	Alternative AlternativeWithCriteria
-	Value       Weight
+	Alternative AlternativeWithCriteria `json:"alternative"`
+	Value       Weight                  `json:"value"`
 }
 
 func (a *AlternativeResult) Identifier() string {
@@ -82,8 +83,8 @@ func (a *AlternativeResult) positionInRanking(allAlternatives *AlternativeResult
 type Alternative = string
 
 type AlternativeWithCriteria struct {
-	Id       Alternative
-	Criteria Weights
+	Id       Alternative `json:"id"`
+	Criteria Weights     `json:"criteria"`
 }
 
 func (a *AlternativeWithCriteria) CriterionValue(criterion *Criterion) Weight {
@@ -98,6 +99,6 @@ type Alternatives []Alternative
 
 type AlternativesRankEntry struct {
 	AlternativeResult
-	BetterThanOrSameAs Alternatives // preference >=
+	BetterThanOrSameAs Alternatives `json:"betterThanOrSameAs"` // preference >=
 }
 type AlternativesRanking []AlternativesRankEntry

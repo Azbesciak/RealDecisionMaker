@@ -4,6 +4,7 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/utils"
 )
 
+//go:generate easytags $GOFILE json:camel
 type CriterionType string
 
 const (
@@ -12,8 +13,8 @@ const (
 )
 
 type Criterion struct {
-	Id   string
-	Type CriterionType
+	Id   string        `json:"id"`
+	Type CriterionType `json:"type"`
 }
 
 func (c Criterion) Identifier() string {
@@ -41,7 +42,7 @@ type Weight = float64
 
 type WeightedCriterion struct {
 	Criterion
-	Weight Weight
+	Weight Weight `json:"weight"`
 }
 
 type Weights map[string]Weight
