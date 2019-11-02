@@ -1,10 +1,10 @@
 package client
 
 import (
-	. "../logic/electreIII"
-	. "../logic/owa"
-	. "../logic/weighted-sum"
-	. "../model"
+	. "github.com/Azbesciak/RealDecisionMaker/logic/electreIII"
+	. "github.com/Azbesciak/RealDecisionMaker/logic/owa"
+	. "github.com/Azbesciak/RealDecisionMaker/logic/weighted-sum"
+	. "github.com/Azbesciak/RealDecisionMaker/model"
 	"reflect"
 	"testing"
 )
