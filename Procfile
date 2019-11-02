@@ -1,1 +1,1 @@
-web: bin/http-client
+web: bin/RealDecisionMaker
