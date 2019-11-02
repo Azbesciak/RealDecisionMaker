@@ -6,6 +6,8 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/logic/owa"
 	"github.com/Azbesciak/RealDecisionMaker/logic/weighted-sum"
 	"github.com/Azbesciak/RealDecisionMaker/model"
+	"github.com/Azbesciak/RealDecisionMaker/utils"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-errors/errors"
 	"log"
@@ -19,6 +21,7 @@ var owaF = &owa.OWAPreferenceFunc{}
 var eleF = &electreIII.ElectreIIIPreferenceFunc{}
 var choquetF = &choquet.ChoquetIntegralPreferenceFunc{}
 var funcs = model.PreferenceFunctions{Functions: []model.PreferenceFunction{weightedSumF, owaF, eleF, choquetF}}
+var funcNames = utils.AsMap(funcs)
 
 func decideHandler(c *gin.Context) {
 	var dm model.DecisionMaker
@@ -63,8 +66,14 @@ type requestSuccess struct {
 	Response interface{} `json:"response"`
 }
 
+func functionsHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, funcNames)
+}
+
 func main() {
 	r := gin.Default()
+	r.Use(cors.Default())
 	r.POST("/decide", decideHandler)
+	r.GET("/preferenceFunctions", functionsHandler)
 	log.Fatal(r.Run())
 }
