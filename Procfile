@@ -1,1 +1,1 @@
-web: bin\httpClient
+web: bin/http-client
