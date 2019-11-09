@@ -2,7 +2,7 @@ package model
 
 import (
 	"fmt"
-	"github.com/Azbesciak/RealDecisionMaker/utils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"reflect"
 	"strings"
 )

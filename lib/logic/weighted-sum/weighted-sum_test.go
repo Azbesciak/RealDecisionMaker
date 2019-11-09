@@ -1,8 +1,8 @@
 package weighted_sum
 
 import (
-	"github.com/Azbesciak/RealDecisionMaker/model"
-	"github.com/Azbesciak/RealDecisionMaker/utils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
 )
 

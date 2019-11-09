@@ -1,7 +1,7 @@
 package model
 
 import (
-	. "github.com/Azbesciak/RealDecisionMaker/testUtils"
+	. "github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"testing"
 )
 

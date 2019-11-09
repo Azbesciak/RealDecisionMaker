@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/Azbesciak/RealDecisionMaker/logic/choquet"
-	"github.com/Azbesciak/RealDecisionMaker/logic/electreIII"
-	"github.com/Azbesciak/RealDecisionMaker/logic/owa"
-	"github.com/Azbesciak/RealDecisionMaker/logic/weighted-sum"
-	"github.com/Azbesciak/RealDecisionMaker/model"
-	"github.com/Azbesciak/RealDecisionMaker/utils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/choquet"
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/electreIII"
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/owa"
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/weighted-sum"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-errors/errors"

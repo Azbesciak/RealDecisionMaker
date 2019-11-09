@@ -2,7 +2,7 @@ package owa
 
 import (
 	"fmt"
-	"github.com/Azbesciak/RealDecisionMaker/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"sort"
 )
 

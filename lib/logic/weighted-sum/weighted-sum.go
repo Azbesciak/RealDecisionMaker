@@ -2,7 +2,7 @@ package weighted_sum
 
 import (
 	"fmt"
-	. "github.com/Azbesciak/RealDecisionMaker/model"
+	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 )
 
 type WeightedSumPreferenceFunc struct {

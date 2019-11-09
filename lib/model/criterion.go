@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/Azbesciak/RealDecisionMaker/utils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
 //go:generate easytags $GOFILE json:camel

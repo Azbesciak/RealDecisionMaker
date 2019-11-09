@@ -2,7 +2,7 @@ package electreIII
 
 import (
 	"fmt"
-	"github.com/Azbesciak/RealDecisionMaker/utils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"sort"
 	"strings"
 )
