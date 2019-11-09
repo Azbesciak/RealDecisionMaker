@@ -8,6 +8,7 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/go-errors/errors"
 	"log"
@@ -72,8 +73,11 @@ func functionsHandler(c *gin.Context) {
 
 func main() {
 	r := gin.Default()
+	// Dont worry about this line just yet, it will make sense in the Dockerise bit!
+	r.Use(static.Serve("/", static.LocalFile("./web", true)))
 	r.Use(cors.Default())
-	r.POST("/decide", decideHandler)
-	r.GET("/preferenceFunctions", functionsHandler)
+	api := r.Group("/api")
+	api.POST("/decide", decideHandler)
+	api.GET("/preferenceFunctions", functionsHandler)
 	log.Fatal(r.Run())
 }
