@@ -68,13 +68,8 @@ func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions) *
 	if IsStringBlank(&dm.PreferenceFunction) {
 		panic(fmt.Errorf("preference function must not be empty"))
 	}
-	preferenceFunMap := utils.AsMap(preferenceFunctions)
-	fun, ok := (*preferenceFunMap)[dm.PreferenceFunction]
-	if !ok {
-		keys := reflect.ValueOf(preferenceFunctions).MapKeys()
-		panic(fmt.Errorf("preference function '%s' not found, available are '%s'", dm.PreferenceFunction, keys))
-	}
-	res := fun.(PreferenceFunction).Evaluate(dm)
+	fun := FetchPreferenceFunction(preferenceFunctions, dm.PreferenceFunction)
+	res := (*fun).(PreferenceFunction).Evaluate(dm)
 	return &DecisionMakerChoice{*res, dm.State}
 }
 

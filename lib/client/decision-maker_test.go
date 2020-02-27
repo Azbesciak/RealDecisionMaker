@@ -5,6 +5,7 @@ import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/owa"
 	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/weighted-sum"
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"reflect"
 	"testing"
 )
@@ -71,4 +72,13 @@ func TestDecisionMaker_MakeDecision_ElectreIII(t *testing.T) {
 	if !reflect.DeepEqual(ranking.Result, *expectedRanking) {
 		t.Errorf("Invalid result, expected '%v', got '%v'", ranking.Result, *expectedRanking)
 	}
+}
+
+func TestFetchPreferenceFunc(t *testing.T) {
+	functions := PreferenceFunctions{Functions: []PreferenceFunction{
+		&ElectreIIIPreferenceFunc{},
+		&OWAPreferenceFunc{},
+	}}
+	defer utils.ExpectError(t, "preference function 'xyz' not found, available are '[electreIII owa]'")()
+	FetchPreferenceFunction(functions, "xyz")
 }

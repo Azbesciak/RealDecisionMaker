@@ -25,3 +25,16 @@ func ExtractWeights(dm *DecisionMaker) Weights {
 	utils.DecodeToStruct(weights, &weightsParsed)
 	return weightsParsed
 }
+
+func FetchPreferenceFunction(preferenceFunctions PreferenceFunctions, function string) *utils.Identifiable {
+	preferenceFunMap := utils.AsMap(preferenceFunctions)
+	fun, ok := (*preferenceFunMap)[function]
+	if !ok {
+		var keys []string
+		for k := range *preferenceFunMap {
+			keys = append(keys, k)
+		}
+		panic(fmt.Errorf("preference function '%s' not found, available are '%s'", function, keys))
+	}
+	return &fun
+}
