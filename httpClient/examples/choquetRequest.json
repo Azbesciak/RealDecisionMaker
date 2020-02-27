@@ -1,0 +1,77 @@
+{
+  "preferenceFunction": "choquetIntegral",
+  "knownAlternatives": [
+    {
+      "id": "ITA",
+      "criteria": {
+        "power": 9.0,
+        "safety": 4,
+        "efficiency": 4
+      }
+    },
+    {
+      "id": "BEL",
+      "criteria": {
+        "power": 5.8,
+        "safety": 0,
+        "efficiency": 8
+      }
+    },
+    {
+      "id": "GER",
+      "criteria": {
+        "power": 6.6,
+        "safety": 7,
+        "efficiency": 6
+      }
+    },
+    {
+      "id": "AUT",
+      "criteria": {
+        "power": 7.4,
+        "safety": 8,
+        "efficiency": 2
+      }
+    },
+    {
+      "id": "FRA",
+      "criteria": {
+        "power": 9.8,
+        "safety": 6,
+        "efficiency": 2
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "power",
+      "type": "gain"
+    },
+    {
+      "id": "safety",
+      "type": "gain"
+    },
+    {
+      "id": "efficiency",
+      "type": "gain"
+    }
+  ],
+  "choseToMake": [
+    "ITA",
+    "BEL",
+    "GER",
+    "AUT",
+    "FRA"
+  ],
+  "methodParameters": {
+    "weights": {
+      "power,safety,efficiency": 1,
+      "power,safety": 0.6,
+      "safety,efficiency": 0.5,
+      "power,efficiency": 0.7,
+      "power": 0.1,
+      "safety": 0.5,
+      "efficiency": 0.4
+    }
+  }
+}

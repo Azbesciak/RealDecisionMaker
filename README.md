@@ -11,10 +11,18 @@ Simulator of real human-like decision maker, focused on pairwise comparisons
 - [Toward a Synthesis of Cognitive Biases: How Noisy Information Processing Can Bias Human Decision Making](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.432.8763&rep=rep1&type=pdf)
 
 ## Thoughts
-- DM needs to have some weighting function;
-  - Chebyshev
+- DM needs to have some weighting function; available
+  - OWA
   - Weighted sum
   - Choquet's integral
-- what with incomparability? functions above can't manage it (Electre? Promethee I?)
+  - Electre III
 - how to manage "I don't want to answer" / "I don't know"
 - Need to remember - decision depends on presented alternatives now (also multiple pairs) and earlier (order is also important).
+
+
+## Available preference functions
+Only `preferenceFunction`, `weights` and `methodParameters` are custom per method.
+[Examples of functions requests](./httpClient/examples).
+> OWA (`owa`), Weighted sum (`weightedSum`) and Choquet (`choquetIntegral`) have the same request structure with difference to `preferenceFunction` (keys in brackets).
+> The only difference is weights structure: for Choquet as keys you should pass comma separated list of criteria without any braces.
+> Both OWA and Weighted sum does not contain any criteria interaction, so for those keys contains only single criterion.
