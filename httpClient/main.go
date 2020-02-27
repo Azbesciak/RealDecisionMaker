@@ -6,13 +6,13 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/owa"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/weighted-sum"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
-	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/go-errors/errors"
 	"log"
 	"net/http"
+	"sync"
 )
 
 //go:generate easytags $GOFILE json:camel
@@ -22,7 +22,25 @@ var owaF = &owa.OWAPreferenceFunc{}
 var eleF = &electreIII.ElectreIIIPreferenceFunc{}
 var choquetF = &choquet.ChoquetIntegralPreferenceFunc{}
 var funcs = model.PreferenceFunctions{Functions: []model.PreferenceFunction{weightedSumF, owaF, eleF, choquetF}}
-var funcNames = utils.AsMap(funcs)
+
+type MapOfSomething *map[string]interface{}
+type LazyFunctions func() MapOfSomething
+
+func Make(f LazyFunctions) LazyFunctions {
+	var v MapOfSomething
+	var once sync.Once
+	return func() MapOfSomething {
+		once.Do(func() {
+			v = f()
+			f = nil
+		})
+		return v
+	}
+}
+
+var funcRequirements = Make(func() MapOfSomething {
+	return model.FetchPreferenceFunctionsParameters(funcs)
+})
 
 func decideHandler(c *gin.Context) {
 	var dm model.DecisionMaker
@@ -68,7 +86,7 @@ type requestSuccess struct {
 }
 
 func functionsHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, funcNames)
+	c.JSON(http.StatusOK, funcRequirements())
 }
 
 func main() {
