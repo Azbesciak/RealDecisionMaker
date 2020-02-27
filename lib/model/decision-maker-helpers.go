@@ -52,8 +52,9 @@ func FetchPreferenceFunction(preferenceFunctions PreferenceFunctions, function s
 
 func FetchPreferenceFunctionsParameters(functions PreferenceFunctions) *map[string]interface{} {
 	var functionsParameters = make(map[string]interface{}, functions.Len())
+	reflector := jsonschema.Reflector{RequiredFromJSONSchemaTags: true}
 	for _, f := range functions.Functions {
-		functionsParameters[f.Identifier()] = jsonschema.Reflect(f.MethodParameters())
+		functionsParameters[f.Identifier()] = reflector.Reflect(f.MethodParameters())
 	}
 	return &functionsParameters
 }
