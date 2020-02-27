@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"reflect"
 	"strings"
 )
 
@@ -49,6 +48,7 @@ type DecisionMakerChoice struct {
 
 type PreferenceFunction interface {
 	utils.Identifiable
+	MethodParameters() *map[string]interface{}
 	Evaluate(dm *DecisionMaker) *AlternativesRanking
 }
 
