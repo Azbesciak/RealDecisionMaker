@@ -12,6 +12,10 @@ func (w *WeightedSumPreferenceFunc) Identifier() string {
 	return "weightedSum"
 }
 
+func (w *WeightedSumPreferenceFunc) MethodParameters() interface{} {
+	return WeightsParamOnly()
+}
+
 func (w *WeightedSumPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
 	weights := ExtractWeights(dm)
 	weightedCriteria := make([]WeightedCriterion, len(dm.Criteria))

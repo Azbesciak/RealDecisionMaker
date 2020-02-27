@@ -6,11 +6,23 @@ import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
+const distillationFun = "electreDistillation"
+const criteria = "electreCriteria"
+
 type ElectreIIIPreferenceFunc struct {
 }
 
 func (e ElectreIIIPreferenceFunc) Identifier() string {
 	return "electreIII"
+}
+
+type ElectreIIIParams struct {
+	Criteria        ElectreCriteria          `json:"criteria"`
+	DistillationFun LinearFunctionParameters `json:"distillationFun"`
+}
+
+func (e *ElectreIIIPreferenceFunc) MethodParameters() interface{} {
+	return ElectreIIIParams{}
 }
 
 func (e ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
@@ -21,7 +33,7 @@ func (e ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanki
 }
 
 func extractElectreIIICriteria(dm *DecisionMaker) *ElectreCriteria {
-	potentialEleCriteria, ok := dm.MethodParameters["electreCriteria"]
+	potentialEleCriteria, ok := dm.MethodParameters[criteria]
 	if !ok {
 		panic(fmt.Errorf("criteria for electre not found in methodParameters: %v", dm.MethodParameters))
 	}
@@ -61,7 +73,7 @@ func requireBValueAtLeast(f *LinearFunctionParameters, current float64, criterio
 }
 
 func getDistillationFunc(dm *DecisionMaker) *LinearFunctionParameters {
-	params, ok := dm.MethodParameters["electreDistillation"]
+	params, ok := dm.MethodParameters[distillationFun]
 	if !ok {
 		return &DefaultDistillationFunc
 	} else {

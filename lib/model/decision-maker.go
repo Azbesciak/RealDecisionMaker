@@ -48,7 +48,7 @@ type DecisionMakerChoice struct {
 
 type PreferenceFunction interface {
 	utils.Identifiable
-	MethodParameters() *map[string]interface{}
+	MethodParameters() interface{}
 	Evaluate(dm *DecisionMaker) *AlternativesRanking
 }
 

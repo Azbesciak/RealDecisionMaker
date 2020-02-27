@@ -13,6 +13,10 @@ func (O *OWAPreferenceFunc) Identifier() string {
 	return "owa"
 }
 
+func (O *OWAPreferenceFunc) MethodParameters() interface{} {
+	return model.WeightsParamOnly()
+}
+
 func (O *OWAPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
 	originalWeights := model.ExtractWeights(dm)
 	var weights = make([]model.Weight, len(originalWeights))
