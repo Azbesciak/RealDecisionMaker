@@ -1,5 +1,6 @@
 import React, {FunctionComponent} from 'react';
 import {createStyles, List, ListItem, makeStyles, Theme} from '@material-ui/core';
+import {camelCaseToNormal} from "./utils/utils";
 
 
 interface OwnProps {
@@ -23,7 +24,7 @@ const MethodsList: FunctionComponent<Props> = (props) => {
         <div className={classes.root}>
             <List>
                 {Object.entries(props.methodComponents).map(([k, v]) => (
-                    <ListItem button key={k}>{k}</ListItem>
+                    <ListItem button key={k}>{camelCaseToNormal(k)}</ListItem>
                 ))}
             </List>
         </div>
