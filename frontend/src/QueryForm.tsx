@@ -7,6 +7,8 @@ import {Criterion} from "./criteria/CriterionComponent";
 import {Collection} from "./utils/ValuesContainerComponent";
 import {Alternative} from "./alternatives/AlternativeComponent";
 import {remapCollection} from "./utils/utils";
+import {WeightedSumFactory} from "./methods/WeightedSum";
+import {MethodFactory} from "./methods/declarations";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -26,10 +28,14 @@ interface DecisionMakerQuery {
     preferenceFunctions: { [key: string]: any };
     criteria: Collection<Criterion>;
     alternatives: Collection<Alternative>;
+    selectedMethod?: MethodFactory<any>;
 }
 
 class QueryForm extends React.Component<any, DecisionMakerQuery> {
-    state = {
+    private functions = [
+        new WeightedSumFactory(() => this.setState({}))
+    ];
+    state: DecisionMakerQuery = {
         preferenceFunctions: {},
         criteria: {},
         alternatives: {}
@@ -50,6 +56,12 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
         {alternatives: remapCollection(alts, (k, v) => s.alternatives[k] ? v : this.applyCriteriaToAlternative(v, s.criteria))}
     ));
 
+    onMethodSelected = (method: string) => {
+        const selectedMethod = this.functions.find(m => m.methodName === method);
+        this.setState({selectedMethod});
+        console.log("METHOD SELECTED", method);
+    }
+
     private applyCriteriaToAlternative(value: Alternative, criteria: Collection<Criterion>) {
         return {
             id: value.id,
@@ -60,6 +72,8 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
         }
     }
 
+    renderMethod = () => this.state.selectedMethod && this.state.selectedMethod.getComponent(this.state.criteria);
+
     render() {
         return (
             <form noValidate autoComplete="off">
@@ -68,7 +82,9 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
                     payload={this.state.alternatives}
                     onUpdate={this.onAlternativesUpdated}
                 />
-                <MethodsList methodComponents={this.state.preferenceFunctions}/>
+                <MethodsList methodComponents={this.state.preferenceFunctions}
+                             onMethodSelected={this.onMethodSelected}/>
+                {this.renderMethod()}
             </form>
         );
     }

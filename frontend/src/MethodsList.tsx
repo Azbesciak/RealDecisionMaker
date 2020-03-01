@@ -4,7 +4,8 @@ import {camelCaseToNormal} from "./utils/utils";
 
 
 interface OwnProps {
-    methodComponents: { [key: string]: any }
+    methodComponents: { [key: string]: any };
+    onMethodSelected: (methodName: string) => void
 }
 
 type Props = OwnProps;
@@ -23,8 +24,8 @@ const MethodsList: FunctionComponent<Props> = (props) => {
     return (
         <div className={classes.root}>
             <List>
-                {Object.entries(props.methodComponents).map(([k, v]) => (
-                    <ListItem button key={k}>{camelCaseToNormal(k)}</ListItem>
+                {Object.entries(props.methodComponents).map(([k]) => (
+                    <ListItem button key={k} onClick={() => props.onMethodSelected(k)}>{camelCaseToNormal(k)}</ListItem>
                 ))}
             </List>
         </div>

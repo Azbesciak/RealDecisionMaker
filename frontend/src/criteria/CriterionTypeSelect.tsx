@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent} from 'react';
 import {createStyles, FormControl, InputLabel, makeStyles, MenuItem, Select, Theme} from "@material-ui/core";
 import {handleInputValueChange} from "../utils/utils";
 import {criteriaTypes, CriterionType} from "./CriterionType";
@@ -19,9 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 export const CriterionTypeSelect: FunctionComponent<ItemValue<CriterionType>> = (props) => {
     const classes = useStyles();
-    const handleChange = handleInputValueChange((value: CriterionType) => {
-        props.onChange(value)
-    });
+    const handleChange = handleInputValueChange((value: CriterionType) => props.onChange(value));
     return (
         <FormControl className={classes.formControl}>
             <InputLabel>Type</InputLabel>
