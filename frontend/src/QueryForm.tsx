@@ -9,6 +9,7 @@ import {Alternative} from "./alternatives/AlternativeComponent";
 import {remapCollection} from "./utils/utils";
 import {WeightedSumFactory} from "./methods/WeightedSum";
 import {MethodFactory} from "./methods/declarations";
+import AcceptButton from "./utils/AcceptButton";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -59,8 +60,7 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
     onMethodSelected = (method: string) => {
         const selectedMethod = this.functions.find(m => m.methodName === method);
         this.setState({selectedMethod});
-        console.log("METHOD SELECTED", method);
-    }
+    };
 
     private applyCriteriaToAlternative(value: Alternative, criteria: Collection<Criterion>) {
         return {
@@ -71,6 +71,12 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
             })
         }
     }
+
+    private onAccept = () => {
+        if (!this.state.selectedMethod) return;
+        const params = this.state.selectedMethod.getParams(this.state.criteria);
+        console.log("PARAMS", params)
+    };
 
     renderMethod = () => this.state.selectedMethod && this.state.selectedMethod.getComponent(this.state.criteria);
 
@@ -85,6 +91,7 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
                 <MethodsList methodComponents={this.state.preferenceFunctions}
                              onMethodSelected={this.onMethodSelected}/>
                 {this.renderMethod()}
+                <AcceptButton label={"OK"} onAccept={this.onAccept} enabled={!!this.state.selectedMethod}/>
             </form>
         );
     }

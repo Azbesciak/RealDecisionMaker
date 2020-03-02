@@ -6,7 +6,11 @@ export function handleInputValueChange<T extends string>(callback: (value: T) =>
 }
 
 export function remapCollection<T, R>(obj: Collection<T>, mapper: (k: string, v: T) => R): Collection<R> {
-    return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, mapper(k, v)]))
+    return fromCollection(obj, (k, v) => [k, mapper(k, v)]);
+}
+
+export function fromCollection<T, R>(obj: Collection<T>, mapper: (k: string, v: T) => [string, R]): Collection<R> {
+    return Object.fromEntries(Object.entries(obj).map(([k, v]) => mapper(k, v)));
 }
 
 export function camelCaseToNormal(value: string) {

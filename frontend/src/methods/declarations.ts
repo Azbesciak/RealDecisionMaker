@@ -10,7 +10,7 @@ export interface Method<T> {
 export interface MethodFactory<T> {
     readonly methodName: string;
     getComponent: (criteria: Collection<Criterion>) => JSX.Element;
-    getParams: () => T;
+    getParams: (criteria: Collection<Criterion>) => T;
 }
 
 export interface SimpleWeights {
