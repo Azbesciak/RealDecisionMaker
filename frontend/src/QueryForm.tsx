@@ -1,45 +1,53 @@
 import React from 'react';
-import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import MethodsList from "./MethodsList";
 import CriteriaContainerComponent from "./criteria/CriteriaContainerComponent";
 import {AlternativesContainerComponent} from "./alternatives/AlternativesContainerComponent";
 import {Criterion} from "./criteria/CriterionComponent";
 import {Collection} from "./utils/ValuesContainerComponent";
 import {Alternative} from "./alternatives/AlternativeComponent";
-import {remapCollection} from "./utils/utils";
+import {fromCollection, remapCollection} from "./utils/utils";
 import {WeightedSumFactory} from "./methods/WeightedSum";
 import {MethodFactory} from "./methods/declarations";
 import AcceptButton from "./utils/AcceptButton";
+import ErrorMessage from "./ErrorMessage";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        container: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        textField: {
-            marginLeft: theme.spacing(1),
-            marginRight: theme.spacing(1),
-            width: 200,
-        },
-    }),
-);
+interface DecisionError {
+    error: string | null;
+}
+
+export interface NamedAlternative {
+    id: string;
+    criteria: Collection<number>;
+}
+
+interface AlternativeResult {
+    alternative: NamedAlternative;
+    value: number;
+    betterThanOrSameAs: string[]
+}
+
+interface DecisionResult {
+    result: AlternativeResult[];
+}
 
 interface DecisionMakerQuery {
     preferenceFunctions: { [key: string]: any };
     criteria: Collection<Criterion>;
     alternatives: Collection<Alternative>;
     selectedMethod?: MethodFactory<any>;
+    decision: Partial<DecisionError & DecisionResult>;
 }
 
 class QueryForm extends React.Component<any, DecisionMakerQuery> {
+    private lastRequestId = 0;
     private functions = [
         new WeightedSumFactory(() => this.setState({}))
     ];
     state: DecisionMakerQuery = {
         preferenceFunctions: {},
         criteria: {},
-        alternatives: {}
+        alternatives: {},
+        decision: {}
     };
 
     componentDidMount() {
@@ -75,10 +83,48 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
     private onAccept = () => {
         if (!this.state.selectedMethod) return;
         const params = this.state.selectedMethod.getParams(this.state.criteria);
+        this.sendRequest(this.state.selectedMethod.methodName, params);
         console.log("PARAMS", params)
     };
 
+    private sendRequest = async (preferenceFunction: string, methodParameters: any,) => {
+        this.lastRequestId++;
+        this.setState({decision: {}});
+        const body = {
+            preferenceFunction,
+            methodParameters,
+            criteria: Object.values(this.state.criteria),
+            knownAlternatives: Object.values(this.state.alternatives).map(a => ({
+                id: a.id,
+                criteria: fromCollection(a.criteria, (_, v) => [v.id, v.value])
+            })),
+            choseToMake: Object.values(this.state.alternatives).map(a => a.id)
+        };
+        fetch(`${process.env.REACT_APP_API_ROOT}/decide`, {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(r => r.json())
+            .then(r => {
+                if (r.error) {
+                    this.setState({decision: {error: r.error}})
+                } else {
+                    this.setState({decision: {result: r.result}})
+                }
+            })
+            .catch(e => this.setState({decision: {error: e.error || e.message}}))
+    };
+
     renderMethod = () => this.state.selectedMethod && this.state.selectedMethod.getComponent(this.state.criteria);
+
+    private clearMessageIfValid = () => {
+        let id = this.lastRequestId;
+        return () => {
+            if (id === this.lastRequestId) this.setState({decision: {}})
+        }
+    };
 
     render() {
         return (
@@ -88,10 +134,13 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
                     payload={this.state.alternatives}
                     onUpdate={this.onAlternativesUpdated}
                 />
-                <MethodsList methodComponents={this.state.preferenceFunctions}
-                             onMethodSelected={this.onMethodSelected}/>
+                <MethodsList
+                    methodComponents={this.state.preferenceFunctions}
+                    onMethodSelected={this.onMethodSelected}
+                />
                 {this.renderMethod()}
                 <AcceptButton label={"OK"} onAccept={this.onAccept} enabled={!!this.state.selectedMethod}/>
+                <ErrorMessage message={this.state.decision.error} closed={this.clearMessageIfValid()}/>
             </form>
         );
     }
