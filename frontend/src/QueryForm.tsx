@@ -11,6 +11,7 @@ import {MethodFactory} from "./methods/declarations";
 import AcceptButton from "./utils/AcceptButton";
 import ErrorMessage from "./ErrorMessage";
 import {ChoquetIntegralFactory} from "./methods/ChoquetIntegral";
+import {OWAFactory} from "./methods/OWA";
 
 interface DecisionError {
     error: string | null;
@@ -41,9 +42,11 @@ interface DecisionMakerQuery {
 
 class QueryForm extends React.Component<any, DecisionMakerQuery> {
     private lastRequestId = 0;
+    private readonly update = () => this.setState({});
     private functions = [
-        new WeightedSumFactory(() => this.setState({})),
-        new ChoquetIntegralFactory(() => this.setState({}))
+        new OWAFactory(this.update),
+        new WeightedSumFactory(this.update),
+        new ChoquetIntegralFactory(this.update)
     ];
     state: DecisionMakerQuery = {
         preferenceFunctions: {},
