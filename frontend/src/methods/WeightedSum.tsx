@@ -1,20 +1,16 @@
 import React from 'react';
-import {MethodFactory, SimpleWeights} from "./declarations";
 import {Collection} from "../utils/ValuesContainerComponent";
 import {Criterion} from "../criteria/CriterionComponent";
 import {SimpleWeightsComponent} from "./SimpleWeightsComponent";
 import {fromCollection} from "../utils/utils";
+import {SimpleWeightsMethodFactory} from "./SimpleWeightsMethodFactory";
 
-export class WeightedSumFactory implements MethodFactory<SimpleWeights> {
-    constructor(private onUpdate: () => void) {
+export class WeightedSumFactory extends SimpleWeightsMethodFactory {
+    constructor(onUpdate: () => void) {
+        super(onUpdate)
     }
 
     readonly methodName = "weightedSum";
-    private params: SimpleWeights = {weights: {}};
-    private updateParams = (newWeights: Partial<SimpleWeights>) => {
-        this.params = {...this.params, ...newWeights};
-        this.onUpdate();
-    };
     getComponent = (criteria: Collection<Criterion>) => (
         <WeightedSum criteria={criteria} methodParameters={this.params} onChange={this.updateParams}/>
     );

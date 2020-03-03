@@ -1,19 +1,15 @@
-import {MethodFactory, SimpleWeights} from "./declarations";
 import {Collection} from "../utils/ValuesContainerComponent";
 import {Criterion} from "../criteria/CriterionComponent";
 import {SimpleWeightsComponent} from "./SimpleWeightsComponent";
 import React from "react";
+import {SimpleWeightsMethodFactory} from "./SimpleWeightsMethodFactory";
 
-export class ChoquetIntegralFactory implements MethodFactory<SimpleWeights> {
-    constructor(private onUpdate: () => void) {
+export class ChoquetIntegralFactory extends SimpleWeightsMethodFactory {
+    constructor(onUpdate: () => void) {
+        super(onUpdate)
     }
 
     readonly methodName = "choquetIntegral";
-    private params: SimpleWeights = {weights: {}};
-    private updateParams = (newWeights: Partial<SimpleWeights>) => {
-        this.params = {...this.params, ...newWeights};
-        this.onUpdate();
-    };
     getComponent = (criteria: Collection<Criterion>) => (
         <ChoquetIntegral criteria={criteria} methodParameters={this.params} onChange={this.updateParams}/>
     );
