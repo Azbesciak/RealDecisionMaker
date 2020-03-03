@@ -10,6 +10,7 @@ import {WeightedSumFactory} from "./methods/WeightedSum";
 import {MethodFactory} from "./methods/declarations";
 import AcceptButton from "./utils/AcceptButton";
 import ErrorMessage from "./ErrorMessage";
+import {ChoquetIntegralFactory} from "./methods/ChoquetIntegral";
 
 interface DecisionError {
     error: string | null;
@@ -41,7 +42,8 @@ interface DecisionMakerQuery {
 class QueryForm extends React.Component<any, DecisionMakerQuery> {
     private lastRequestId = 0;
     private functions = [
-        new WeightedSumFactory(() => this.setState({}))
+        new WeightedSumFactory(() => this.setState({})),
+        new ChoquetIntegralFactory(() => this.setState({}))
     ];
     state: DecisionMakerQuery = {
         preferenceFunctions: {},
