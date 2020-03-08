@@ -18,7 +18,7 @@ export interface AlternativeCriterion {
 export class AlternativeComponent extends ItemValueComponent<Alternative> {
     updateWeight = (criterionId: string) => handleInputValueChange(valueStr => {
         const {id, criteria} = this.props.value;
-        const value = (+valueStr);
+        const value = +(valueStr || 0);
         this.props.onChange({
             id,
             criteria: {
@@ -32,9 +32,13 @@ export class AlternativeComponent extends ItemValueComponent<Alternative> {
             <div className="alternative list-item">
                 {this.getIdField()}
                 {Object.entries(this.props.value.criteria || {}).map(([k, v], i) => (
-                    <TextField key={k} value={v.value} label={v.id || criterionNamePlaceholder(i) } required
-                               type={'number'}
-                               onChange={this.updateWeight(k)}/>
+                    <TextField
+                        key={k}
+                        placeholder="0"
+                        value={v.value || ""}
+                        label={v.id || criterionNamePlaceholder(i)} required
+                        type={'number'}
+                        onChange={this.updateWeight(k)}/>
                 ))}
             </div>
         )

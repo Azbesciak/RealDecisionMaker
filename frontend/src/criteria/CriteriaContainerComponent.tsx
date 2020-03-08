@@ -9,7 +9,7 @@ class CriteriaContainerComponent extends ValuesContainerComponent<Criterion> {
     classNames = "criteria-container";
     newItemFactory = () => ({id: "", type: defaultCriterion});
 
-    createNewComponent(key: string, value: Criterion, index: number): JSX.Element {
+    createNewComponent(key: string, value: Criterion): JSX.Element {
         return (<CriterionComponent key={key} onChange={v => this.update(key, v)} value={value}/>);
     }
 

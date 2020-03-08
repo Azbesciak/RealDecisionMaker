@@ -21,7 +21,12 @@ const ElectreIIICriterionComp: FunctionComponent<OwnProps> = (props) => {
             <CardContent className="electre-criterion-content">
                 <div className="electre-k-field">
                     <label>k</label>
-                    <TextField value={props.params.k} type={'number'} onChange={updateK}/>
+                    <TextField
+                        placeholder="0"
+                        value={props.params.k || ""}
+                        type={'number'}
+                        onChange={updateK}
+                    />
                 </div>
                 <LinearFunction label={"q"} onChange={handleChange("q")} params={props.params.q}/>
                 <LinearFunction label={"p"} onChange={handleChange("p")} params={props.params.p}/>

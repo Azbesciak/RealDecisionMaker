@@ -2,6 +2,7 @@ import React from 'react';
 import {CriterionTypeSelect} from "./CriterionTypeSelect";
 import {ItemValueComponent} from "../utils/ItemValueComponent";
 import {CriterionType} from "./CriterionType";
+import {criterionNamePlaceholder} from "../utils/utils";
 
 export interface Criterion {
     id: string;

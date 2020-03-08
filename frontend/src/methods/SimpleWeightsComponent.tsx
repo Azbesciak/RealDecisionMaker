@@ -17,7 +17,7 @@ export abstract class SimpleWeightsComponent extends Component<Method<SimpleWeig
 
     private updateWeight = (criterionId: string) => handleInputValueChange(valueStr => {
         const weights = this.props.methodParameters.weights;
-        const value = (+valueStr);
+        const value = +(valueStr || 0);
         if (value >= 0)
             this.props.onChange({
                 weights: {...weights, [criterionId]: value}
@@ -30,8 +30,9 @@ export abstract class SimpleWeightsComponent extends Component<Method<SimpleWeig
                 {this.keys(this.props.criteria || {}).map(info => (
                     <TextField
                         className="weight-input"
+                        placeholder="0"
                         key={info.id}
-                        value={this.props.methodParameters.weights[info.id] || 0}
+                        value={this.props.methodParameters.weights[info.id] || ""}
                         label={info.name} required
                         inputProps={{min: "0"}}
                         type={'number'} onChange={this.updateWeight(info.id)}/>

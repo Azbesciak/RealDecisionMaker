@@ -1,8 +1,8 @@
 import {Collection} from "../../utils/ValuesContainerComponent";
 
 export interface LinearFunctionParameters {
-    a: number;
-    b: number;
+    a?: number;
+    b?: number;
 }
 
 export interface ElectreCriterion {
@@ -22,7 +22,7 @@ export function defaultDistillationFun(): LinearFunctionParameters {
 }
 
 export function blankDistillationFun(): LinearFunctionParameters {
-    return {a: 0, b: 0}
+    return {a: undefined, b: undefined}
 }
 
 export function blankElectreCriterion(): ElectreCriterion {

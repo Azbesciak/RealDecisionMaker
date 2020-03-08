@@ -21,13 +21,15 @@ const LinearFunction: FunctionComponent<LinearFunctionComponentParams> = (props)
             <div className="function-label">{props.label}</div>
             <div className="function-coefficient">
                 <TextField
-                    value={params.a}
+                    placeholder="0"
+                    value={params.a || ""}
                     label={"a"}
                     type={'number'} onChange={updateWeight("a")}/>
             </div>
             <div className="function-coefficient">
                 <TextField
-                    value={params.b}
+                    placeholder="0"
+                    value={params.b || ""}
                     label={"b"}
                     type={'number'} onChange={updateWeight("b")}/>
             </div>
