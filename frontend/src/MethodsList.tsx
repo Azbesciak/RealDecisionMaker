@@ -1,34 +1,42 @@
 import React, {FunctionComponent} from 'react';
-import {createStyles, List, ListItem, makeStyles, Theme} from '@material-ui/core';
-import {camelCaseToNormal} from "./utils/utils";
+import {Paper, Tab, Tabs} from '@material-ui/core';
+import {camelCaseToNormal, isUndefined} from "./utils/utils";
+import {makeStyles} from "@material-ui/core/styles";
 
 
 interface OwnProps {
     methodComponents: { [key: string]: any };
+    method?: string;
     onMethodSelected: (methodName: string) => void
 }
 
-type Props = OwnProps;
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            width: '100%',
-            maxWidth: 360,
-            backgroundColor: theme.palette.background.paper,
-        },
-    }),
-);
+const useStyles = makeStyles({
+    root: {
+        flexGrow: 1,
+    },
+});
 
+type Props = OwnProps;
 const MethodsList: FunctionComponent<Props> = (props) => {
     const classes = useStyles();
+    const methods = [...Object.keys(props.methodComponents)];
+    const index = props.method ? methods.indexOf(props.method) : 0;
+    const handleChange = (event: React.ChangeEvent<{}>, newIndex: number) => {
+        props.onMethodSelected(methods[newIndex]);
+    };
     return (
-        <div className={classes.root}>
-            <List>
-                {Object.entries(props.methodComponents).map(([k]) => (
-                    <ListItem button key={k} onClick={() => props.onMethodSelected(k)}>{camelCaseToNormal(k)}</ListItem>
+        <Paper className={classes.root}>
+            <Tabs value={index}
+                  onChange={handleChange}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  centered
+            >
+                {methods.map(k => (
+                    <Tab key={k} label={camelCaseToNormal(k)}/>
                 ))}
-            </List>
-        </div>
+            </Tabs>
+        </Paper>
     );
 };
 

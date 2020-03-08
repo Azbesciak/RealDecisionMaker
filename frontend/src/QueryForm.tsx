@@ -37,7 +37,7 @@ interface DecisionMakerQuery {
     preferenceFunctions: { [key: string]: any };
     criteria: Collection<Criterion>;
     alternatives: Collection<Alternative>;
-    selectedMethod?: MethodFactory<any>;
+    selectedMethod: MethodFactory<any>;
     decision: Partial<DecisionError & DecisionResult>;
 }
 
@@ -45,16 +45,17 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
     private lastRequestId = 0;
     private readonly update = () => this.setState({});
     private functions = [
+        new ChoquetIntegralFactory(this.update),
+        new ElectreIIIFactory(this.update),
         new OWAFactory(this.update),
         new WeightedSumFactory(this.update),
-        new ChoquetIntegralFactory(this.update),
-        new ElectreIIIFactory(this.update)
     ];
     state: DecisionMakerQuery = {
         preferenceFunctions: {},
         criteria: {},
         alternatives: {},
-        decision: {}
+        decision: {},
+        selectedMethod: this.functions[0]
     };
 
     componentDidMount() {
@@ -73,7 +74,7 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
     ));
 
     onMethodSelected = (method: string) => {
-        const selectedMethod = this.functions.find(m => m.methodName === method);
+        const selectedMethod = this.functions.find(m => m.methodName === method) as MethodFactory<any>;
         this.setState({selectedMethod});
     };
 
@@ -142,6 +143,7 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
                     onUpdate={this.onAlternativesUpdated}
                 />
                 <MethodsList
+                    method={this.state.selectedMethod.methodName}
                     methodComponents={this.state.preferenceFunctions}
                     onMethodSelected={this.onMethodSelected}
                 />
