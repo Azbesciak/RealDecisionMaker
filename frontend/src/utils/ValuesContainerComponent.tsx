@@ -30,24 +30,25 @@ export abstract class ValuesContainerComponent<T> extends Component<ValuesContai
         this.props.onUpdate(payload);
     };
 
-    abstract label: string;
+    abstract readonly label: string;
+    abstract readonly classNames: string;
 
-    abstract createNewComponent(key: string, value: T): JSX.Element
+    abstract createNewComponent(key: string, value: T, index: number): JSX.Element
 
     render() {
         return (
-            <React.Fragment>
+            <div className={"container " + this.classNames}>
                 <AddButton label={`Add ${this.label}`} onAdd={this.addItem}/>
-                <List>
-                    {Object.entries(this.props.payload).map(([k, v]) => (
+                <List className="container-list">
+                    {Object.entries(this.props.payload).map(([k, v], i) => (
                         <ListItem key={k}>
-                            {this.createNewComponent(k, v)}
+                            {this.createNewComponent(k, v, i)}
                             <RemoveButtonComponent onRemove={this.removeItem(k as any)}/>
                         </ListItem>
                     ))
                     }
                 </List>
-            </React.Fragment>
+            </div>
         );
     }
 }

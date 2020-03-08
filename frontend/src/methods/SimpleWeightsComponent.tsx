@@ -4,7 +4,6 @@ import {Collection} from "../utils/ValuesContainerComponent";
 import {Criterion} from "../criteria/CriterionComponent";
 import {handleInputValueChange} from "../utils/utils";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import {TextField} from "@material-ui/core";
 
 export interface CriterionWeightInfo {
@@ -27,19 +26,17 @@ export abstract class SimpleWeightsComponent extends Component<Method<SimpleWeig
 
     render() {
         return (
-            <Grid container spacing={3}>
+            <div className="weights-grid">
                 {this.keys(this.props.criteria || {}).map(info => (
-                    <Grid item key={info.id}>
-                        <Paper>
-                            <TextField
-                                value={this.props.methodParameters.weights[info.id] || 0}
-                                label={info.name} required
-                                inputProps={{min: "0"}}
-                                type={'number'} onChange={this.updateWeight(info.id)}/>
-                        </Paper>
-                    </Grid>
+                    <TextField
+                        className="weight-input"
+                        key={info.id}
+                        value={this.props.methodParameters.weights[info.id] || 0}
+                        label={info.name} required
+                        inputProps={{min: "0"}}
+                        type={'number'} onChange={this.updateWeight(info.id)}/>
                 ))}
-            </Grid>
+            </div>
         )
     }
 }

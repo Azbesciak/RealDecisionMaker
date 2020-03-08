@@ -13,7 +13,7 @@ export class CriterionComponent extends ItemValueComponent<Criterion> {
 
     render() {
         return (
-            <div>
+            <div className="criterion list-item">
                 {this.getIdField()}
                 <CriterionTypeSelect value={this.props.value.type} onChange={this.onTypeChange}/>
             </div>)

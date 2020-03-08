@@ -136,7 +136,7 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
 
     render() {
         return (
-            <form noValidate autoComplete="off">
+            <form noValidate autoComplete="off" className="query-form">
                 <CriteriaContainerComponent payload={this.state.criteria} onUpdate={this.onCriteriaUpdated}/>
                 <AlternativesContainerComponent
                     payload={this.state.alternatives}
@@ -148,7 +148,7 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
                     onMethodSelected={this.onMethodSelected}
                 />
                 {this.renderMethod()}
-                <AcceptButton label={"OK"} onAccept={this.onAccept} enabled={!!this.state.selectedMethod}/>
+                <AcceptButton label="OK" onAccept={this.onAccept} enabled={!!this.state.selectedMethod}/>
                 <ErrorMessage message={this.state.decision.error} closed={this.clearMessageIfValid()}/>
             </form>
         );

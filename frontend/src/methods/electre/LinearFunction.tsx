@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from "react";
-import {Grid, TextField} from "@material-ui/core";
+import {TextField} from "@material-ui/core";
 import {blankDistillationFun, LinearFunctionParameters} from "./electre";
 import {handleInputValueChange} from "../../utils/utils";
 
@@ -17,21 +17,21 @@ const LinearFunction: FunctionComponent<LinearFunctionComponentParams> = (props)
         props.onChange(numbers)
     });
     return (
-        <Grid spacing={5} container direction={"row"} style={{flexGrow: 1}}>
-            <Grid item xs={1}>{props.label}</Grid>
-            <Grid item xs={5}>
+        <div className="linear-function">
+            <div className="function-label">{props.label}</div>
+            <div className="function-coefficient">
                 <TextField
                     value={params.a}
                     label={"a"}
                     type={'number'} onChange={updateWeight("a")}/>
-            </Grid>
-            <Grid item xs={5}>
+            </div>
+            <div className="function-coefficient">
                 <TextField
                     value={params.b}
                     label={"b"}
                     type={'number'} onChange={updateWeight("b")}/>
-            </Grid>
-        </Grid>
+            </div>
+        </div>
     );
 };
 

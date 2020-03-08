@@ -16,10 +16,13 @@ const ElectreIIICriterionComp: FunctionComponent<OwnProps> = (props) => {
 
     const updateK = handleInputValueChange(value => props.onChange({...props.params, k: +(value || 0)}));
     return (
-        <Card>
+        <Card className="electre-criterion">
             <CardHeader title={props.criterionName}/>
-            <CardContent>
-                <TextField value={props.params.k} label={"k"} type={'number'} onChange={updateK}/>
+            <CardContent className="electre-criterion-content">
+                <div className="electre-k-field">
+                    <label>k</label>
+                    <TextField value={props.params.k} type={'number'} onChange={updateK}/>
+                </div>
                 <LinearFunction label={"q"} onChange={handleChange("q")} params={props.params.q}/>
                 <LinearFunction label={"p"} onChange={handleChange("p")} params={props.params.p}/>
                 <LinearFunction label={"v"} onChange={handleChange("v")} params={props.params.v}/>

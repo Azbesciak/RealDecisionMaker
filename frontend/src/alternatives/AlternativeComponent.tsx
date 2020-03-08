@@ -29,7 +29,7 @@ export class AlternativeComponent extends ItemValueComponent<Alternative> {
 
     render() {
         return (
-            <div>
+            <div className="alternative list-item">
                 {this.getIdField()}
                 {Object.entries(this.props.value.criteria || {}).map(([k, v], i) => (
                     <TextField key={k} value={v.value} label={v.id || criterionNamePlaceholder(i) } required

@@ -3,7 +3,6 @@ import {Collection} from "../../utils/ValuesContainerComponent";
 import {Criterion} from "../../criteria/CriterionComponent";
 import React, {Component} from "react";
 import {criterionNamePlaceholder, fromCollection} from "../../utils/utils";
-import {GridList, GridListTile} from "@material-ui/core";
 import {
     blankElectreCriterion,
     defaultDistillationFun,
@@ -48,22 +47,21 @@ export class ElectreIII extends Component<Method<ElectreIIIParams>> {
 
     render() {
         return (
-            <div>
-                <GridList cols={3} cellHeight={"auto"} spacing={5}>
+            <React.Fragment>
+                <div className="electre-criteria">
                     {Object.entries(this.props.criteria || {}).map(([id, c], i) => (
-                        <GridListTile key={id}>
-                            <ElectreIIICriterionComp
-                                criterionName={c.id || criterionNamePlaceholder(i)}
-                                params={this.props.methodParameters.electreCriteria[id] || blankElectreCriterion()}
-                                onChange={this.handleCriterionChange(id)}/>
-                        </GridListTile>
+                        <ElectreIIICriterionComp
+                            key={id}
+                            criterionName={c.id || criterionNamePlaceholder(i)}
+                            params={this.props.methodParameters.electreCriteria[id] || blankElectreCriterion()}
+                            onChange={this.handleCriterionChange(id)}/>
                     ))}
-                </GridList>
+                </div>
                 <LinearFunction
                     params={this.props.methodParameters.electreDistillation}
                     onChange={this.handleDistillationChange}
                     label={"distillation function"}/>
-            </div>
+            </React.Fragment>
         )
     }
 }

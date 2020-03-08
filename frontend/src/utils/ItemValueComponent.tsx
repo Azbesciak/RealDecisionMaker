@@ -4,12 +4,12 @@ import {handleInputValueChange} from "./utils";
 import {TextField} from "@material-ui/core";
 
 export abstract class ItemValueComponent<T extends Identifiable> extends Component<ItemValue<T>> {
-    getIdField() {
+    getIdField(placeholder?: string) {
         return (
             <TextField
-                id="standard-basic"
                 label="Name"
                 required
+                placeholder={placeholder}
                 value={this.props.value.id} onChange={this.handleIdChange}
             />
         )
