@@ -9,39 +9,24 @@ import {fromCollection, remapCollection} from "./utils/utils";
 import {WeightedSumFactory} from "./methods/WeightedSum";
 import {MethodFactory} from "./methods/declarations";
 import AcceptButton from "./utils/AcceptButton";
-import ErrorMessage from "./ErrorMessage";
 import {ChoquetIntegralFactory} from "./methods/ChoquetIntegral";
 import {OWAFactory} from "./methods/OWA";
 import {ElectreIIIFactory} from "./methods/electre/ElectreIII";
+import {Decision} from "./ResultView";
 
-interface DecisionError {
-    error: string | null;
-}
-
-export interface NamedAlternative {
-    id: string;
-    criteria: Collection<number>;
-}
-
-interface AlternativeResult {
-    alternative: NamedAlternative;
-    value: number;
-    betterThanOrSameAs: string[]
-}
-
-interface DecisionResult {
-    result: AlternativeResult[];
-}
 
 interface DecisionMakerQuery {
     preferenceFunctions: { [key: string]: any };
     criteria: Collection<Criterion>;
     alternatives: Collection<Alternative>;
     selectedMethod: MethodFactory<any>;
-    decision: Partial<DecisionError & DecisionResult>;
 }
 
-class QueryForm extends React.Component<any, DecisionMakerQuery> {
+export interface QueryFromProps {
+    onResult: (decision: Decision) => void;
+}
+
+class QueryForm extends React.Component<QueryFromProps, DecisionMakerQuery> {
     private lastRequestId = 0;
     private readonly update = () => this.setState({});
     private functions = [
@@ -54,7 +39,6 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
         preferenceFunctions: {},
         criteria: {},
         alternatives: {},
-        decision: {},
         selectedMethod: this.functions[0]
     };
 
@@ -92,12 +76,11 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
         if (!this.state.selectedMethod) return;
         const params = this.state.selectedMethod.getParams(this.state.criteria);
         this.sendRequest(this.state.selectedMethod.methodName, params);
-        console.log("PARAMS", params)
     };
 
     private sendRequest = async (preferenceFunction: string, methodParameters: any,) => {
         this.lastRequestId++;
-        this.setState({decision: {}});
+        this.props.onResult({});
         const body = {
             preferenceFunction,
             methodParameters,
@@ -116,23 +99,12 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
             }
         }).then(r => r.json())
             .then(r => {
-                if (r.error) {
-                    this.setState({decision: {error: r.error}})
-                } else {
-                    this.setState({decision: {result: r.result}})
-                }
+                this.props.onResult(r);
             })
-            .catch(e => this.setState({decision: {error: e.error || e.message}}))
+            .catch(e => this.props.onResult({error: e.error || e.message}))
     };
 
     renderMethod = () => this.state.selectedMethod && this.state.selectedMethod.getComponent(this.state.criteria);
-
-    private clearMessageIfValid = () => {
-        let id = this.lastRequestId;
-        return () => {
-            if (id === this.lastRequestId) this.setState({decision: {}})
-        }
-    };
 
     render() {
         return (
@@ -149,7 +121,6 @@ class QueryForm extends React.Component<any, DecisionMakerQuery> {
                 />
                 {this.renderMethod()}
                 <AcceptButton label="OK" onAccept={this.onAccept} enabled={!!this.state.selectedMethod}/>
-                <ErrorMessage message={this.state.decision.error} closed={this.clearMessageIfValid()}/>
             </form>
         );
     }

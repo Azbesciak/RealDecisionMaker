@@ -1,13 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Header from "./Header"
 import {ThemeProvider} from '@material-ui/styles';
 import {createMuiTheme, CssBaseline, useMediaQuery} from "@material-ui/core";
 import QueryForm from "./QueryForm";
-
+import ResultView, {Decision} from "./ResultView";
 
 const App: React.FC = () => {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
+    const [state, setState] = useState({decision: {}});
     const theme = React.useMemo(
         () => createMuiTheme({
             palette: {
@@ -16,11 +16,15 @@ const App: React.FC = () => {
         }),
         [prefersDarkMode],
     );
+    const onResult = (decision: Decision) => {
+        setState({decision})
+    };
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline/>
             <Header title={"Real Decision Maker"}/>
-            <QueryForm/>
+            <QueryForm onResult={onResult}/>
+            <ResultView decision={state.decision}/>
         </ThemeProvider>
     );
 };
