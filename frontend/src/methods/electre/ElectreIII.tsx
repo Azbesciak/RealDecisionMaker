@@ -2,7 +2,7 @@ import {Method, MethodFactory} from "../declarations";
 import {Collection} from "../../utils/ValuesContainerComponent";
 import {Criterion} from "../../criteria/CriterionComponent";
 import React, {Component} from "react";
-import {fromCollection} from "../../utils/utils";
+import {criterionNamePlaceholder, fromCollection} from "../../utils/utils";
 import {GridList, GridListTile} from "@material-ui/core";
 import {
     blankElectreCriterion,
@@ -50,10 +50,10 @@ export class ElectreIII extends Component<Method<ElectreIIIParams>> {
         return (
             <div>
                 <GridList cols={3} cellHeight={"auto"} spacing={5}>
-                    {Object.entries(this.props.criteria || {}).map(([id, c]) => (
+                    {Object.entries(this.props.criteria || {}).map(([id, c], i) => (
                         <GridListTile key={id}>
                             <ElectreIIICriterionComp
-                                criterionName={c.id}
+                                criterionName={c.id || criterionNamePlaceholder(i)}
                                 params={this.props.methodParameters.electreCriteria[id] || blankElectreCriterion()}
                                 onChange={this.handleCriterionChange(id)}/>
                         </GridListTile>

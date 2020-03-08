@@ -2,7 +2,7 @@ import React from 'react';
 import {Collection} from "../utils/ValuesContainerComponent";
 import {Criterion} from "../criteria/CriterionComponent";
 import {SimpleWeightsComponent} from "./SimpleWeightsComponent";
-import {fromCollection} from "../utils/utils";
+import {criterionNamePlaceholder, fromCollection} from "../utils/utils";
 import {SimpleWeightsMethodFactory} from "./SimpleWeightsMethodFactory";
 
 export class WeightedSumFactory extends SimpleWeightsMethodFactory {
@@ -20,5 +20,6 @@ export class WeightedSumFactory extends SimpleWeightsMethodFactory {
 }
 
 export class WeightedSum extends SimpleWeightsComponent {
-    keys = (criteria: Collection<Criterion>) => Object.entries(criteria).map(([id, v]) => ({id, name: v.id}));
+    keys = (criteria: Collection<Criterion>) => Object.entries(criteria)
+        .map(([id, v], i) => ({id, name: v.id || criterionNamePlaceholder(i)}));
 }

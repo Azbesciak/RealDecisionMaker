@@ -2,7 +2,7 @@ import React from 'react';
 import {ItemValueComponent} from "../utils/ItemValueComponent";
 import {Collection} from "../utils/ValuesContainerComponent";
 import {TextField} from "@material-ui/core";
-import {handleInputValueChange} from "../utils/utils";
+import {criterionNamePlaceholder, handleInputValueChange} from "../utils/utils";
 
 
 export interface Alternative {
@@ -31,8 +31,8 @@ export class AlternativeComponent extends ItemValueComponent<Alternative> {
         return (
             <div>
                 {this.getIdField()}
-                {Object.entries(this.props.value.criteria || {}).map(([k, v]) => (
-                    <TextField key={k} value={v.value} label={v.id} required
+                {Object.entries(this.props.value.criteria || {}).map(([k, v], i) => (
+                    <TextField key={k} value={v.value} label={v.id || criterionNamePlaceholder(i) } required
                                type={'number'}
                                onChange={this.updateWeight(k)}/>
                 ))}

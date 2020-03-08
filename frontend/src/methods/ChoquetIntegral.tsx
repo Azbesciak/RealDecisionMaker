@@ -3,6 +3,7 @@ import {Criterion} from "../criteria/CriterionComponent";
 import {SimpleWeightsComponent} from "./SimpleWeightsComponent";
 import React from "react";
 import {SimpleWeightsMethodFactory} from "./SimpleWeightsMethodFactory";
+import {criterionNamePlaceholder} from "../utils/utils";
 
 export class ChoquetIntegralFactory extends SimpleWeightsMethodFactory {
     constructor(onUpdate: () => void) {
@@ -42,10 +43,11 @@ function powerSet<T>(ids: T[]): T[][] {
 
 export class ChoquetIntegral extends SimpleWeightsComponent {
     keys = (criteria: Collection<Criterion>) => {
-        const keys = powerSet(Object.keys(criteria));
+        const ids = Object.keys(criteria);
+        const keys = powerSet(ids);
         return keys.map(composedKey => ({
             id: composedId(composedKey),
-            name: composedKey.map(k => criteria[k].id).join(", ")
+            name: composedKey.map(k => criteria[k].id || criterionNamePlaceholder(ids.indexOf(k))).join(", ")
         }));
     };
 }
