@@ -21,7 +21,7 @@ func (O *OWAPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.Alternative
 	originalWeights := model.ExtractWeights(dm)
 	var weights = make([]model.Weight, len(originalWeights))
 	i := 0
-	for _, v := range weights {
+	for _, v := range originalWeights {
 		weights[i] = v
 		i++
 	}
