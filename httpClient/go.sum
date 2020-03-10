@@ -1,13 +1,5 @@
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20191109212955-b0a26c045fbf h1:h1fZxDogJ2y3sQGtkN4zS76/hcAlfRiLxCPU1unqJBk=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20191109212955-b0a26c045fbf/go.mod h1:TppPiOuRz2HVCGNyp5Zo2UxU3C6i0W7qyH/ZXkFtObs=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227183456-810f1f9668a1 h1:Fo9NKXJunXc/9Cc/Kk1deMuu68ckteVOnLvu8ZJXeUM=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227183456-810f1f9668a1/go.mod h1:TppPiOuRz2HVCGNyp5Zo2UxU3C6i0W7qyH/ZXkFtObs=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227193843-7aa159f8a4c3 h1:OjuxcvVevSLY0PYcvle9wPMpCGrXfNG8IYhCyVtI9M4=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227193843-7aa159f8a4c3/go.mod h1:q73Gs/9G2anPOsjLNonU2AhMJLv7eFH8xsS3GwycZIk=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227200313-5c15ac854ae8 h1:0BHABJX4YcJtVsdBlFOE7VgHYKkygiou11zo6znEgcQ=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227200313-5c15ac854ae8/go.mod h1:q73Gs/9G2anPOsjLNonU2AhMJLv7eFH8xsS3GwycZIk=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227200557-634e6f75bece h1:Ez8JWSQcKR4+79GioCLeP5ip6jLFj0p8T3l8NZSZ8dk=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200227200557-634e6f75bece/go.mod h1:q73Gs/9G2anPOsjLNonU2AhMJLv7eFH8xsS3GwycZIk=
+github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200310153942-6de121016068 h1:OnnMgjlp40WzK2BvyaYDyQy/OvpgN6P7KOraOdcHNac=
+github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200310153942-6de121016068/go.mod h1:q73Gs/9G2anPOsjLNonU2AhMJLv7eFH8xsS3GwycZIk=
 github.com/alecthomas/jsonschema v0.0.0-20200217214135-7152f22193c9 h1:h+KAZEUnNceFhqyH46BgwH4lk8m6pdR/3x3h7IPn7VA=
 github.com/alecthomas/jsonschema v0.0.0-20200217214135-7152f22193c9/go.mod h1:/n6+1/DWPltRLWL/VKyUxg6tzsl5kHUCcraimt4vr60=
 github.com/betacraft/easytags v1.0.2/go.mod h1:g3FkpCCFj2YbU+JDDXfumrmJpxj0ZJ/+szwQM5JkWZ8=
