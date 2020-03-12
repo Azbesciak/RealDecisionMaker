@@ -4,6 +4,7 @@ import {ThemeProvider} from '@material-ui/styles';
 import {createMuiTheme, CssBaseline, useMediaQuery} from "@material-ui/core";
 import QueryForm from "./QueryForm";
 import ResultView, {Decision} from "./ResultView";
+import {lightGreen, orange} from "@material-ui/core/colors";
 
 const App: React.FC = () => {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -12,6 +13,8 @@ const App: React.FC = () => {
         () => createMuiTheme({
             palette: {
                 type: prefersDarkMode ? 'dark' : 'light',
+                primary: lightGreen,
+                secondary: orange
             },
         }),
         [prefersDarkMode],
