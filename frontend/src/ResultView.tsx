@@ -1,28 +1,8 @@
 import React, {Component} from "react";
-import {Collection} from "./utils/ValuesContainerComponent";
 import ErrorMessage from "./ErrorMessage";
+import {Decision} from "./Result";
+import DecisionView, {Dimensions} from "./DecisionView";
 
-
-interface DecisionError {
-    error: string | null;
-}
-
-export interface NamedAlternative {
-    id: string;
-    criteria: Collection<number>;
-}
-
-interface AlternativeResult {
-    alternative: NamedAlternative;
-    value: number;
-    betterThanOrSameAs: string[]
-}
-
-interface DecisionResult {
-    result: AlternativeResult[];
-}
-
-export type Decision = Partial<DecisionError & DecisionResult>
 
 export interface ResultProps {
     decision: Decision;
@@ -30,20 +10,29 @@ export interface ResultProps {
 
 interface ResultViewState extends Decision {
     recentProps: Readonly<ResultProps> | null;
+    viewProps: Dimensions;
 }
 
 class ResultView extends Component<ResultProps, ResultViewState> {
     state: ResultViewState = {
         recentProps: null,
         error: null,
-        result: []
+        result: [],
+        viewProps: {width: 400, height: 400}
     };
     private clearError = () => this.setState({error: null});
+
+    componentDidMount(): void {
+        const updateViewProps = () => this.setState({viewProps: {width: window.innerWidth * .9, height: 500}});
+        window.addEventListener("resize", updateViewProps);
+        updateViewProps()
+    }
 
     static getDerivedStateFromProps(nextProps: Readonly<ResultProps>, nextContext: ResultViewState): ResultViewState {
         if (nextProps !== nextContext.recentProps) {
             return {
                 recentProps: nextProps,
+                viewProps: nextContext.viewProps,
                 ...nextProps.decision
             }
         }
@@ -54,6 +43,8 @@ class ResultView extends Component<ResultProps, ResultViewState> {
         return (
             <React.Fragment>
                 <ErrorMessage message={this.state.error} closed={this.clearError}/>
+                {this.state.result && this.state.result.length > 0 &&
+                <DecisionView result={this.state.result} dimensions={this.state.viewProps}/>}
             </React.Fragment>
         )
     }

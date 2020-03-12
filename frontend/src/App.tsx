@@ -3,7 +3,8 @@ import Header from "./Header"
 import {ThemeProvider} from '@material-ui/styles';
 import {createMuiTheme, CssBaseline, useMediaQuery} from "@material-ui/core";
 import QueryForm from "./QueryForm";
-import ResultView, {Decision} from "./ResultView";
+import {Decision} from "./Result";
+import ResultView from "./ResultView";
 import {lightGreen, orange} from "@material-ui/core/colors";
 
 const App: React.FC = () => {

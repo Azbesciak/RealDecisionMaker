@@ -12,7 +12,7 @@ import AcceptButton from "./utils/AcceptButton";
 import {ChoquetIntegralFactory} from "./methods/ChoquetIntegral";
 import {OWAFactory} from "./methods/OWA";
 import {ElectreIIIFactory} from "./methods/electre/ElectreIII";
-import {Decision} from "./ResultView";
+import {Decision} from "./Result";
 
 
 interface DecisionMakerQuery {
