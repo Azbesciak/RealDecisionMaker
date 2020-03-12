@@ -91,7 +91,7 @@ const getConfig = (theme: Theme, {width, height}: Dimensions) => {
 // https://williaster.github.io/data-ui/?selectedKind=network&selectedStory=Default%20network&full=0&addons=0&stories=1&panelRight=0
 const DecisionView: FunctionComponent<DecisionViewProps> = ({result, dimensions}) => {
     const config = getConfig(useTheme(), dimensions);
-    const nodes = result.map((r, i) => ({id: r.alternative.id}));
+    const nodes = result.map(r => ({id: r.alternative.id}));
     const data = {
         nodes: nodes,
         links: result.flatMap(r1 => r1.betterThanOrSameAs.map(r2 => ({
@@ -99,10 +99,13 @@ const DecisionView: FunctionComponent<DecisionViewProps> = ({result, dimensions}
             target: r2
         })))
     };
-    return (<Graph
-        id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-        data={data}
-        config={config}
-    />);
+    return (
+        <div className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded graph-container">
+            <Graph
+                id="decision-result-graph"
+                data={data}
+                config={config}
+            />
+        </div>);
 };
 export default DecisionView;

@@ -5,12 +5,24 @@ body {
   sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  #root {
+    display: grid;
+    .query-form {
+      padding: 2em;
+    }
+    .graph-container {
+      margin: 2em;
+    }
+  }
 }
 
 .query-form {
-  padding: 2em;
   display: grid;
   grid-row-gap: 1em;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  flex: 1;
+  flex-shrink: 2;
 }
 
 .container {
@@ -96,4 +108,11 @@ $gap: .5em;
   flex-wrap: wrap;
   margin-left: -$gap;
   margin-right: -$gap;
+}
+
+#decision-result-graph-graph-wrapper {
+  display: grid;
+  flex: 1;
+  bottom: 0;
+  justify-content: center;
 }
