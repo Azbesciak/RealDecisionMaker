@@ -41,13 +41,23 @@ function powerSet<T>(ids: T[]): T[][] {
     return result;
 }
 
+const cache: number[][][] = [];
+
+function getPowerSetFor(ids: string[]) {
+    let set = cache[ids.length];
+    if (!set) {
+        cache[ids.length] = set = powerSet(ids.map((_, i) => i))
+    }
+    return set
+}
+
 export class ChoquetIntegral extends SimpleWeightsComponent {
     keys = (criteria: Collection<Criterion>) => {
         const ids = Object.keys(criteria);
-        const keys = powerSet(ids);
-        return keys.map(composedKey => ({
-            id: composedId(composedKey),
-            name: composedKey.map(k => criteria[k].id || criterionNamePlaceholder(ids.indexOf(k))).join(", ")
+        const keys = getPowerSetFor(ids);
+        return keys.map(indices => ({
+            id: composedId(indices.map(i => ids[i])),
+            name: indices.map(i => criteria[ids[i]].id || criterionNamePlaceholder(i)).join(", ")
         }));
     };
 }
