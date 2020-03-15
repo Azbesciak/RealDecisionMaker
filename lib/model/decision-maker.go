@@ -9,7 +9,7 @@ import (
 
 type DecisionMaker struct {
 	PreferenceFunction string                    `json:"preferenceFunction"`
-	State              DecisionMakerState        `json:"state"`
+	Heuristics         HeuristicsParams          `json:"heuristics"`
 	KnownAlternatives  []AlternativeWithCriteria `json:"knownAlternatives"`
 	ChoseToMake        []Alternative             `json:"choseToMake"`
 	Criteria           Criteria                  `json:"criteria"`
@@ -35,14 +35,9 @@ func (dm *DecisionMaker) AlternativesToConsider() *[]AlternativeWithCriteria {
 	return &results
 }
 
-type DecisionMakerState struct {
-	Focus   int `json:"focus"`
-	Fatigue int `json:"fatigue"`
-}
-
 type DecisionMakerChoice struct {
-	Result AlternativesRanking `json:"result"`
-	State  DecisionMakerState  `json:"state"`
+	Result     AlternativesRanking `json:"result"`
+	Heuristics HeuristicsParams    `json:"heuristics"`
 }
 
 func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions) *DecisionMakerChoice {
@@ -51,7 +46,7 @@ func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions) *
 	}
 	fun := FetchPreferenceFunction(preferenceFunctions, dm.PreferenceFunction)
 	res := (*fun).(PreferenceFunction).Evaluate(dm)
-	return &DecisionMakerChoice{*res, dm.State}
+	return &DecisionMakerChoice{*res, dm.Heuristics}
 }
 
 func IsStringBlank(str *string) bool {
