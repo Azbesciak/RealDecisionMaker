@@ -12,7 +12,7 @@ var cost = "cost"
 var powerCriterion = &Criterion{Id: power, Type: Gain}
 var safetyCriterion = &Criterion{Id: safety, Type: Gain}
 var costCriterion = &Criterion{Id: cost, Type: Cost}
-var criteria = &Criteria{*powerCriterion, *safetyCriterion, *costCriterion}
+var testCriteria = &Criteria{*powerCriterion, *safetyCriterion, *costCriterion}
 var electreIIICriteria = &map[string]ElectreCriterion{
 	power: {
 		K: 3,
@@ -69,8 +69,8 @@ func TestElectreIIIEvaluatePair(t *testing.T) {
 }
 
 func TestElectreIIIFinalResult(t *testing.T) {
-	assertElectreIIIPairCredibilityPerCriterion(t, fra, ita, criteria, electreIIICriteria, &ElectreResult{C: 0.6, D: 0.6})
-	assertElectreIIIPairCredibilityPerCriterion(t, ita, fra, criteria, electreIIICriteria, &ElectreResult{C: 0.55, D: 0.55})
+	assertElectreIIIPairCredibilityPerCriterion(t, fra, ita, testCriteria, electreIIICriteria, &ElectreResult{C: 0.6, D: 0.6})
+	assertElectreIIIPairCredibilityPerCriterion(t, ita, fra, testCriteria, electreIIICriteria, &ElectreResult{C: 0.55, D: 0.55})
 }
 
 func assertElectreIIIPairCredibilityPerCriterion(
