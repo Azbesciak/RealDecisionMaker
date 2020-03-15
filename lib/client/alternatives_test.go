@@ -1,12 +1,13 @@
-package model
+package client
 
 import (
+	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	. "github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"testing"
 )
 
 func TestAlternativeResults_Ranking(t *testing.T) {
-	alts := AlternativeResults{
+	alts := model.AlternativeResults{
 		DummyAlternative("1", 5),
 		DummyAlternative("2", 3),
 		DummyAlternative("3", 5),
@@ -16,7 +17,7 @@ func TestAlternativeResults_Ranking(t *testing.T) {
 	}
 	ranking := alts.Ranking()
 	altsMap := AlternativesResultToMap(&alts)
-	expectedRanking := AlternativesRanking{
+	expectedRanking := model.AlternativesRanking{
 		DummyRankingEntry(altsMap, "1", "3", "0", "2"),
 		DummyRankingEntry(altsMap, "3", "1", "0", "2"),
 		DummyRankingEntry(altsMap, "0", "2", "7"),
