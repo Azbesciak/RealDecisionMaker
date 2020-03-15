@@ -30,14 +30,6 @@ func ToIdentifiable(objects IdentifiableIterable) *[]Identifiable {
 	return &interfaceSlice
 }
 
-func IdentityMapToKeys(m *IdentityMap) *[]string {
-	var keys []string
-	for k := range *m {
-		keys = append(keys, k)
-	}
-	return &keys
-}
-
 func ContainsByIdentity(slice *[]Identifiable, value *string) bool {
 	for _, v := range *slice {
 		if *value == v.Identifier() {
