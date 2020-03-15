@@ -13,7 +13,6 @@ import (
 func TestDecisionMaker_MakeDecision_WeightedSum(t *testing.T) {
 	dm := DecisionMaker{
 		PreferenceFunction: "weightedSum",
-		State:              DecisionMakerState{},
 		KnownAlternatives: []AlternativeWithCriteria{
 			{"1", Weights{"1": 10, "2": 20}},
 			{"2", Weights{"1": 20, "2": 10}},
@@ -36,7 +35,6 @@ func TestDecisionMaker_MakeDecision_WeightedSum(t *testing.T) {
 func TestDecisionMaker_MakeDecision_ElectreIII(t *testing.T) {
 	dm := DecisionMaker{
 		PreferenceFunction: "electreIII",
-		State:              DecisionMakerState{},
 		KnownAlternatives: []AlternativeWithCriteria{
 			{"1", Weights{"1": 10, "2": 20}},
 			{"2", Weights{"1": 20, "2": 10}},
