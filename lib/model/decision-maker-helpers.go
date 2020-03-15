@@ -41,11 +41,8 @@ func FetchPreferenceFunction(preferenceFunctions PreferenceFunctions, function s
 	preferenceFunMap := utils.AsMap(preferenceFunctions)
 	fun, ok := (*preferenceFunMap)[function]
 	if !ok {
-		var keys []string
-		for k := range *preferenceFunMap {
-			keys = append(keys, k)
-		}
-		panic(fmt.Errorf("preference function '%s' not found, available are '%s'", function, keys))
+		keys := utils.IdentityMapToKeys(preferenceFunMap)
+		panic(fmt.Errorf("preference function '%s' not found, available are '%s'", function, *keys))
 	}
 	return &fun
 }
