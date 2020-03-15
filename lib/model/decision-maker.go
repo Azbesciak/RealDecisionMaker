@@ -40,13 +40,27 @@ type DecisionMakerChoice struct {
 	Heuristics HeuristicsParams    `json:"heuristics"`
 }
 
-func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions) *DecisionMakerChoice {
+func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions, availableHeuristics *HeuristicsMap) *DecisionMakerChoice {
 	if IsStringBlank(&dm.PreferenceFunction) {
 		panic(fmt.Errorf("preference function must not be empty"))
 	}
 	fun := FetchPreferenceFunction(preferenceFunctions, dm.PreferenceFunction)
-	res := (*fun).(PreferenceFunction).Evaluate(dm)
-	return &DecisionMakerChoice{*res, dm.Heuristics}
+	preferenceFunction := (*fun).(PreferenceFunction)
+	chosenHeuristics := ChooseHeuristics(availableHeuristics, &dm.Heuristics)
+	processedDm, heuristicProps := dm.processHeuristics(chosenHeuristics)
+	res := preferenceFunction.Evaluate(processedDm)
+	return &DecisionMakerChoice{*res, *heuristicProps}
+}
+
+func (dm *DecisionMaker) processHeuristics(heuristics *HeuristicsWithProps) (*DecisionMaker, *HeuristicsParams) {
+	result := make(HeuristicsParams, len(*heuristics))
+	tempDM := dm
+	for i, h := range *heuristics {
+		res := (*h.Heuristic).Apply(tempDM, &h.Props.Props)
+		tempDM = res.Dm
+		result[i] = *UpdateHeuristicProps(h.Props, res.Props)
+	}
+	return tempDM, &result
 }
 
 func IsStringBlank(str *string) bool {

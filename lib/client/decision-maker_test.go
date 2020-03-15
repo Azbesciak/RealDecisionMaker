@@ -24,7 +24,7 @@ func TestDecisionMaker_MakeDecision_WeightedSum(t *testing.T) {
 	weightedSum := &WeightedSumPreferenceFunc{}
 	owa := &OWAPreferenceFunc{}
 	funcs := PreferenceFunctions{Functions: []PreferenceFunction{weightedSum, owa}}
-	ranking := dm.MakeDecision(funcs)
+	ranking := dm.MakeDecision(funcs, &HeuristicsMap{})
 	expectedRanking := weightedSum.Evaluate(&dm)
 
 	if !reflect.DeepEqual(ranking.Result, *expectedRanking) {
@@ -64,7 +64,7 @@ func TestDecisionMaker_MakeDecision_ElectreIII(t *testing.T) {
 	weightedSum := &WeightedSumPreferenceFunc{}
 	ele := &ElectreIIIPreferenceFunc{}
 	funcs := PreferenceFunctions{Functions: []PreferenceFunction{weightedSum, ele}}
-	ranking := dm.MakeDecision(funcs)
+	ranking := dm.MakeDecision(funcs, &HeuristicsMap{})
 	expectedRanking := ele.Evaluate(&dm)
 
 	if !reflect.DeepEqual(ranking.Result, *expectedRanking) {

@@ -20,13 +20,13 @@ type HeuristicParams struct {
 }
 
 type HeuristicWithProps struct {
-	Heuristic *Heuristic      `json:"heuristic"`
-	Props     *HeuristicProps `json:"props"`
+	Heuristic *Heuristic       `json:"heuristic"`
+	Props     *HeuristicParams `json:"props"`
 }
 
 type Heuristic interface {
 	utils.Identifiable
-	Process(dm *DecisionMaker) *DecisionMaker
+	Apply(dm *DecisionMaker, props *HeuristicProps) *HeuristicResult
 }
 
 type HeuristicResult struct {
@@ -56,7 +56,15 @@ func ChooseHeuristics(available *HeuristicsMap, choose *HeuristicsParams) *Heuri
 			}
 			panic(fmt.Errorf("heuristic '%s' not found, available are '%s'", props.Name, keys))
 		}
-		result = append(result, HeuristicWithProps{Heuristic: &heu, Props: &props.Props})
+		result = append(result, HeuristicWithProps{Heuristic: &heu, Props: &props})
 	}
 	return &result
+}
+
+func UpdateHeuristicProps(oldProps *HeuristicParams, update *HeuristicProps) *HeuristicParams {
+	return &HeuristicParams{
+		Name:     oldProps.Name,
+		Disabled: oldProps.Disabled,
+		Props:    *update,
+	}
 }
