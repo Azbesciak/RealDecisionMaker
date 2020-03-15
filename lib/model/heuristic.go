@@ -29,7 +29,7 @@ func AsHeuristicsMap(h *Heuristics) *HeuristicsMap {
 	return &result
 }
 
-func ChooseHeuristics(choose *HeuristicsParams, available *HeuristicsMap) *Heuristics {
+func ChooseHeuristics(available *HeuristicsMap, choose *HeuristicsParams) *Heuristics {
 	var result Heuristics
 	for _, k := range *choose {
 		if k.Disabled {

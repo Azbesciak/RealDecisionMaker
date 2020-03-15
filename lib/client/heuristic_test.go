@@ -28,7 +28,7 @@ func TestHeuristicsSelection(t *testing.T) {
 		HeuristicParams{Name: "b"},
 		HeuristicParams{Name: "a"},
 	}
-	result := ChooseHeuristics(params, availableHeuristics)
+	result := ChooseHeuristics(availableHeuristics, params)
 	checkResult(t, result, params)
 }
 
@@ -47,7 +47,7 @@ func TestHeuristicsFiltering(t *testing.T) {
 		HeuristicParams{Name: "c"},
 		HeuristicParams{Name: "a"},
 	}
-	result := ChooseHeuristics(params, availableHeuristics)
+	result := ChooseHeuristics(availableHeuristics, params)
 	checkResult(t, result, expected)
 }
 
@@ -59,7 +59,7 @@ func TestHeuristicNotFound(t *testing.T) {
 		HeuristicParams{Name: "a"},
 	}
 	defer utils.ExpectError(t, "heuristic 'a' not found, available are '[b]'")()
-	ChooseHeuristics(params, availableHeuristics)
+	ChooseHeuristics(availableHeuristics, params)
 }
 
 func TestSkippingDisabledNotExistingHeuristic(t *testing.T) {
@@ -69,7 +69,7 @@ func TestSkippingDisabledNotExistingHeuristic(t *testing.T) {
 	params := &HeuristicsParams{
 		HeuristicParams{Name: "a", Disabled: true},
 	}
-	result := ChooseHeuristics(params, availableHeuristics)
+	result := ChooseHeuristics(availableHeuristics, params)
 	checkResult(t, result, &HeuristicsParams{})
 }
 
