@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"strings"
 )
 
@@ -44,24 +43,6 @@ type DecisionMakerState struct {
 type DecisionMakerChoice struct {
 	Result AlternativesRanking `json:"result"`
 	State  DecisionMakerState  `json:"state"`
-}
-
-type PreferenceFunction interface {
-	utils.Identifiable
-	MethodParameters() interface{}
-	Evaluate(dm *DecisionMaker) *AlternativesRanking
-}
-
-type PreferenceFunctions struct {
-	Functions []PreferenceFunction `json:"functions"`
-}
-
-func (pf PreferenceFunctions) Get(index int) utils.Identifiable {
-	return pf.Functions[index]
-}
-
-func (pf PreferenceFunctions) Len() int {
-	return len(pf.Functions)
 }
 
 func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions) *DecisionMakerChoice {
