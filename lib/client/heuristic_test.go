@@ -73,13 +73,13 @@ func TestSkippingDisabledNotExistingHeuristic(t *testing.T) {
 	checkResult(t, result, &HeuristicsParams{})
 }
 
-func checkResult(t *testing.T, result *Heuristics, expected *HeuristicsParams) {
+func checkResult(t *testing.T, result *HeuristicsWithProps, expected *HeuristicsParams) {
 	actualLen := len(*expected)
 	if len(*result) != actualLen {
 		t.Errorf("expected %d results, get %v", actualLen, *result)
 	}
 	for i, v := range *expected {
-		identifier := (*result)[i].Identifier()
+		identifier := (*(*result)[i].Heuristic).Identifier()
 		if identifier != v.Name {
 			t.Errorf("Invalid heuristic at %d: %s, expected %s", i, v.Name, identifier)
 		}

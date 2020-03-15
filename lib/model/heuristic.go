@@ -8,17 +8,30 @@ import (
 //go:generate easytags $GOFILE json:camel
 
 type HeuristicsParams = []HeuristicParams
-type HeuristicParams struct {
-	Name     string                 `json:"name"`
-	Disabled bool                   `json:"disabled"`
-	Props    map[string]interface{} `json:"props"`
-}
+type HeuristicProps = interface{}
 type HeuristicsMap = map[string]Heuristic
 type Heuristics = []Heuristic
+type HeuristicsWithProps = []HeuristicWithProps
+
+type HeuristicParams struct {
+	Name     string         `json:"name"`
+	Disabled bool           `json:"disabled"`
+	Props    HeuristicProps `json:"props"`
+}
+
+type HeuristicWithProps struct {
+	Heuristic *Heuristic      `json:"heuristic"`
+	Props     *HeuristicProps `json:"props"`
+}
 
 type Heuristic interface {
 	utils.Identifiable
 	Process(dm *DecisionMaker) *DecisionMaker
+}
+
+type HeuristicResult struct {
+	Dm    *DecisionMaker  `json:"dm"`
+	Props *HeuristicProps `json:"props"`
 }
 
 func AsHeuristicsMap(h *Heuristics) *HeuristicsMap {
@@ -29,21 +42,21 @@ func AsHeuristicsMap(h *Heuristics) *HeuristicsMap {
 	return &result
 }
 
-func ChooseHeuristics(available *HeuristicsMap, choose *HeuristicsParams) *Heuristics {
-	var result Heuristics
-	for _, k := range *choose {
-		if k.Disabled {
+func ChooseHeuristics(available *HeuristicsMap, choose *HeuristicsParams) *HeuristicsWithProps {
+	var result HeuristicsWithProps
+	for _, props := range *choose {
+		if props.Disabled {
 			continue
 		}
-		heu, ok := (*available)[k.Name]
+		heu, ok := (*available)[props.Name]
 		if !ok {
 			var keys []string
 			for k := range *available {
 				keys = append(keys, k)
 			}
-			panic(fmt.Errorf("heuristic '%s' not found, available are '%s'", k.Name, keys))
+			panic(fmt.Errorf("heuristic '%s' not found, available are '%s'", props.Name, keys))
 		}
-		result = append(result, heu)
+		result = append(result, HeuristicWithProps{Heuristic: &heu, Props: &props.Props})
 	}
 	return &result
 }
