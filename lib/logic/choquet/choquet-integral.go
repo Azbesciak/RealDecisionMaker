@@ -11,16 +11,6 @@ import (
 type ChoquetIntegralPreferenceFunc struct {
 }
 
-type choquetParams struct {
-	weights *model.Weights
-}
-
-func (c *ChoquetIntegralPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
-	weights := model.ExtractWeights(dm)
-	parsedWeights := parse(&dm.Criteria, &weights)
-	return &choquetParams{weights: parsedWeights}
-}
-
 func (c *ChoquetIntegralPreferenceFunc) Identifier() string {
 	return "choquetIntegral"
 }
@@ -46,11 +36,6 @@ func ChoquetIntegral(
 	return choquetIntegral(&alternative, resultWeights)
 }
 
-func parse(criteria *model.Criteria, weights *model.Weights) *model.Weights {
-	validateAllCriteriaAreGain(criteria)
-	return prepareWeights(weights, criteria)
-}
-
 func choquetIntegral(
 	alternative *model.AlternativeWithCriteria,
 	weights *model.Weights,
@@ -58,14 +43,6 @@ func choquetIntegral(
 	sortedCriteria := prepareCriteriaInAscendingOrder(alternative)
 	result := computeTotalWeight(sortedCriteria, weights)
 	return &model.AlternativeResult{Alternative: *alternative, Value: result}
-}
-
-func validateAllCriteriaAreGain(criteria *model.Criteria) {
-	for _, c := range *criteria {
-		if c.Type != model.Gain {
-			panic(fmt.Errorf("%s: only Gain criteria acceptable for Choquet integral", c.Id))
-		}
-	}
 }
 
 func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights) model.Weight {
@@ -108,23 +85,6 @@ func prepareCriteriaInAscendingOrder(alternative *model.AlternativeWithCriteria)
 	}
 	sort.Sort(&sorted)
 	return &sorted
-}
-
-func prepareWeights(weights *model.Weights, criteria *model.Criteria) *model.Weights {
-	resultWeights := make(model.Weights, len(*weights))
-	for k, v := range *weights {
-		splittedValues := strings.Split(k, ",")
-		identifiable := utils.ToIdentifiable(criteria)
-		if !utils.ContainsAll(identifiable, &splittedValues) {
-			panic(fmt.Errorf("%s: not all weights are present in criteria %s", k, *criteria))
-		}
-		if v < 0 || v > 1 {
-			panic(fmt.Errorf("%s: weight must be in range [0,1], got %f", k, v))
-		}
-		sort.Strings(splittedValues)
-		resultWeights[strings.Join(splittedValues, ",")] = v
-	}
-	return &resultWeights
 }
 
 type criterionWeight struct {
