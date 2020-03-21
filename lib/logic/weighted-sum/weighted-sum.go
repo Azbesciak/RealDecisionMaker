@@ -8,7 +8,7 @@ import (
 type WeightedSumPreferenceFunc struct {
 }
 
-type WeightedSumParams struct {
+type weightedSumParams struct {
 	weightedCriteria *[]WeightedCriterion
 }
 
@@ -25,7 +25,7 @@ func (w *WeightedSumPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
 			Weight:    value,
 		}
 	}
-	return &WeightedSumParams{weightedCriteria: &weightedCriteria}
+	return &weightedSumParams{weightedCriteria: &weightedCriteria}
 }
 
 func (w *WeightedSumPreferenceFunc) Identifier() string {
@@ -37,7 +37,7 @@ func (w *WeightedSumPreferenceFunc) MethodParameters() interface{} {
 }
 
 func (w *WeightedSumPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
-	params := w.ParseParams(dm).(WeightedSumParams)
+	params := w.ParseParams(dm).(weightedSumParams)
 	prefFunc := func(alternative *AlternativeWithCriteria) *AlternativeResult {
 		return WeightedSum(*alternative, *params.weightedCriteria)
 	}

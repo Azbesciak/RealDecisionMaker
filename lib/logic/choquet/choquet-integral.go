@@ -11,14 +11,14 @@ import (
 type ChoquetIntegralPreferenceFunc struct {
 }
 
-type ChoquetParams struct {
+type choquetParams struct {
 	weights *model.Weights
 }
 
 func (c *ChoquetIntegralPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 	weights := model.ExtractWeights(dm)
 	parsedWeights := parse(&dm.Criteria, &weights)
-	return &ChoquetParams{weights: parsedWeights}
+	return &choquetParams{weights: parsedWeights}
 }
 
 func (c *ChoquetIntegralPreferenceFunc) Identifier() string {
@@ -30,7 +30,7 @@ func (c *ChoquetIntegralPreferenceFunc) MethodParameters() interface{} {
 }
 
 func (c *ChoquetIntegralPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	params := c.ParseParams(dm).(ChoquetParams)
+	params := c.ParseParams(dm).(choquetParams)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
 		return choquetIntegral(alternative, params.weights)
 	}

@@ -9,7 +9,7 @@ import (
 type OWAPreferenceFunc struct {
 }
 
-type OWAParams struct {
+type owaParams struct {
 	weights *[]model.Weight
 }
 
@@ -26,7 +26,7 @@ func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 		i++
 	}
 	sort.Float64s(weights)
-	return &OWAParams{weights: &weights}
+	return &owaParams{weights: &weights}
 }
 
 func (O *OWAPreferenceFunc) Identifier() string {
@@ -38,7 +38,7 @@ func (O *OWAPreferenceFunc) MethodParameters() interface{} {
 }
 
 func (O *OWAPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	weights := O.ParseParams(dm).(OWAParams)
+	weights := O.ParseParams(dm).(owaParams)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
 		return OWA(*alternative, *weights.weights)
 	}
