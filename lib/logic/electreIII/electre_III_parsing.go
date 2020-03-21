@@ -7,7 +7,6 @@ import (
 )
 
 type electreIIIParams struct {
-	alternatives    *[]model.AlternativeWithCriteria
 	criteria        *ElectreCriteria
 	distillationFun *LinearFunctionParameters
 }
@@ -17,7 +16,6 @@ const criteria = "electreCriteria"
 
 func (e *ElectreIIIPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 	return electreIIIParams{
-		alternatives:    dm.AlternativesToConsider(),
 		criteria:        extractElectreIIICriteria(dm),
 		distillationFun: getDistillationFunc(dm),
 	}

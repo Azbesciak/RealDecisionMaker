@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"strings"
 )
 
@@ -16,10 +17,21 @@ type DecisionMaker struct {
 	MethodParameters   MethodParameters          `json:"methodParameters"`
 }
 
+type DecisionMakingParams struct {
+	NotConsideredAlternatives []AlternativeWithCriteria
+	ConsideredAlternatives    []AlternativeWithCriteria
+	Criteria                  Criteria
+	MethodParameters          interface{}
+}
+
 type MethodParameters = map[string]interface{}
 
-func (dm *DecisionMaker) Alternative(id string) AlternativeWithCriteria {
-	for _, a := range dm.KnownAlternatives {
+func (dm *DecisionMaker) Alternative(id Alternative) AlternativeWithCriteria {
+	return FetchAlternative(&dm.KnownAlternatives, id)
+}
+
+func FetchAlternative(a *[]AlternativeWithCriteria, id Alternative) AlternativeWithCriteria {
+	for _, a := range *a {
 		if a.Id == id {
 			return a
 		}
@@ -28,9 +40,13 @@ func (dm *DecisionMaker) Alternative(id string) AlternativeWithCriteria {
 }
 
 func (dm *DecisionMaker) AlternativesToConsider() *[]AlternativeWithCriteria {
-	results := make([]AlternativeWithCriteria, len(dm.ChoseToMake))
-	for i, r := range dm.ChoseToMake {
-		results[i] = dm.Alternative(r)
+	return FetchAlternatives(&dm.KnownAlternatives, &dm.ChoseToMake)
+}
+
+func FetchAlternatives(a *[]AlternativeWithCriteria, ids *[]Alternative) *[]AlternativeWithCriteria {
+	results := make([]AlternativeWithCriteria, len(*ids))
+	for i, id := range *ids {
+		results[i] = FetchAlternative(a, id)
 	}
 	return &results
 }
@@ -46,18 +62,38 @@ func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions, a
 	}
 	fun := FetchPreferenceFunction(preferenceFunctions, dm.PreferenceFunction)
 	preferenceFunction := (*fun).(PreferenceFunction)
+	params := dm.prepareParams(&preferenceFunction)
 	chosenHeuristics := ChooseHeuristics(availableHeuristics, &dm.Heuristics)
-	processedDm, heuristicProps := dm.processHeuristics(chosenHeuristics)
-	res := preferenceFunction.Evaluate(processedDm)
+	processedParams, heuristicProps := dm.processHeuristics(chosenHeuristics, params)
+	res := preferenceFunction.Evaluate(processedParams)
 	return &DecisionMakerChoice{*res, *heuristicProps}
 }
 
-func (dm *DecisionMaker) processHeuristics(heuristics *HeuristicsWithProps) (*DecisionMaker, *HeuristicsParams) {
+func (dm *DecisionMaker) prepareParams(preferenceFunction *PreferenceFunction) *DecisionMakingParams {
+	return &DecisionMakingParams{
+		NotConsideredAlternatives: *dm.NotConsideredAlternatives(),
+		ConsideredAlternatives:    *dm.AlternativesToConsider(),
+		Criteria:                  dm.Criteria,
+		MethodParameters:          (*preferenceFunction).ParseParams(dm),
+	}
+}
+
+func (dm *DecisionMaker) NotConsideredAlternatives() *[]AlternativeWithCriteria {
+	var result []AlternativeWithCriteria
+	for _, a := range dm.KnownAlternatives {
+		if !utils.ContainsString(&dm.ChoseToMake, &a.Id) {
+			result = append(result, a)
+		}
+	}
+	return &result
+}
+
+func (dm *DecisionMaker) processHeuristics(heuristics *HeuristicsWithProps, params *DecisionMakingParams) (*DecisionMakingParams, *HeuristicsParams) {
 	result := make(HeuristicsParams, len(*heuristics))
-	tempDM := dm
+	tempDM := params
 	for i, h := range *heuristics {
 		res := (*h.Heuristic).Apply(tempDM, &h.Props.Props)
-		tempDM = res.Dm
+		tempDM = res.DMP
 		result[i] = *UpdateHeuristicProps(h.Props, res.Props)
 	}
 	return tempDM, &result

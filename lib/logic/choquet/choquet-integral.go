@@ -17,12 +17,12 @@ func (c *ChoquetIntegralPreferenceFunc) MethodParameters() interface{} {
 	return model.WeightsParamOnly()
 }
 
-func (c *ChoquetIntegralPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	params := c.ParseParams(dm).(choquetParams)
+func (c *ChoquetIntegralPreferenceFunc) Evaluate(dmp *model.DecisionMakingParams) *model.AlternativesRanking {
+	params := dmp.MethodParameters.(choquetParams)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
 		return choquetIntegral(alternative, params.weights)
 	}
-	return model.Rank(dm, prefFunc)
+	return model.Rank(dmp, prefFunc)
 }
 
 func ChoquetIntegral(

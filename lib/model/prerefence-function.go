@@ -10,7 +10,7 @@ type PreferenceFunction interface {
 	utils.Identifiable
 	MethodParameters() interface{}
 	ParseParams(dm *DecisionMaker) interface{}
-	Evaluate(dm *DecisionMaker) *AlternativesRanking
+	Evaluate(dmp *DecisionMakingParams) *AlternativesRanking
 }
 
 func (pf PreferenceFunctions) Get(index int) utils.Identifiable {

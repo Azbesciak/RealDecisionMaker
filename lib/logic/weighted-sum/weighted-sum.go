@@ -36,12 +36,12 @@ func (w *WeightedSumPreferenceFunc) MethodParameters() interface{} {
 	return WeightsParamOnly()
 }
 
-func (w *WeightedSumPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
-	params := w.ParseParams(dm).(weightedSumParams)
+func (w *WeightedSumPreferenceFunc) Evaluate(dmp *DecisionMakingParams) *AlternativesRanking {
+	params := dmp.MethodParameters.(weightedSumParams)
 	prefFunc := func(alternative *AlternativeWithCriteria) *AlternativeResult {
 		return WeightedSum(*alternative, *params.weightedCriteria)
 	}
-	return Rank(dm, prefFunc)
+	return Rank(dmp, prefFunc)
 }
 
 func WeightedSum(alternative AlternativeWithCriteria, criteria []WeightedCriterion) *AlternativeResult {

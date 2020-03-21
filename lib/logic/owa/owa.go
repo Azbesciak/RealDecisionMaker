@@ -37,12 +37,12 @@ func (O *OWAPreferenceFunc) MethodParameters() interface{} {
 	return model.WeightsParamOnly()
 }
 
-func (O *OWAPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	weights := O.ParseParams(dm).(owaParams)
+func (O *OWAPreferenceFunc) Evaluate(dmp *model.DecisionMakingParams) *model.AlternativesRanking {
+	weights := dmp.MethodParameters.(owaParams)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
 		return OWA(*alternative, *weights.weights)
 	}
-	return model.Rank(dm, prefFunc)
+	return model.Rank(dmp, prefFunc)
 }
 
 func OWA(alternative model.AlternativeWithCriteria, weights []model.Weight) *model.AlternativeResult {

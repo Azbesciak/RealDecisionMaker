@@ -25,7 +25,12 @@ func TestDecisionMaker_MakeDecision_WeightedSum(t *testing.T) {
 	owa := &OWAPreferenceFunc{}
 	funcs := PreferenceFunctions{Functions: []PreferenceFunction{weightedSum, owa}}
 	ranking := dm.MakeDecision(funcs, &HeuristicsMap{})
-	expectedRanking := weightedSum.Evaluate(&dm)
+	expectedRanking := weightedSum.Evaluate(&DecisionMakingParams{
+		NotConsideredAlternatives: nil,
+		ConsideredAlternatives:    dm.KnownAlternatives,
+		Criteria:                  dm.Criteria,
+		MethodParameters:          weightedSum.ParseParams(&dm),
+	})
 
 	if !reflect.DeepEqual(ranking.Result, *expectedRanking) {
 		t.Errorf("Invalid result, expected '%v', got '%v'", ranking.Result, *expectedRanking)
@@ -65,7 +70,12 @@ func TestDecisionMaker_MakeDecision_ElectreIII(t *testing.T) {
 	ele := &ElectreIIIPreferenceFunc{}
 	funcs := PreferenceFunctions{Functions: []PreferenceFunction{weightedSum, ele}}
 	ranking := dm.MakeDecision(funcs, &HeuristicsMap{})
-	expectedRanking := ele.Evaluate(&dm)
+	expectedRanking := ele.Evaluate(&DecisionMakingParams{
+		NotConsideredAlternatives: nil,
+		ConsideredAlternatives:    dm.KnownAlternatives,
+		Criteria:                  dm.Criteria,
+		MethodParameters:          ele.ParseParams(&dm),
+	})
 
 	if !reflect.DeepEqual(ranking.Result, *expectedRanking) {
 		t.Errorf("Invalid result, expected '%v', got '%v'", ranking.Result, *expectedRanking)

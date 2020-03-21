@@ -8,10 +8,9 @@ import (
 
 type AlternativeWeightFunction func(alternative *AlternativeWithCriteria) *AlternativeResult
 
-func Rank(dm *DecisionMaker, pref AlternativeWeightFunction) *AlternativesRanking {
-	results := make(AlternativeResults, len(dm.ChoseToMake))
-	for i, r := range dm.ChoseToMake {
-		var alternative = dm.Alternative(r)
+func Rank(dmp *DecisionMakingParams, pref AlternativeWeightFunction) *AlternativesRanking {
+	results := make(AlternativeResults, len(dmp.ConsideredAlternatives))
+	for i, alternative := range dmp.ConsideredAlternatives {
 		results[i] = *pref(&alternative)
 	}
 	return results.Ranking()

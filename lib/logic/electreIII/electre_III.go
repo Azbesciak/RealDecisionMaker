@@ -21,9 +21,9 @@ func (e *ElectreIIIPreferenceFunc) MethodParameters() interface{} {
 	return ElectreIIIInputParams{}
 }
 
-func (e *ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
-	params := e.ParseParams(dm).(electreIIIParams)
-	return ElectreIII(*params.alternatives, dm.Criteria, params.criteria, params.distillationFun)
+func (e *ElectreIIIPreferenceFunc) Evaluate(dmp *DecisionMakingParams) *AlternativesRanking {
+	params := dmp.MethodParameters.(electreIIIParams)
+	return ElectreIII(dmp.ConsideredAlternatives, dmp.Criteria, params.criteria, params.distillationFun)
 }
 
 func ElectreIII(
