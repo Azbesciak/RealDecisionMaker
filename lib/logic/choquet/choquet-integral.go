@@ -11,6 +11,16 @@ import (
 type ChoquetIntegralPreferenceFunc struct {
 }
 
+type ChoquetParams struct {
+	weights *model.Weights
+}
+
+func (c *ChoquetIntegralPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
+	weights := model.ExtractWeights(dm)
+	parsedWeights := parse(&dm.Criteria, &weights)
+	return &ChoquetParams{weights: parsedWeights}
+}
+
 func (c *ChoquetIntegralPreferenceFunc) Identifier() string {
 	return "choquetIntegral"
 }
@@ -20,9 +30,9 @@ func (c *ChoquetIntegralPreferenceFunc) MethodParameters() interface{} {
 }
 
 func (c *ChoquetIntegralPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	weights := model.ExtractWeights(dm)
+	params := c.ParseParams(dm).(ChoquetParams)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
-		return ChoquetIntegral(*alternative, dm.Criteria, weights)
+		return choquetIntegral(alternative, params.weights)
 	}
 	return model.Rank(dm, prefFunc)
 }
@@ -32,11 +42,22 @@ func ChoquetIntegral(
 	criteria model.Criteria,
 	weights model.Weights,
 ) *model.AlternativeResult {
-	validateAllCriteriaAreGain(&criteria)
-	resultWeights := prepareWeights(&weights, &criteria)
+	resultWeights := parse(&criteria, &weights)
+	return choquetIntegral(&alternative, resultWeights)
+}
+
+func parse(criteria *model.Criteria, weights *model.Weights) *model.Weights {
+	validateAllCriteriaAreGain(criteria)
+	return prepareWeights(weights, criteria)
+}
+
+func choquetIntegral(
+	alternative *model.AlternativeWithCriteria,
+	weights *model.Weights,
+) *model.AlternativeResult {
 	sortedCriteria := prepareCriteriaInAscendingOrder(alternative)
-	result := computeTotalWeight(sortedCriteria, resultWeights)
-	return &model.AlternativeResult{Alternative: alternative, Value: result}
+	result := computeTotalWeight(sortedCriteria, weights)
+	return &model.AlternativeResult{Alternative: *alternative, Value: result}
 }
 
 func validateAllCriteriaAreGain(criteria *model.Criteria) {
@@ -78,7 +99,7 @@ func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights)
 	return result
 }
 
-func prepareCriteriaInAscendingOrder(alternative model.AlternativeWithCriteria) *criteriaWeights {
+func prepareCriteriaInAscendingOrder(alternative *model.AlternativeWithCriteria) *criteriaWeights {
 	var sorted = make(criteriaWeights, len(alternative.Criteria))
 	i := 0
 	for k, v := range alternative.Criteria {

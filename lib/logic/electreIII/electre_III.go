@@ -11,25 +11,36 @@ const criteria = "electreCriteria"
 
 type ElectreIIIPreferenceFunc struct {
 }
-
-func (e ElectreIIIPreferenceFunc) Identifier() string {
-	return "electreIII"
+type ElectreIIIParams struct {
+	alternatives    *[]AlternativeWithCriteria
+	criteria        *ElectreCriteria
+	distillationFun *LinearFunctionParameters
 }
 
-type ElectreIIIParams struct {
+type ElectreIIIInputParams struct {
 	Criteria        ElectreCriteria          `json:"criteria"`
 	DistillationFun LinearFunctionParameters `json:"distillationFun"`
+}
+
+func (e *ElectreIIIPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
+	return &ElectreIIIParams{
+		alternatives:    dm.AlternativesToConsider(),
+		criteria:        extractElectreIIICriteria(dm),
+		distillationFun: getDistillationFunc(dm),
+	}
+}
+
+func (e *ElectreIIIPreferenceFunc) Identifier() string {
+	return "electreIII"
 }
 
 func (e *ElectreIIIPreferenceFunc) MethodParameters() interface{} {
 	return ElectreIIIParams{}
 }
 
-func (e ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
-	criteria := *dm.AlternativesToConsider()
-	eleIIICriteria := extractElectreIIICriteria(dm)
-	distillationFunc := getDistillationFunc(dm)
-	return ElectreIII(criteria, dm.Criteria, eleIIICriteria, distillationFunc)
+func (e *ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
+	params := e.ParseParams(dm).(ElectreIIIParams)
+	return ElectreIII(*params.alternatives, dm.Criteria, params.criteria, params.distillationFun)
 }
 
 func extractElectreIIICriteria(dm *DecisionMaker) *ElectreCriteria {

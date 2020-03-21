@@ -9,6 +9,26 @@ import (
 type OWAPreferenceFunc struct {
 }
 
+type OWAParams struct {
+	weights *[]model.Weight
+}
+
+func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
+	originalWeights := model.ExtractWeights(dm)
+	weightsCount := len(originalWeights)
+	if weightsCount != len(dm.Criteria) {
+		panic(fmt.Errorf("weights count (%d) not equal to criteria count (%d) for OWA", weightsCount, len(dm.Criteria)))
+	}
+	var weights = make([]model.Weight, weightsCount)
+	i := 0
+	for _, v := range originalWeights {
+		weights[i] = v
+		i++
+	}
+	sort.Float64s(weights)
+	return &OWAParams{weights: &weights}
+}
+
 func (O *OWAPreferenceFunc) Identifier() string {
 	return "owa"
 }
@@ -18,37 +38,55 @@ func (O *OWAPreferenceFunc) MethodParameters() interface{} {
 }
 
 func (O *OWAPreferenceFunc) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	originalWeights := model.ExtractWeights(dm)
-	var weights = make([]model.Weight, len(originalWeights))
-	i := 0
-	for _, v := range originalWeights {
-		weights[i] = v
-		i++
-	}
+	weights := O.ParseParams(dm).(OWAParams)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
-		return OWA(*alternative, weights)
+		return OWA(*alternative, *weights.weights)
 	}
 	return model.Rank(dm, prefFunc)
 }
 
 func OWA(alternative model.AlternativeWithCriteria, weights []model.Weight) *model.AlternativeResult {
-	alternativeCriteria := len(alternative.Criteria)
-	if alternativeCriteria != len(weights) {
-		panic(fmt.Errorf("criteria and weights must have the same length, got %d and %d", alternativeCriteria, len(weights)))
+	sortedWeights := sortWeights(&weights)
+	return owa(&alternative, sortedWeights)
+}
+
+func owa(alternative *model.AlternativeWithCriteria, sortedWeights *[]model.Weight) *model.AlternativeResult {
+	validateSameCriteriaAndWeightsCount(alternative, sortedWeights)
+	sortedAlternativeCriteriaWeights := sortAlternativeCriteriaWeights(alternative)
+	total := calculateTotalAlternativeValue(sortedWeights, sortedAlternativeCriteriaWeights)
+	return &model.AlternativeResult{Alternative: *alternative, Value: total}
+}
+
+func calculateTotalAlternativeValue(sortedWeights *[]model.Weight, sortedCriteriaWeights *[]model.Weight) model.Weight {
+	var total model.Weight = 0
+	for i := range *sortedWeights {
+		total += (*sortedCriteriaWeights)[i] * (*sortedWeights)[i]
 	}
-	tmpWeights := make([]model.Weight, len(weights))
-	copy(tmpWeights, weights)
-	sort.Float64s(tmpWeights)
-	tmpCriteria := make([]model.Weight, alternativeCriteria)
+	return total
+}
+
+func sortAlternativeCriteriaWeights(alternative *model.AlternativeWithCriteria) *[]model.Weight {
+	tmpCriteria := make([]model.Weight, len(alternative.Criteria))
 	i := 0
 	for _, c := range alternative.Criteria {
 		tmpCriteria[i] = c
 		i += 1
 	}
 	sort.Float64s(tmpCriteria)
-	var total model.Weight = 0
-	for i = 0; i < alternativeCriteria; i++ {
-		total += tmpCriteria[i] * tmpWeights[i]
+	return &tmpCriteria
+}
+
+func sortWeights(weights *[]model.Weight) *[]model.Weight {
+	tmpWeights := make([]model.Weight, len(*weights))
+	copy(tmpWeights, *weights)
+	sort.Float64s(tmpWeights)
+	return &tmpWeights
+}
+
+func validateSameCriteriaAndWeightsCount(alternative *model.AlternativeWithCriteria, weights *[]model.Weight) {
+	alternativeCriteriaCount := len(alternative.Criteria)
+	weightsCount := len(*weights)
+	if alternativeCriteriaCount != weightsCount {
+		panic(fmt.Errorf("criteria and weights must have the same length, got %d and %d", alternativeCriteriaCount, weightsCount))
 	}
-	return &model.AlternativeResult{Alternative: alternative, Value: total}
 }

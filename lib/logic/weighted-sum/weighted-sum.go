@@ -8,15 +8,11 @@ import (
 type WeightedSumPreferenceFunc struct {
 }
 
-func (w *WeightedSumPreferenceFunc) Identifier() string {
-	return "weightedSum"
+type WeightedSumParams struct {
+	weightedCriteria *[]WeightedCriterion
 }
 
-func (w *WeightedSumPreferenceFunc) MethodParameters() interface{} {
-	return WeightsParamOnly()
-}
-
-func (w *WeightedSumPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
+func (w *WeightedSumPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
 	weights := ExtractWeights(dm)
 	weightedCriteria := make([]WeightedCriterion, len(dm.Criteria))
 	for i, c := range dm.Criteria {
@@ -29,8 +25,21 @@ func (w *WeightedSumPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRan
 			Weight:    value,
 		}
 	}
+	return &WeightedSumParams{weightedCriteria: &weightedCriteria}
+}
+
+func (w *WeightedSumPreferenceFunc) Identifier() string {
+	return "weightedSum"
+}
+
+func (w *WeightedSumPreferenceFunc) MethodParameters() interface{} {
+	return WeightsParamOnly()
+}
+
+func (w *WeightedSumPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
+	params := w.ParseParams(dm).(WeightedSumParams)
 	prefFunc := func(alternative *AlternativeWithCriteria) *AlternativeResult {
-		return WeightedSum(*alternative, weightedCriteria)
+		return WeightedSum(*alternative, *params.weightedCriteria)
 	}
 	return Rank(dm, prefFunc)
 }

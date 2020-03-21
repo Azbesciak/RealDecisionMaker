@@ -9,6 +9,7 @@ type PreferenceFunctions struct {
 type PreferenceFunction interface {
 	utils.Identifiable
 	MethodParameters() interface{}
+	ParseParams(dm *DecisionMaker) interface{}
 	Evaluate(dm *DecisionMaker) *AlternativesRanking
 }
 
