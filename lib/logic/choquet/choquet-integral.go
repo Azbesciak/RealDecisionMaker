@@ -1,11 +1,9 @@
 package choquet
 
 import (
-	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"sort"
-	"strings"
 )
 
 type ChoquetIntegralPreferenceFunc struct {
@@ -62,13 +60,7 @@ func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights)
 				break
 			}
 		}
-		sort.Strings(commonWeightCriteria)
-		weightKey := strings.Join(commonWeightCriteria, ",")
-		criteriaUnionWeight, ok := (*weights)[weightKey]
-
-		if !ok {
-			panic(fmt.Errorf("weight for criteria union '%s' not found", weightKey))
-		}
+		criteriaUnionWeight := getWeightForCriteriaUnion(&commonWeightCriteria, weights)
 		result += criteriaUnionWeight * (current.weight - previousWeight)
 		previousWeight = current.weight
 		i = j

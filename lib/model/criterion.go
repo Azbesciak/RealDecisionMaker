@@ -38,6 +38,14 @@ func (c Criterion) Multiplier() int8 {
 	}
 }
 
+func (c *Criteria) Names() *[]string {
+	result := make([]string, len(*c))
+	for i, crit := range *c {
+		result[i] = crit.Id
+	}
+	return &result
+}
+
 type Weight = float64
 
 type WeightedCriterion struct {
