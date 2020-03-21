@@ -35,7 +35,7 @@ func (e *ElectreIIIPreferenceFunc) Identifier() string {
 }
 
 func (e *ElectreIIIPreferenceFunc) MethodParameters() interface{} {
-	return electreIIIParams{}
+	return ElectreIIIInputParams{}
 }
 
 func (e *ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
