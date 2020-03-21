@@ -35,9 +35,9 @@ func ErrorDiffers(err interface{}, message string) bool {
 func ExpectError(t *testing.T, expectedMessage string) func() {
 	return func() {
 		if e := recover(); e == nil {
-			t.Errorf("expected error")
+			t.Errorf("expected error with message '%s'", expectedMessage)
 		} else if ErrorDiffers(e, expectedMessage) {
-			t.Errorf("invalid error message, got '%s'", e)
+			t.Errorf("invalid error message:\nactual   '%s'\nexpected '%s'", e, expectedMessage)
 		}
 	}
 }
