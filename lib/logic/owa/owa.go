@@ -26,7 +26,7 @@ func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 		i++
 	}
 	sort.Float64s(weights)
-	return &owaParams{weights: &weights}
+	return owaParams{weights: &weights}
 }
 
 func (O *OWAPreferenceFunc) Identifier() string {

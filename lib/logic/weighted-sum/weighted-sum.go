@@ -25,7 +25,7 @@ func (w *WeightedSumPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
 			Weight:    value,
 		}
 	}
-	return &weightedSumParams{weightedCriteria: &weightedCriteria}
+	return weightedSumParams{weightedCriteria: &weightedCriteria}
 }
 
 func (w *WeightedSumPreferenceFunc) Identifier() string {

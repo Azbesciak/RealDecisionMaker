@@ -16,7 +16,7 @@ const distillationFun = "electreDistillation"
 const criteria = "electreCriteria"
 
 func (e *ElectreIIIPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
-	return &electreIIIParams{
+	return electreIIIParams{
 		alternatives:    dm.AlternativesToConsider(),
 		criteria:        extractElectreIIICriteria(dm),
 		distillationFun: getDistillationFunc(dm),
