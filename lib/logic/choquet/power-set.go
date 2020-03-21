@@ -2,7 +2,7 @@ package choquet
 
 import "math"
 
-func PowerSet(original []string) [][]string {
+func PowerSet(original []string) *[][]string {
 	powerSetSize := int(math.Pow(2, float64(len(original))))
 	result := make([][]string, 0, powerSetSize)
 
@@ -20,5 +20,5 @@ func PowerSet(original []string) [][]string {
 		}
 		index++
 	}
-	return result
+	return &result
 }
