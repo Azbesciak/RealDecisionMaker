@@ -3,31 +3,14 @@ package electreIII
 import (
 	"fmt"
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
-	. "github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
-const distillationFun = "electreDistillation"
-const criteria = "electreCriteria"
-
 type ElectreIIIPreferenceFunc struct {
-}
-type electreIIIParams struct {
-	alternatives    *[]AlternativeWithCriteria
-	criteria        *ElectreCriteria
-	distillationFun *LinearFunctionParameters
 }
 
 type ElectreIIIInputParams struct {
 	Criteria        ElectreCriteria          `json:"criteria"`
 	DistillationFun LinearFunctionParameters `json:"distillationFun"`
-}
-
-func (e *ElectreIIIPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
-	return &electreIIIParams{
-		alternatives:    dm.AlternativesToConsider(),
-		criteria:        extractElectreIIICriteria(dm),
-		distillationFun: getDistillationFunc(dm),
-	}
 }
 
 func (e *ElectreIIIPreferenceFunc) Identifier() string {
@@ -41,57 +24,6 @@ func (e *ElectreIIIPreferenceFunc) MethodParameters() interface{} {
 func (e *ElectreIIIPreferenceFunc) Evaluate(dm *DecisionMaker) *AlternativesRanking {
 	params := e.ParseParams(dm).(electreIIIParams)
 	return ElectreIII(*params.alternatives, dm.Criteria, params.criteria, params.distillationFun)
-}
-
-func extractElectreIIICriteria(dm *DecisionMaker) *ElectreCriteria {
-	potentialEleCriteria, ok := dm.MethodParameters[criteria]
-	if !ok {
-		panic(fmt.Errorf("criteria for electre not found in methodParameters: %v", dm.MethodParameters))
-	}
-	electreCriteria := make(ElectreCriteria)
-	DecodeToStruct(potentialEleCriteria, &electreCriteria)
-	for _, criterion := range dm.Criteria {
-		electreCriterion, cOk := electreCriteria[criterion.Id]
-		if !cOk {
-			panic(fmt.Errorf("criterion '%s' not found in electre criteria: %v", criterion.Id, electreCriteria))
-		}
-		validateParameters(&criterion, &electreCriterion)
-	}
-	return &electreCriteria
-}
-
-func validateParameters(criterion *Criterion, crit *ElectreCriterion) {
-	if crit.K <= 0 {
-		panic(fmt.Errorf("electre criterion's weight must be positive, got %v for %s", crit.K, criterion.Id))
-	}
-	lastWeight := 0.0
-	lastWeight = requireBValueAtLeast(&crit.Q, lastWeight, criterion.Id, "Q")
-	lastWeight = requireBValueAtLeast(&crit.P, lastWeight, criterion.Id, "P")
-	requireBValueAtLeast(&crit.V, lastWeight, criterion.Id, "V")
-}
-
-func requireBValueAtLeast(f *LinearFunctionParameters, current float64, criterion, funcName string) float64 {
-	if f.A == 0 && f.B != 0 && f.B <= current {
-		panic(fmt.Errorf(
-			"b parameter of electre pref func %s %v for criterion %s must be greater than %f",
-			funcName, f, criterion, current,
-		))
-	}
-	if f.B > 0 {
-		return f.B
-	}
-	return current
-}
-
-func getDistillationFunc(dm *DecisionMaker) *LinearFunctionParameters {
-	params, ok := dm.MethodParameters[distillationFun]
-	if !ok {
-		return &DefaultDistillationFunc
-	} else {
-		parameters := LinearFunctionParameters{}
-		DecodeToStruct(params, &parameters)
-		return &parameters
-	}
 }
 
 func ElectreIII(
