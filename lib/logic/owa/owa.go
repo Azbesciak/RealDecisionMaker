@@ -85,6 +85,23 @@ func sortWeights(weights *[]model.Weight) *[]model.Weight {
 	return &tmpWeights
 }
 
+func (o *owaParams) withoutNWorstWeights(n int) *owaParams {
+	res := (*o.weights)[n:]
+	return &owaParams{weights: &res}
+}
+
+func (o *owaParams) withWeight(weight model.Weight) *owaParams {
+	weights := append([]model.Weight{weight}, *o.weights...)
+	if weight > weights[1] {
+		_sortWeightsMutate(&weights)
+	}
+	return &owaParams{weights: &weights}
+}
+
+func (o *owaParams) minWeight() float64 {
+	return (*o.weights)[0]
+}
+
 func _sortWeightsMutate(weights *[]model.Weight) {
 	sort.Float64s(*weights)
 }
