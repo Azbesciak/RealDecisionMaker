@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"math/rand"
 )
 
 type AddCriterionResult struct {
@@ -16,7 +15,7 @@ type CriterionAdder interface {
 		criterion *Criterion,
 		previousRankedCriteria *Criteria,
 		params MethodParameters,
-		rand *rand.Rand,
+		rand utils.ValueGenerator,
 	) *AddCriterionResult
 }
 
