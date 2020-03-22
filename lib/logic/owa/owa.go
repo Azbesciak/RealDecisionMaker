@@ -13,6 +13,8 @@ type owaParams struct {
 	weights *[]model.Weight
 }
 
+const methodName = "owa"
+
 func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 	originalWeights := model.ExtractWeights(dm)
 	weightsCount := len(originalWeights)
@@ -30,7 +32,7 @@ func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 }
 
 func (O *OWAPreferenceFunc) Identifier() string {
-	return "owa"
+	return methodName
 }
 
 func (O *OWAPreferenceFunc) MethodParameters() interface{} {

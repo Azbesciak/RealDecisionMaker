@@ -6,11 +6,13 @@ import (
 	"sort"
 )
 
+const methodName = "choquetIntegral"
+
 type ChoquetIntegralPreferenceFunc struct {
 }
 
 func (c *ChoquetIntegralPreferenceFunc) Identifier() string {
-	return "choquetIntegral"
+	return methodName
 }
 
 func (c *ChoquetIntegralPreferenceFunc) MethodParameters() interface{} {

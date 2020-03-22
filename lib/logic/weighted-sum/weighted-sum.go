@@ -5,6 +5,8 @@ import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 )
 
+const methodName = "weightedSum"
+
 type WeightedSumPreferenceFunc struct {
 }
 
@@ -29,7 +31,7 @@ func (w *WeightedSumPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
 }
 
 func (w *WeightedSumPreferenceFunc) Identifier() string {
-	return "weightedSum"
+	return methodName
 }
 
 func (w *WeightedSumPreferenceFunc) MethodParameters() interface{} {

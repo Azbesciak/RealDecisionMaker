@@ -5,6 +5,8 @@ import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 )
 
+const methodName = "electreIII"
+
 type ElectreIIIPreferenceFunc struct {
 }
 
@@ -14,7 +16,7 @@ type ElectreIIIInputParams struct {
 }
 
 func (e *ElectreIIIPreferenceFunc) Identifier() string {
-	return "electreIII"
+	return methodName
 }
 
 func (e *ElectreIIIPreferenceFunc) MethodParameters() interface{} {
