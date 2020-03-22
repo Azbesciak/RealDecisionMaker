@@ -13,7 +13,7 @@ type MockHeuristic struct {
 func (m *MockHeuristic) Identifier() string {
 	return m.Name
 }
-func (m *MockHeuristic) Apply(dm *DecisionMakingParams, props *HeuristicProps) *HeuristicResult {
+func (m *MockHeuristic) Apply(dm *DecisionMakingParams, props *HeuristicProps, listener *HeuristicListener) *HeuristicResult {
 	panic("mock")
 }
 

@@ -26,12 +26,12 @@ type HeuristicWithProps struct {
 
 type Heuristic interface {
 	utils.Identifiable
-	Apply(dm *DecisionMakingParams, props *HeuristicProps) *HeuristicResult
+	Apply(params *DecisionMakingParams, props *HeuristicProps, listener *HeuristicListener) *HeuristicResult
 }
 
 type HeuristicResult struct {
 	DMP   *DecisionMakingParams `json:"dm"`
-	Props *HeuristicProps       `json:"props"`
+	Props HeuristicProps        `json:"props"`
 }
 
 func AsHeuristicsMap(h *Heuristics) *HeuristicsMap {
@@ -61,10 +61,10 @@ func ChooseHeuristics(available *HeuristicsMap, choose *HeuristicsParams) *Heuri
 	return &result
 }
 
-func UpdateHeuristicProps(oldProps *HeuristicParams, update *HeuristicProps) *HeuristicParams {
+func UpdateHeuristicProps(oldProps *HeuristicParams, update HeuristicProps) *HeuristicParams {
 	return &HeuristicParams{
 		Name:     oldProps.Name,
 		Disabled: oldProps.Disabled,
-		Props:    *update,
+		Props:    update,
 	}
 }

@@ -14,7 +14,7 @@ type DecisionMaker struct {
 	KnownAlternatives  []AlternativeWithCriteria `json:"knownAlternatives"`
 	ChoseToMake        []Alternative             `json:"choseToMake"`
 	Criteria           Criteria                  `json:"criteria"`
-	MethodParameters   MethodParameters          `json:"methodParameters"`
+	MethodParameters   RawMethodParameters       `json:"methodParameters"`
 }
 
 type DecisionMakingParams struct {
@@ -24,10 +24,19 @@ type DecisionMakingParams struct {
 	MethodParameters          interface{}
 }
 
-type MethodParameters = map[string]interface{}
+type RawMethodParameters = map[string]interface{}
+type MethodParameters = interface{}
 
 func (dm *DecisionMaker) Alternative(id Alternative) AlternativeWithCriteria {
 	return FetchAlternative(&dm.KnownAlternatives, id)
+}
+
+func UpdateAlternatives(old *[]AlternativeWithCriteria, newOnes *[]AlternativeWithCriteria) *[]AlternativeWithCriteria {
+	res := make([]AlternativeWithCriteria, len(*old))
+	for i, a := range *old {
+		res[i] = FetchAlternative(newOnes, a.Id)
+	}
+	return &res
 }
 
 func FetchAlternative(a *[]AlternativeWithCriteria, id Alternative) AlternativeWithCriteria {
@@ -56,14 +65,18 @@ type DecisionMakerChoice struct {
 	Heuristics HeuristicsParams    `json:"heuristics"`
 }
 
-func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions, availableHeuristics *HeuristicsMap) *DecisionMakerChoice {
+func (dm *DecisionMaker) MakeDecision(
+	preferenceFunctions PreferenceFunctions,
+	heuristicListeners HeuristicListeners,
+	availableHeuristics *HeuristicsMap,
+) *DecisionMakerChoice {
 	if IsStringBlank(&dm.PreferenceFunction) {
 		panic(fmt.Errorf("preference function must not be empty"))
 	}
 	preferenceFunction := preferenceFunctions.Fetch(dm.PreferenceFunction)
 	params := dm.prepareParams(preferenceFunction)
 	chosenHeuristics := ChooseHeuristics(availableHeuristics, &dm.Heuristics)
-	processedParams, heuristicProps := dm.processHeuristics(chosenHeuristics, params)
+	processedParams, heuristicProps := dm.processHeuristics(chosenHeuristics, params, &heuristicListeners)
 	res := (*preferenceFunction).Evaluate(processedParams)
 	return &DecisionMakerChoice{*res, *heuristicProps}
 }
@@ -87,11 +100,20 @@ func (dm *DecisionMaker) NotConsideredAlternatives() *[]AlternativeWithCriteria 
 	return &result
 }
 
-func (dm *DecisionMaker) processHeuristics(heuristics *HeuristicsWithProps, params *DecisionMakingParams) (*DecisionMakingParams, *HeuristicsParams) {
-	result := make(HeuristicsParams, len(*heuristics))
+func (dm *DecisionMaker) processHeuristics(
+	heuristics *HeuristicsWithProps,
+	params *DecisionMakingParams,
+	listeners *HeuristicListeners,
+) (*DecisionMakingParams, *HeuristicsParams) {
+	heuristicsToProcessCount := len(*heuristics)
+	result := make(HeuristicsParams, heuristicsToProcessCount)
 	tempDM := params
+	if heuristicsToProcessCount == 0 {
+		return tempDM, &result
+	}
+	listener := listeners.Fetch(dm.PreferenceFunction)
 	for i, h := range *heuristics {
-		res := (*h.Heuristic).Apply(tempDM, &h.Props.Props)
+		res := (*h.Heuristic).Apply(tempDM, &h.Props.Props, listener)
 		tempDM = res.DMP
 		result[i] = *UpdateHeuristicProps(h.Props, res.Props)
 	}
