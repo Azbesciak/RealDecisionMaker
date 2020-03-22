@@ -52,3 +52,45 @@ func DecodeToStruct(src, target interface{}) {
 		panic(e)
 	}
 }
+
+type ValueRange struct {
+	Min float64
+	Max float64
+}
+
+func (r *ValueRange) ScaleEqually(scale float64) *ValueRange {
+	dif := (r.Max - r.Min) / 2
+	return &ValueRange{
+		Min: r.Min + dif - dif*scale,
+		Max: r.Max - dif + dif*scale,
+	}
+}
+
+func NewValueRange() *ValueRange {
+	return &ValueRange{
+		Min: 0,
+		Max: 0,
+	}
+}
+
+type SeededValueGenerator = func(seed int64) ValueGenerator
+type ValueGenerator = func() float64
+
+func RandomGenerator(seed int64) *rand.Rand {
+	source := rand.NewSource(seed)
+	return rand.New(source)
+}
+
+func RandomBasedSeedValueGenerator(seed int64) ValueGenerator {
+	gen := RandomGenerator(seed)
+	return func() float64 {
+		return gen.Float64()
+	}
+}
+
+func NewValueInRangeGenerator(generator ValueGenerator, valueRange *ValueRange) ValueGenerator {
+	dif := valueRange.Max - valueRange.Min
+	return func() float64 {
+		return generator()*dif + valueRange.Min
+	}
+}
