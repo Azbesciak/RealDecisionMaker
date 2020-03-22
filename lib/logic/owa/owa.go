@@ -27,7 +27,7 @@ func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 		weights[i] = v
 		i++
 	}
-	sort.Float64s(weights)
+	_sortWeightsMutate(&weights)
 	return owaParams{weights: &weights}
 }
 
@@ -74,15 +74,19 @@ func sortAlternativeCriteriaWeights(alternative *model.AlternativeWithCriteria) 
 		tmpCriteria[i] = c
 		i += 1
 	}
-	sort.Float64s(tmpCriteria)
+	_sortWeightsMutate(&tmpCriteria)
 	return &tmpCriteria
 }
 
 func sortWeights(weights *[]model.Weight) *[]model.Weight {
 	tmpWeights := make([]model.Weight, len(*weights))
 	copy(tmpWeights, *weights)
-	sort.Float64s(tmpWeights)
+	_sortWeightsMutate(&tmpWeights)
 	return &tmpWeights
+}
+
+func _sortWeightsMutate(weights *[]model.Weight) {
+	sort.Float64s(*weights)
 }
 
 func validateSameCriteriaAndWeightsCount(alternative *model.AlternativeWithCriteria, weights *[]model.Weight) {
