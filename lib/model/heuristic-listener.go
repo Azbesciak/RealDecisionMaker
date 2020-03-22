@@ -15,7 +15,7 @@ type CriterionAdder interface {
 		criterion *Criterion,
 		previousRankedCriteria *Criteria,
 		params MethodParameters,
-		rand utils.ValueGenerator,
+		generator utils.ValueGenerator,
 	) *AddCriterionResult
 }
 

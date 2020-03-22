@@ -1,7 +1,9 @@
 package model
 
 import (
+	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
+	"sort"
 )
 
 //go:generate easytags $GOFILE json:camel
@@ -30,6 +32,24 @@ func (c *Criteria) Get(index int) utils.Identifiable {
 	return (*c)[index]
 }
 
+func (c *Criteria) ShallowCopy() *Criteria {
+	criteriaCopy := make(Criteria, len(*c))
+	copy(criteriaCopy, *c)
+	return &criteriaCopy
+}
+
+func (c *Criteria) SortByWeights(weights Weights) *Criteria {
+	criteriaCopy := c.ShallowCopy()
+	sort.SliceStable(*criteriaCopy, func(i, j int) bool {
+		return c.Weight(weights, i) < c.Weight(weights, j)
+	})
+	return criteriaCopy
+}
+
+func (c *Criteria) Weight(weights Weights, criterionIndex int) Weight {
+	return weights[c.Get(criterionIndex).Identifier()]
+}
+
 func (c Criterion) Multiplier() int8 {
 	if c.Type == Cost {
 		return -1
@@ -44,6 +64,15 @@ func (c *Criteria) Names() *[]string {
 		result[i] = crit.Id
 	}
 	return &result
+}
+
+func (c *Criteria) Add(criterion *Criterion) Criteria {
+	for _, crit := range *c {
+		if crit.Id == criterion.Id {
+			panic(fmt.Errorf("cannot add criterion '%v' - already exists in criteria: %v", *criterion, *c))
+		}
+	}
+	return append(*c, *criterion)
 }
 
 type Weight = float64

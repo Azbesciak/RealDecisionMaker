@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"math"
 	"sort"
 )
@@ -88,11 +89,78 @@ type AlternativeWithCriteria struct {
 }
 
 func (a *AlternativeWithCriteria) CriterionValue(criterion *Criterion) Weight {
-	var value, ok = a.Criteria[criterion.Id]
+	return a.CriterionRawValue(criterion) * Weight(criterion.Multiplier())
+}
+
+func (a *AlternativeWithCriteria) WithCriteriaOnly(criteria *Criteria) *AlternativeWithCriteria {
+	newCriteria := make(Weights, len(*criteria))
+	for _, c := range *criteria {
+		newCriteria[c.Id] = a.CriterionRawValue(&c)
+	}
+	return a.WithCriteriaValues(&newCriteria)
+}
+
+func (a *AlternativeWithCriteria) WithCriteriaValues(criteriaValues *Weights) *AlternativeWithCriteria {
+	return &AlternativeWithCriteria{
+		Id:       a.Id,
+		Criteria: *criteriaValues,
+	}
+}
+
+func (a *AlternativeWithCriteria) CriterionRawValue(criterion *Criterion) Weight {
+	weight, ok := a.Criteria[criterion.Id]
 	if !ok {
 		panic(fmt.Errorf("alternative '%s' does not have value for criterion '%s'", a.Id, criterion.Id))
 	}
-	return value * Weight(criterion.Multiplier())
+	return weight
+}
+
+func SortAlternativesByName(alternatives *[]AlternativeWithCriteria) *[]AlternativeWithCriteria {
+	res := make([]AlternativeWithCriteria, len(*alternatives))
+	copy(res, *alternatives)
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Id < res[j].Id
+	})
+	return &res
+}
+
+func (a *AlternativeWithCriteria) WithCriterion(name string, value Weight) *AlternativeWithCriteria {
+	if _, ok := a.Criteria[name]; ok {
+		panic(fmt.Errorf("cannot add new criterion '%s' because it already exist in alternative %v", name, *a))
+	}
+	criteria := make(Weights, len(a.Criteria)+1)
+	for k, v := range a.Criteria {
+		criteria[k] = v
+	}
+	criteria[name] = value
+	return a.WithCriteriaValues(&criteria)
+}
+
+func CriteriaValuesRange(alternatives *[]AlternativeWithCriteria, criterion *Criterion) *utils.ValueRange {
+	valRange := utils.NewValueRange()
+	for i, a := range *alternatives {
+		value := a.CriterionRawValue(criterion)
+		if i == 0 {
+			valRange.Max = value
+			valRange.Min = value
+		} else {
+			if valRange.Min > value {
+				valRange.Min = value
+			}
+			if valRange.Max < value {
+				valRange.Max = value
+			}
+		}
+	}
+	return valRange
+}
+
+func PreserveCriteriaForAlternatives(alternatives *[]AlternativeWithCriteria, criteria *Criteria) *[]AlternativeWithCriteria {
+	result := make([]AlternativeWithCriteria, len(*alternatives))
+	for i, a := range *alternatives {
+		result[i] = *a.WithCriteriaOnly(criteria)
+	}
+	return &result
 }
 
 type Alternatives []Alternative

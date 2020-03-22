@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/mitchellh/mapstructure"
 	"math"
+	"math/rand"
 	"testing"
 )
 
@@ -42,8 +43,27 @@ func ExpectError(t *testing.T, expectedMessage string) func() {
 	}
 }
 
+func CheckValueRange(t *testing.T, valueRange ValueRange, expMin, expMax float64) {
+	validateValue(t, "min", expMin, valueRange.Min)
+	validateValue(t, "max", expMax, valueRange.Max)
+}
+
+func validateValue(t *testing.T, name string, expected, actual float64) {
+	if !FloatsAreEqual(actual, expected, 1e-6) {
+		t.Errorf("%s value expected %f, got %f", name, expected, actual)
+	}
+}
+
 func IsPositive(value float64) bool {
 	return value > 0
+}
+
+func IsInBounds(value float64, lower float64, upper float64) bool {
+	return value >= lower && value <= upper
+}
+
+func IsProbability(value float64) bool {
+	return IsInBounds(value, 0, 1)
 }
 
 func DecodeToStruct(src, target interface{}) {

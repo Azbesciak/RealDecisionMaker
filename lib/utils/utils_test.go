@@ -14,12 +14,5 @@ func TestValueRange_ScaleEqually(t *testing.T) {
 func checkRange(t *testing.T, min, max, expMin, expMax, scale float64) {
 	valueRange := ValueRange{Min: min, Max: max}
 	res := valueRange.ScaleEqually(scale)
-	validateValue(t, "min", expMin, res.Min)
-	validateValue(t, "max", expMax, res.Max)
-}
-
-func validateValue(t *testing.T, name string, expected, actual float64) {
-	if !FloatsAreEqual(actual, expected, 1e-6) {
-		t.Errorf("%s value expected %f, got %f", name, expected, actual)
-	}
+	CheckValueRange(t, *res, expMin, expMax)
 }
