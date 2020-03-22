@@ -60,12 +60,11 @@ func (dm *DecisionMaker) MakeDecision(preferenceFunctions PreferenceFunctions, a
 	if IsStringBlank(&dm.PreferenceFunction) {
 		panic(fmt.Errorf("preference function must not be empty"))
 	}
-	fun := FetchPreferenceFunction(preferenceFunctions, dm.PreferenceFunction)
-	preferenceFunction := (*fun).(PreferenceFunction)
-	params := dm.prepareParams(&preferenceFunction)
+	preferenceFunction := preferenceFunctions.Fetch(dm.PreferenceFunction)
+	params := dm.prepareParams(preferenceFunction)
 	chosenHeuristics := ChooseHeuristics(availableHeuristics, &dm.Heuristics)
 	processedParams, heuristicProps := dm.processHeuristics(chosenHeuristics, params)
-	res := preferenceFunction.Evaluate(processedParams)
+	res := (*preferenceFunction).Evaluate(processedParams)
 	return &DecisionMakerChoice{*res, *heuristicProps}
 }
 

@@ -88,5 +88,5 @@ func TestFetchPreferenceFunc(t *testing.T) {
 		&OWAPreferenceFunc{},
 	}}
 	defer utils.ExpectError(t, "preference function 'xyz' not found, available are '[electreIII owa]'")()
-	FetchPreferenceFunction(functions, "xyz")
+	functions.Fetch("xyz")
 }
