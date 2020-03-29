@@ -36,25 +36,10 @@ func (h *OwaHeuristic) OnCriteriaRemoved(
 	params model.MethodParameters,
 ) model.MethodParameters {
 	owaPar := params.(owaParams)
-	return owaPar.withoutNWorstWeights(len(*removedCriteria))
+	return *owaPar.withoutNWorstWeights(len(*removedCriteria))
 }
 
 func (h *OwaHeuristic) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
-	weights := *prepareAccumulatedValuesMap(params)
+	weights := *model.PrepareCumulatedWeightsMap(params, model.WeightIdentity)
 	return params.Criteria.SortByWeights(weights)
-}
-
-func prepareAccumulatedValuesMap(params *model.DecisionMakingParams) *model.Weights {
-	weights := make(model.Weights, len(params.Criteria))
-	for _, a := range params.ConsideredAlternatives {
-		for crit, v := range a.Criteria {
-			w, ok := weights[crit]
-			if !ok {
-				weights[crit] = v
-			} else {
-				weights[crit] = w + v
-			}
-		}
-	}
-	return &weights
 }

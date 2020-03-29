@@ -61,3 +61,25 @@ func (pf *HeuristicListeners) Fetch(listenerName string) *HeuristicListener {
 	listener := fun.(HeuristicListener)
 	return &listener
 }
+
+func PrepareCumulatedWeightsMap(
+	params *DecisionMakingParams,
+	mapper func(criterion string, value Weight) Weight,
+) *Weights {
+	weights := make(Weights, len(params.Criteria))
+	for _, a := range params.ConsideredAlternatives {
+		for crit, v := range a.Criteria {
+			w, ok := weights[crit]
+			if !ok {
+				weights[crit] = mapper(crit, v)
+			} else {
+				weights[crit] = w + mapper(crit, v)
+			}
+		}
+	}
+	return &weights
+}
+
+func WeightIdentity(criterion string, value Weight) Weight {
+	return value
+}
