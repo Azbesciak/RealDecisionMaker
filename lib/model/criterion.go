@@ -41,7 +41,7 @@ func (c *Criteria) ShallowCopy() *Criteria {
 func (c *Criteria) SortByWeights(weights Weights) *Criteria {
 	criteriaCopy := c.ShallowCopy()
 	sort.SliceStable(*criteriaCopy, func(i, j int) bool {
-		return c.Weight(weights, i) < c.Weight(weights, j)
+		return criteriaCopy.Weight(weights, i) < criteriaCopy.Weight(weights, j)
 	})
 	return criteriaCopy
 }
