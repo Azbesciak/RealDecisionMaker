@@ -14,6 +14,15 @@ type weightedSumParams struct {
 	weightedCriteria *[]WeightedCriterion
 }
 
+func (p *weightedSumParams) Criterion(criterion string) WeightedCriterion {
+	for _, c := range *p.weightedCriteria {
+		if c.Id == criterion {
+			return c
+		}
+	}
+	panic(fmt.Errorf("criterion '%s' not found in weights %v", criterion, *p.weightedCriteria))
+}
+
 func (w *WeightedSumPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
 	weights := ExtractWeights(dm)
 	weightedCriteria := make([]WeightedCriterion, len(dm.Criteria))

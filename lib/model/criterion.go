@@ -50,6 +50,10 @@ func (c *Criteria) Weight(weights Weights, criterionIndex int) Weight {
 	return weights[c.Get(criterionIndex).Identifier()]
 }
 
+func (c *Criteria) First() Criterion {
+	return (*c)[0]
+}
+
 func (c Criterion) Multiplier() int8 {
 	if c.Type == Cost {
 		return -1
