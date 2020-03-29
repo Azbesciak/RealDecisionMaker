@@ -95,19 +95,20 @@ func (c *CriteriaOmission) generateNewCriterion(
 	valueGenerator utils.ValueGenerator,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
 	newCriterion := model.Criterion{Id: addedCriterionName(), Type: model.Gain}
-	methodParameters := (*listener).OnCriterionAdded(&newCriterion, &resParams.Criteria, resParams.MethodParameters, valueGenerator)
 	valRange := c.getCriterionValueRange(originalParams)
 	addResult := generateCriterionValuesForAlternatives(&newCriterion, valRange, resParams, valueGenerator)
+	addedCriterionParams := (*listener).OnCriterionAdded(&newCriterion, &resParams.Criteria, resParams.MethodParameters, valueGenerator)
+	finalParams := (*listener).Merge(resParams.MethodParameters, addedCriterionParams)
 	newCriteria := resParams.Criteria.Add(&newCriterion)
 	return &model.DecisionMakingParams{
 			NotConsideredAlternatives: *addResult.notConsideredAlternatives,
 			ConsideredAlternatives:    *addResult.consideredAlternatives,
 			Criteria:                  newCriteria,
-			MethodParameters:          methodParameters.MethodParameters,
+			MethodParameters:          finalParams,
 		}, []AddedCriterion{{
 			Type:                newCriterion.Type,
 			AlternativesValues:  addResult.alternativesValues,
-			MethodParameters:    methodParameters.AddedCriterionParams,
+			MethodParameters:    addedCriterionParams,
 			CriterionValueRange: *valRange,
 		}}
 }

@@ -5,10 +5,7 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
-type AddCriterionResult struct {
-	MethodParameters     MethodParameters
-	AddedCriterionParams MethodParameters
-}
+type AddedCriterionParams = MethodParameters
 
 type CriterionAdder interface {
 	OnCriterionAdded(
@@ -16,7 +13,11 @@ type CriterionAdder interface {
 		previousRankedCriteria *Criteria,
 		params MethodParameters,
 		generator utils.ValueGenerator,
-	) *AddCriterionResult
+	) AddedCriterionParams
+}
+
+type MethodParametersMerger interface {
+	Merge(params MethodParameters, addition MethodParameters) MethodParameters
 }
 
 type CriterionRemover interface {
@@ -32,6 +33,7 @@ type HeuristicListener interface {
 	CriterionAdder
 	CriterionRemover
 	CriteriaRanker
+	MethodParametersMerger
 }
 
 type HeuristicListeners struct {

@@ -163,6 +163,12 @@ type dummyMethodParameters struct {
 type dummyHeuListener struct {
 }
 
+func (d *dummyHeuListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
+	prevParams := params.(dummyMethodParameters)
+	addedParams := addition.(dummyMethodParameters)
+	return dummyMethodParameters{criteria: append(prevParams.criteria, addedParams.criteria...)}
+}
+
 func (d *dummyHeuListener) Identifier() string {
 	panic("should not call identifier in test")
 }
@@ -172,12 +178,8 @@ func (d *dummyHeuListener) OnCriterionAdded(
 	previousRankedCriteria *model.Criteria,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
-) *model.AddCriterionResult {
-	prevParams := params.(dummyMethodParameters)
-	return &model.AddCriterionResult{
-		MethodParameters:     dummyMethodParameters{criteria: append(prevParams.criteria, criterion.Id)},
-		AddedCriterionParams: dummyMethodParameters{criteria: []string{criterion.Id}},
-	}
+) model.AddedCriterionParams {
+	return dummyMethodParameters{criteria: []string{criterion.Id}}
 }
 
 func (d *dummyHeuListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {

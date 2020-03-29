@@ -13,18 +13,21 @@ func (h *OwaHeuristic) Identifier() string {
 	return methodName
 }
 
+func (h *OwaHeuristic) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
+	oldParams := params.(owaParams)
+	newParams := addition.(owaParams)
+	return *oldParams.withWeight(newParams.minWeight())
+}
+
 func (h *OwaHeuristic) OnCriterionAdded(
 	criterion *model.Criterion,
 	previousRankedCriteria *model.Criteria,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
-) *model.AddCriterionResult {
+) model.MethodParameters {
 	owaPar := params.(owaParams)
 	newWeight := rand.Float64() * owaPar.minWeight()
-	return &model.AddCriterionResult{
-		MethodParameters:     owaPar.withWeight(newWeight),
-		AddedCriterionParams: owaParams{weights: &[]model.Weight{newWeight}},
-	}
+	return owaParams{weights: &[]model.Weight{newWeight}}
 }
 
 func (h *OwaHeuristic) OnCriteriaRemoved(
