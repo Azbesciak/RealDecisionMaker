@@ -7,21 +7,21 @@ import (
 )
 
 func TestWeightedSumHeuristic_RankCriteriaAscending_EqualWeights(t *testing.T) {
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{}, []model.Weight{}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}}, []model.Weight{1, 1, 1}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 3}}, []model.Weight{1, 1, 1}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 0}}, []model.Weight{1, 1, 1}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": 0}}, []model.Weight{1, 1, 1}), []string{"2", "1", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": -2}}, []model.Weight{1, 1, 1}), []string{"3", "2", "1"})
+	testUtils.TestHeuristicRanking(0, t, heu, dmParams([]model.Weights{}, []model.Weight{}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(1, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}}, []model.Weight{1, 1, 1}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(2, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 3}}, []model.Weight{1, 1, 1}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(3, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 0}}, []model.Weight{1, 1, 1}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(4, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": 0}}, []model.Weight{1, 1, 1}), []string{"2", "1", "3"})
+	testUtils.TestHeuristicRanking(5, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": -2}}, []model.Weight{1, 1, 1}), []string{"3", "2", "1"})
 }
 
 func TestWeightedSumHeuristic_RankCriteriaAscending(t *testing.T) {
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{}, []model.Weight{}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}}, []model.Weight{1, 1, 2}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 3}}, []model.Weight{10, 0.5, 0.1}), []string{"3", "2", "1"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 0}}, []model.Weight{1, 1, .1}), []string{"3", "1", "2"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": 0}}, []model.Weight{10, 1, 1}), []string{"2", "3", "1"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 1000, "3": 3}, {"1": 2, "2": 600, "3": -2}}, []model.Weight{1, 0, 1}), []string{"2", "3", "1"})
+	testUtils.TestHeuristicRanking(0, t, heu, dmParams([]model.Weights{}, []model.Weight{}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(1, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}}, []model.Weight{1, 1, 2}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(2, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 3}}, []model.Weight{10, 0.5, 0.1}), []string{"3", "2", "1"})
+	testUtils.TestHeuristicRanking(3, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 0}}, []model.Weight{1, 1, .1}), []string{"3", "1", "2"})
+	testUtils.TestHeuristicRanking(4, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": 0}}, []model.Weight{10, 1, 1}), []string{"2", "3", "1"})
+	testUtils.TestHeuristicRanking(5, t, heu, dmParams([]model.Weights{{"1": 1, "2": 1000, "3": 3}, {"1": 2, "2": 600, "3": -2}}, []model.Weight{1, 0, 1}), []string{"2", "3", "1"})
 }
 
 var wsTestCriteria = model.Criteria{{Id: "1"}, {Id: "2"}, {Id: "3"}}

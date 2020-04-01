@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestHeuristicRanking(t *testing.T, heu model.HeuristicListener, params *model.DecisionMakingParams, expectedOrder []string) {
+func TestHeuristicRanking(index int, t *testing.T, heu model.HeuristicListener, params *model.DecisionMakingParams, expectedOrder []string) {
 	ranked := heu.RankCriteriaAscending(params)
 	if ranked.Len() != len(expectedOrder) {
 		t.Errorf("lengths differ, expected %d, got %d", len(expectedOrder), ranked.Len())
@@ -15,7 +15,8 @@ func TestHeuristicRanking(t *testing.T, heu model.HeuristicListener, params *mod
 	for i, expectedId := range expectedOrder {
 		actualId := ranked.Get(i).Identifier()
 		if actualId != expectedId {
-			t.Errorf("expected '%s' at %d index, got '%s', alternatives: %v", expectedId, i, actualId, params.ConsideredAlternatives)
+			t.Errorf("%d: expected '%s' at %d index, got '%s', alternatives: %v",
+				index, expectedId, i, actualId, params.ConsideredAlternatives)
 		}
 	}
 }
