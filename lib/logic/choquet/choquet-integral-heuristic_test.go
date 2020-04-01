@@ -1,0 +1,91 @@
+package choquet
+
+import (
+	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
+	"testing"
+)
+
+var wsTestCriteria = model.Criteria{{Id: "1"}, {Id: "2"}, {Id: "3"}}
+var heu = &ChoquetIntegralHeuristic{}
+
+type cw struct {
+	_1, _2, _3, _12, _13, _23, _123 model.Weight
+}
+
+func (w cw) toMap() *model.Weights {
+	return &model.Weights{
+		"1":     w._1,
+		"2":     w._2,
+		"3":     w._3,
+		"1,2":   w._12,
+		"1,3":   w._13,
+		"2,3":   w._23,
+		"1,2,3": w._123,
+	}
+}
+
+type Alts = []model.Weights
+
+func dm(alternativesWeights Alts, combinationsWeights cw) *model.DecisionMakingParams {
+	alternatives := testUtils.WrapAlternatives(alternativesWeights)
+	return &model.DecisionMakingParams{
+		ConsideredAlternatives: alternatives,
+		Criteria:               wsTestCriteria,
+		MethodParameters:       choquetParams{weights: combinationsWeights.toMap()},
+	}
+}
+
+func TestChoquetIntegralHeuristic_RankCriteriaAscending(t *testing.T) {
+	testUtils.TestHeuristicRanking(0, t, heu, dm(
+		Alts{},
+		cw{_1: 0, _2: 0, _3: 0, _12: 0, _13: 0, _23: 0, _123: 0},
+	), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(1, t, heu, dm(
+		Alts{{"1": 1, "2": 2, "3": 3}},
+		cw{_1: 1, _2: 1, _3: 1, _12: 1, _13: 1, _23: 1, _123: 1},
+	), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(2, t, heu, dm(
+		Alts{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 3}},
+		cw{_1: 0.5, _2: 0.5, _3: 0.5, _12: 0.5, _13: 0.2, _23: 0.7, _123: 1},
+	), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(3, t, heu, dm(
+		Alts{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 0}},
+		cw{_1: 0.5, _2: .6, _3: 1, _12: 1, _13: 0.7, _23: .7, _123: 0},
+	), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(4, t, heu, dm(
+		Alts{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": 0}},
+		cw{_1: .45, _2: 0, _3: 1, _12: 0, _13: 0, _23: 0, _123: 0},
+	), []string{"2", "1", "3"})
+	testUtils.TestHeuristicRanking(5, t, heu, dm(
+		Alts{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": -2}},
+		cw{_1: 1, _2: 1, _3: 0, _12: 1, _13: 0, _23: .5, _123: 1},
+	), []string{"3", "2", "1"})
+}
+
+func TestChoquetIntegralHeuristic_RankCriteriaAscending_EqualWeights(t *testing.T) {
+	testUtils.TestHeuristicRanking(0, t, heu, dm(
+		Alts{},
+		cw{_1: 0, _2: 0, _3: 0, _12: 0, _13: 0, _23: 0, _123: 0},
+	), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(1, t, heu, dm(
+		Alts{{"1": 1, "2": 2, "3": 3}},
+		cw{_1: .5, _2: .5, _3: .5, _12: .5, _13: .5, _23: .5, _123: .5},
+	), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(2, t, heu, dm(
+		Alts{{"1": 10, "2": 6, "3": 3}, {"1": 2, "2": 4, "3": 3}},
+		cw{_1: .25, _2: .25, _3: .25, _12: .25, _13: .25, _23: .25, _123: .25},
+	), []string{"3", "2", "1"})
+	testUtils.TestHeuristicRanking(3, t, heu, dm(
+		Alts{{"1": 1, "2": 7, "3": 2}, {"1": 2, "2": 1, "3": 0}},
+		cw{_1: .1, _2: .1, _3: .1, _12: .1, _13: .1, _23: .1, _123: .1},
+	), []string{"3", "1", "2"})
+	testUtils.TestHeuristicRanking(4, t, heu, dm(
+		Alts{{"1": 1, "2": 2, "3": 3}, {"1": 2.1, "2": 0, "3": 0}},
+		cw{_1: .4, _2: .4, _3: .4, _12: .4, _13: .4, _23: .4, _123: .4},
+	), []string{"2", "3", "1"})
+	testUtils.TestHeuristicRanking(5, t, heu, dm(
+		Alts{{"1": 1, "2": 1000, "3": 3}, {"1": 2, "2": 600, "3": -2}},
+		cw{_1: 1, _2: 1, _3: 1, _12: 1, _13: 1, _23: 1, _123: 1},
+	), []string{"3", "1", "2"})
+}

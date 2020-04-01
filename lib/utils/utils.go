@@ -16,6 +16,15 @@ func ContainsString(slice *[]string, value *string) bool {
 	return false
 }
 
+func RemoveSingleStringOccurrence(s []string, r string) []string {
+	for i, v := range s {
+		if v == r {
+			return append(s[:i], s[i+1:]...)
+		}
+	}
+	return s
+}
+
 func ContainsInts(slice *[]int, value *int) bool {
 	for _, v := range *slice {
 		if v == *value {

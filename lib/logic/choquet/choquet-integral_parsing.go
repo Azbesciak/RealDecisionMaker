@@ -42,10 +42,14 @@ func validateAllWeightsAvailable(weights *model.Weights, criteria *model.Criteri
 
 const criteriaSeparator = ","
 
+func containedCriteria(key string) []string {
+	return strings.Split(key, criteriaSeparator)
+}
+
 func prepareWeights(weights *model.Weights, criteria *model.Criteria) *model.Weights {
 	resultWeights := make(model.Weights, len(*weights))
 	for k, v := range *weights {
-		splittedValues := strings.Split(k, criteriaSeparator)
+		splittedValues := containedCriteria(k)
 		identifiable := utils.ToIdentifiable(criteria)
 		if !utils.ContainsAll(identifiable, &splittedValues) {
 			panic(fmt.Errorf("%s: not all weights are present in criteria %s", k, *criteria))

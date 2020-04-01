@@ -41,13 +41,19 @@ func choquetIntegral(
 	weights *model.Weights,
 ) *model.AlternativeResult {
 	sortedCriteria := prepareCriteriaInAscendingOrder(alternative)
-	result := computeTotalWeight(sortedCriteria, weights)
+	result, _ := computeTotalWeight(sortedCriteria, weights)
 	return &model.AlternativeResult{Alternative: *alternative, Value: result}
 }
 
-func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights) model.Weight {
+type weightComponent struct {
+	criteria   []string
+	valueAdded model.Weight
+}
+
+func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights) (model.Weight, []weightComponent) {
 	var result model.Weight = 0
 	var previousWeight model.Weight = 0
+	var components []weightComponent
 	totalElements := len(*sortedCriteria)
 	for i := 0; i < totalElements; {
 		commonWeightCriteria := make([]string, totalElements-i)
@@ -63,11 +69,13 @@ func computeTotalWeight(sortedCriteria *criteriaWeights, weights *model.Weights)
 			}
 		}
 		criteriaUnionWeight := getWeightForCriteriaUnion(&commonWeightCriteria, weights)
-		result += criteriaUnionWeight * (current.weight - previousWeight)
+		valueAdded := criteriaUnionWeight * (current.weight - previousWeight)
+		result += valueAdded
+		components = append(components, weightComponent{commonWeightCriteria, valueAdded})
 		previousWeight = current.weight
 		i = j
 	}
-	return result
+	return result, components
 }
 
 func prepareCriteriaInAscendingOrder(alternative *model.AlternativeWithCriteria) *criteriaWeights {
