@@ -17,10 +17,10 @@ func dmParams(alternativesWeights []model.Weights) *model.DecisionMakingParams {
 }
 
 func TestOwaHeuristic_RankCriteriaAscending(t *testing.T) {
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 3}}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 0}}), []string{"1", "2", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": 0}}), []string{"2", "1", "3"})
-	testUtils.TestHeuristicRanking(t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": -2}}), []string{"3", "2", "1"})
+	testUtils.TestHeuristicRanking(0, t, heu, dmParams([]model.Weights{}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(1, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(2, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 3}}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(3, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 1, "3": 0}}), []string{"1", "2", "3"})
+	testUtils.TestHeuristicRanking(4, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": 0}}), []string{"2", "1", "3"})
+	testUtils.TestHeuristicRanking(5, t, heu, dmParams([]model.Weights{{"1": 1, "2": 2, "3": 3}, {"1": 2, "2": 0, "3": -2}}), []string{"3", "2", "1"})
 }
