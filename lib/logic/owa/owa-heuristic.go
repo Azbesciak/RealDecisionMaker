@@ -3,7 +3,6 @@ package owa
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"math/rand"
 )
 
 type OwaHeuristic struct {
@@ -26,7 +25,7 @@ func (h *OwaHeuristic) OnCriterionAdded(
 	generator utils.ValueGenerator,
 ) model.MethodParameters {
 	owaPar := params.(owaParams)
-	newWeight := rand.Float64() * owaPar.minWeight()
+	newWeight := generator() * owaPar.minWeight()
 	return owaParams{weights: &[]model.Weight{newWeight}}
 }
 
