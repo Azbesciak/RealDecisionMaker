@@ -24,6 +24,18 @@ type DecisionMakingParams struct {
 	MethodParameters          interface{}
 }
 
+func (p *DecisionMakingParams) AllAlternatives() []AlternativeWithCriteria {
+	notConsider := p.NotConsideredAlternatives
+	if notConsider == nil {
+		notConsider = make([]AlternativeWithCriteria, 0)
+	}
+	toConsider := p.ConsideredAlternatives
+	if toConsider == nil {
+		toConsider = make([]AlternativeWithCriteria, 0)
+	}
+	return append(toConsider, notConsider...)
+}
+
 type RawMethodParameters = map[string]interface{}
 type MethodParameters = interface{}
 

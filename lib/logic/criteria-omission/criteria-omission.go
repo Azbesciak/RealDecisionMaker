@@ -133,20 +133,21 @@ func assignNewCriterionToAlternatives(
 	generator utils.ValueGenerator,
 	newCriterion *model.Criterion,
 ) (*[]model.AlternativeWithCriteria, model.Weights) {
-	allAlternatives := append(resParams.NotConsideredAlternatives, resParams.ConsideredAlternatives...)
+	allAlternatives := resParams.AllAlternatives()
 	sortedAlternatives := model.SortAlternativesByName(&allAlternatives)
 	alternativesValues := make(model.Weights, len(*sortedAlternatives))
-	for i, a := range *sortedAlternatives {
-		newValue := generator()
-		alternativesValues[a.Id] = newValue
-		(*sortedAlternatives)[i] = *a.WithCriterion(newCriterion.Id, newValue)
-	}
+	sortedAlternatives = model.AddCriterionToAlternatives(sortedAlternatives, newCriterion,
+		func(a *model.AlternativeWithCriteria) model.Weight {
+			newValue := generator()
+			alternativesValues[a.Id] = newValue
+			return newValue
+		})
 	return sortedAlternatives, alternativesValues
 }
 
 func (c *CriteriaOmission) getCriterionValueRange(originalParams *model.DecisionMakingParams) *utils.ValueRange {
 	weakestCriterion := originalParams.Criteria[0]
-	allAlternatives := append(originalParams.ConsideredAlternatives, originalParams.NotConsideredAlternatives...)
+	allAlternatives := originalParams.AllAlternatives()
 	valRange := model.CriteriaValuesRange(&allAlternatives, &weakestCriterion).ScaleEqually(c.newCriterionValueScalar)
 	return valRange
 }

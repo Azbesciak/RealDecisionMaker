@@ -124,6 +124,19 @@ func SortAlternativesByName(alternatives *[]AlternativeWithCriteria) *[]Alternat
 	return &res
 }
 
+func AddCriterionToAlternatives(
+	alternatives *[]AlternativeWithCriteria,
+	newCriterion *Criterion,
+	valueProvider func(alt *AlternativeWithCriteria) Weight,
+) *[]AlternativeWithCriteria {
+	newAlts := make([]AlternativeWithCriteria, len(*alternatives))
+	for i, a := range *alternatives {
+		newValue := valueProvider(&a)
+		newAlts[i] = *a.WithCriterion(newCriterion.Id, newValue)
+	}
+	return &newAlts
+}
+
 func (a *AlternativeWithCriteria) WithCriterion(name string, value Weight) *AlternativeWithCriteria {
 	if _, ok := a.Criteria[name]; ok {
 		panic(fmt.Errorf("cannot add new criterion '%s' because it already exist in alternative %v", name, *a))
