@@ -31,3 +31,18 @@ func WrapAlternatives(alternativesWeights []model.Weights) []model.AlternativeWi
 	}
 	return alternatives
 }
+
+func CheckCount(t *testing.T, typ string, expected []string, actual *model.Criteria) {
+	expectedLen := len(expected)
+	actualLen := len(*actual)
+	if actualLen != expectedLen {
+		t.Errorf("expected %d criteria to %s, but got %d", expectedLen, typ, actualLen)
+		return
+	}
+	for i, expectedId := range expected {
+		actualId := (*actual).Get(i).Identifier()
+		if actualId != expectedId {
+			t.Errorf("expected '%s' at %d in %s criteria, got '%s'", expectedId, i, typ, actualId)
+		}
+	}
+}

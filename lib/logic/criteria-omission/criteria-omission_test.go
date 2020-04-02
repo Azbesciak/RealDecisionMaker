@@ -2,8 +2,8 @@ package criteria_omission
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"sort"
 	"testing"
 )
 
@@ -21,33 +21,6 @@ func TestCriteriaOmission_splitCriteria(t *testing.T) {
 	validateOmission(t, criteria, 0.5, []string{"1", "2", "3"}, []string{"4", "5", "6"})
 	validateOmission(t, criteria, 0.25, []string{"1"}, []string{"2", "3", "4", "5", "6"})
 	validateOmission(t, criteria, 0.34, []string{"1", "2"}, []string{"3", "4", "5", "6"})
-}
-
-func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omitted []string, kept []string) {
-	division := splitCriteriaToOmit(ratio, criteria)
-	actualOmittedLen := len(*division.omitted)
-	actualKeptLen := len(*division.kept)
-
-	if actualOmittedLen+actualKeptLen != len(*criteria) {
-		t.Errorf("sum of kept (%d) and omitted (%d) criteria is not equal to total len (%d)", actualKeptLen, actualOmittedLen, len(*criteria))
-	}
-	checkCount(t, "omit", omitted, division.omitted)
-	checkCount(t, "keep", kept, division.kept)
-}
-
-func checkCount(t *testing.T, typ string, expected []string, actual *model.Criteria) {
-	expectedLen := len(expected)
-	actualLen := len(*actual)
-	if actualLen != expectedLen {
-		t.Errorf("expected %d criteria to %s, but got %d", expectedLen, typ, actualLen)
-		return
-	}
-	for i, expectedId := range expected {
-		actualId := (*actual).Get(i).Identifier()
-		if actualId != expectedId {
-			t.Errorf("expected '%s' at %d in %s criteria, got '%s'", expectedId, i, typ, actualId)
-		}
-	}
 }
 
 func TestCriteriaOmission_Apply(t *testing.T) {
@@ -74,7 +47,7 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		{Id: "2", Type: model.Gain},
 		{Id: "3", Type: model.Gain},
 	}
-	listener := model.HeuristicListener(&dummyHeuListener{})
+	listener := model.HeuristicListener(&testUtils.DummyHeuListener{})
 	m := model.HeuristicProps(map[string]interface{}{
 		"addCriterionProbability": 0.5,
 		"omittedCriteriaRatio":    0.4,
@@ -84,8 +57,8 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		NotConsideredAlternatives: notConsidered,
 		ConsideredAlternatives:    considered,
 		Criteria:                  criteria,
-		MethodParameters: dummyMethodParameters{
-			criteria: []string{"1", "2", "3"},
+		MethodParameters: testUtils.DummyMethodParameters{
+			Criteria: []string{"1", "2", "3"},
 		},
 	}, &m, &listener)
 	checkProps(t, result.Props, CriteriaOmissionResult{
@@ -94,11 +67,23 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 			{
 				Type:                model.Gain,
 				AlternativesValues:  model.Weights{"a": 0.5, "b": 0.6, "x": 0.7, "y": 0.8},
-				MethodParameters:    dummyMethodParameters{criteria: []string{addedCriterionName()}},
+				MethodParameters:    testUtils.DummyMethodParameters{Criteria: []string{addedCriterionName()}},
 				CriterionValueRange: utils.ValueRange{Min: 0, Max: 1},
 			},
 		},
 	})
+}
+
+func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omitted []string, kept []string) {
+	division := splitCriteriaToOmit(ratio, criteria)
+	actualOmittedLen := len(*division.omitted)
+	actualKeptLen := len(*division.kept)
+
+	if actualOmittedLen+actualKeptLen != len(*criteria) {
+		t.Errorf("sum of kept (%d) and omitted (%d) criteria is not equal to total len (%d)", actualKeptLen, actualOmittedLen, len(*criteria))
+	}
+	testUtils.CheckCount(t, "omit", omitted, division.omitted)
+	testUtils.CheckCount(t, "keep", kept, division.kept)
 }
 
 func checkProps(t *testing.T, actual model.HeuristicProps, expected CriteriaOmissionResult) {
@@ -138,58 +123,20 @@ func checkAlternatives(exp AddedCriterion, act AddedCriterion, t *testing.T) {
 }
 
 func checkMethodParameters(act AddedCriterion, t *testing.T, i int, exp AddedCriterion) {
-	actPar, ok := act.MethodParameters.(dummyMethodParameters)
+	actPar, ok := act.MethodParameters.(testUtils.DummyMethodParameters)
 	if !ok {
-		t.Errorf("expected instance of dummyMethodParameters at criterion %d, got %v", i, act.MethodParameters)
+		t.Errorf("expected instance of testUtils.DummyMethodParameters at criterion %d, got %v", i, act.MethodParameters)
 		return
 	}
-	expPar := exp.MethodParameters.(dummyMethodParameters)
-	if len(actPar.criteria) != len(expPar.criteria) {
-		t.Errorf("expected %d criteria, got %d", len(expPar.criteria), len(actPar.criteria))
+	expPar := exp.MethodParameters.(testUtils.DummyMethodParameters)
+	if len(actPar.Criteria) != len(expPar.Criteria) {
+		t.Errorf("expected %d criteria, got %d", len(expPar.Criteria), len(actPar.Criteria))
 		return
 	}
-	for i, expCr := range expPar.criteria {
-		actCr := actPar.criteria[i]
+	for i, expCr := range expPar.Criteria {
+		actCr := actPar.Criteria[i]
 		if actCr != expCr {
 			t.Errorf("criterion at %d are not equal, expected %s, got %s", i, expCr, actCr)
 		}
 	}
-}
-
-type dummyMethodParameters struct {
-	criteria []string
-}
-
-type dummyHeuListener struct {
-}
-
-func (d *dummyHeuListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
-	prevParams := params.(dummyMethodParameters)
-	addedParams := addition.(dummyMethodParameters)
-	return dummyMethodParameters{criteria: append(prevParams.criteria, addedParams.criteria...)}
-}
-
-func (d *dummyHeuListener) Identifier() string {
-	panic("should not call identifier in test")
-}
-
-func (d *dummyHeuListener) OnCriterionAdded(
-	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
-	params model.MethodParameters,
-	generator utils.ValueGenerator,
-) model.AddedCriterionParams {
-	return dummyMethodParameters{criteria: []string{criterion.Id}}
-}
-
-func (d *dummyHeuListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
-	return dummyMethodParameters{criteria: *leftCriteria.Names()}
-}
-
-func (d *dummyHeuListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
-	criteria := params.Criteria.ShallowCopy()
-	sort.Slice(*criteria, func(i, j int) bool {
-		return (*criteria)[i].Id < (*criteria)[j].Id
-	})
-	return criteria
 }
