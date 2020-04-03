@@ -2,6 +2,7 @@ package testUtils
 
 import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"reflect"
 	"testing"
 )
@@ -66,5 +67,20 @@ func DummyAlternative(id string, value Weight) AlternativeResult {
 			Criteria: nil,
 		},
 		Value: value,
+	}
+}
+
+func ValidateWeights(t *testing.T, name string, expected, actual Weights) {
+	if len(expected) != len(actual) {
+		t.Errorf("%s: expected %d elements, got %d", name, len(expected), len(actual))
+		return
+	}
+	for k, expValue := range expected {
+		actValue, ok := actual[k]
+		if !ok {
+			t.Errorf("%s: no value for key '%s'", name, k)
+		} else if !utils.FloatsAreEqual(expValue, actValue, 1e-6) {
+			t.Errorf("%s: weights differ for %s: exp %f vs act %f", name, k, expValue, actValue)
+		}
 	}
 }

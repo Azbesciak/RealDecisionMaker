@@ -87,8 +87,12 @@ type ValueRange struct {
 	Max float64
 }
 
+func (r *ValueRange) Diff() float64 {
+	return r.Max - r.Min
+}
+
 func (r *ValueRange) ScaleEqually(scale float64) *ValueRange {
-	dif := (r.Max - r.Min) / 2
+	dif := r.Diff() / 2
 	return &ValueRange{
 		Min: r.Min + dif - dif*scale,
 		Max: r.Max - dif + dif*scale,
