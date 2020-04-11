@@ -26,13 +26,7 @@ func TestCriteriaOmission_splitCriteria(t *testing.T) {
 func TestCriteriaOmission_Apply(t *testing.T) {
 	omission := CriteriaOmission{
 		newCriterionValueScalar: 1,
-		generatorSource: func(seed int64) utils.ValueGenerator {
-			counter := 3 // because 0.5 chance for added criterion
-			return func() float64 {
-				counter = (counter + 1) % 10
-				return float64(counter) / 10
-			}
-		},
+		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
 	}
 	notConsidered := []model.AlternativeWithCriteria{
 		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},

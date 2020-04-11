@@ -84,3 +84,13 @@ func ValidateWeights(t *testing.T, name string, expected, actual Weights) {
 		}
 	}
 }
+
+func CyclicRandomGenerator(start, cycle int64) func(seed int64) utils.ValueGenerator {
+	return func(seed int64) utils.ValueGenerator {
+		counter := start
+		return func() float64 {
+			counter = (counter + 1) % cycle
+			return float64(counter) / float64(cycle)
+		}
+	}
+}

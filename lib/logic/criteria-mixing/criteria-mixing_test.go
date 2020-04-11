@@ -3,7 +3,6 @@ package criteria_mixing
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
-	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
 )
 
@@ -15,13 +14,7 @@ func mixValues(v1, v2 float64) float64 {
 
 func TestCriteriaMixing_Apply(t *testing.T) {
 	mixing := CriteriaMixing{
-		generatorSource: func(seed int64) utils.ValueGenerator {
-			counter := 0
-			return func() float64 {
-				counter = (counter + 1) % 10
-				return float64(counter) / 10
-			}
-		},
+		generatorSource: testUtils.CyclicRandomGenerator(0, 10),
 	}
 	notConsidered := []model.AlternativeWithCriteria{
 		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
