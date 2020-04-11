@@ -41,14 +41,15 @@ func TestCriteriaMixing_Apply(t *testing.T) {
 		"mixingRatio": testMixing,
 		"randomSeed":  0,
 	})
-	result := mixing.Apply(&model.DecisionMakingParams{
+	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
 		ConsideredAlternatives:    considered,
 		Criteria:                  criteria,
 		MethodParameters: testUtils.DummyMethodParameters{
 			Criteria: []string{"1", "2", "3"},
 		},
-	}, &m, &listener)
+	}
+	result := mixing.Apply(original, original, &m, &listener)
 	expected := MixedCriterion{
 		Component1: CriterionComponent{
 			Criterion:    "1",

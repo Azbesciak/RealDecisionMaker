@@ -7,13 +7,13 @@ import (
 
 func omitCriteria(
 	parsedProps *CriteriaOmissionParams,
-	params *model.DecisionMakingParams,
+	current *model.DecisionMakingParams,
 	listener *model.HeuristicListener,
 ) (*model.DecisionMakingParams, *model.Criteria) {
-	omissionPartition := splitCriteriaToOmit(parsedProps.OmittedCriteriaRatio, &params.Criteria)
-	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.omitted, omissionPartition.kept, params.MethodParameters)
-	consideredAlternatives := model.PreserveCriteriaForAlternatives(&params.ConsideredAlternatives, omissionPartition.kept)
-	notConsideredAlternatives := model.PreserveCriteriaForAlternatives(&params.NotConsideredAlternatives, omissionPartition.kept)
+	omissionPartition := splitCriteriaToOmit(parsedProps.OmittedCriteriaRatio, &current.Criteria)
+	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.omitted, omissionPartition.kept, current.MethodParameters)
+	consideredAlternatives := model.PreserveCriteriaForAlternatives(&current.ConsideredAlternatives, omissionPartition.kept)
+	notConsideredAlternatives := model.PreserveCriteriaForAlternatives(&current.NotConsideredAlternatives, omissionPartition.kept)
 	return &model.DecisionMakingParams{
 		NotConsideredAlternatives: *notConsideredAlternatives,
 		ConsideredAlternatives:    *consideredAlternatives,

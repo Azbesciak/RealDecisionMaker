@@ -119,17 +119,17 @@ func (dm *DecisionMaker) processHeuristics(
 ) (*DecisionMakingParams, *HeuristicsParams) {
 	heuristicsToProcessCount := len(*heuristics)
 	result := make(HeuristicsParams, heuristicsToProcessCount)
-	tempDM := params
+	current := params
 	if heuristicsToProcessCount == 0 {
-		return tempDM, &result
+		return current, &result
 	}
 	listener := listeners.Fetch(dm.PreferenceFunction)
 	for i, h := range *heuristics {
-		res := (*h.Heuristic).Apply(tempDM, &h.Props.Props, listener)
-		tempDM = res.DMP
+		res := (*h.Heuristic).Apply(params, current, &h.Props.Props, listener)
+		current = res.DMP
 		result[i] = *UpdateHeuristicProps(h.Props, res.Props)
 	}
-	return tempDM, &result
+	return current, &result
 }
 
 func IsStringBlank(str *string) bool {

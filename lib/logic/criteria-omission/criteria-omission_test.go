@@ -53,14 +53,15 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		"omittedCriteriaRatio":    0.4,
 		"randomSeed":              0,
 	})
-	result := omission.Apply(&model.DecisionMakingParams{
+	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
 		ConsideredAlternatives:    considered,
 		Criteria:                  criteria,
 		MethodParameters: testUtils.DummyMethodParameters{
 			Criteria: []string{"1", "2", "3"},
 		},
-	}, &m, &listener)
+	}
+	result := omission.Apply(original, original, &m, &listener)
 	checkProps(t, result.Props, CriteriaOmissionResult{
 		OmittedCriteria: model.Criteria{criteria[0]},
 		AddedCriteria: []AddedCriterion{

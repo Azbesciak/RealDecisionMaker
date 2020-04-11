@@ -29,15 +29,15 @@ func (c *CriteriaOmission) Identifier() string {
 }
 
 func (c *CriteriaOmission) Apply(
-	params *model.DecisionMakingParams,
+	original, current *model.DecisionMakingParams,
 	props *model.HeuristicProps,
 	listener *model.HeuristicListener,
 ) *model.HeuristicResult {
 	parsedProps := *parseProps(props)
 	if parsedProps.OmittedCriteriaRatio == 0 && parsedProps.AddCriterionProbability == 0 {
-		return &model.HeuristicResult{DMP: params, Props: CriteriaOmissionResult{}}
+		return &model.HeuristicResult{DMP: current, Props: CriteriaOmissionResult{}}
 	}
-	paramsWithSortedCriteria := paramsWithSortedCriteria(params, listener)
+	paramsWithSortedCriteria := paramsWithSortedCriteria(original, listener)
 	resParams, omitted := omitCriteria(&parsedProps, paramsWithSortedCriteria, listener)
 	resParams, addedCriterion := c.addCriterion(parsedProps, paramsWithSortedCriteria, resParams, listener)
 	return &model.HeuristicResult{

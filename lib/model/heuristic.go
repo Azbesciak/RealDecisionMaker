@@ -26,9 +26,12 @@ type HeuristicWithProps struct {
 
 type Heuristic interface {
 	utils.Identifiable
-	Apply(params *DecisionMakingParams, props *HeuristicProps, listener *HeuristicListener) *HeuristicResult
+	Apply(
+		original, current *DecisionMakingParams,
+		props *HeuristicProps,
+		listener *HeuristicListener,
+	) *HeuristicResult
 }
-
 type HeuristicResult struct {
 	DMP   *DecisionMakingParams `json:"dm"`
 	Props HeuristicProps        `json:"props"`

@@ -50,26 +50,24 @@ func (c *CriteriaMixing) Identifier() string {
 }
 
 func (c *CriteriaMixing) Apply(
-	params *model.DecisionMakingParams,
+	original, current *model.DecisionMakingParams,
 	props *model.HeuristicProps,
 	listener *model.HeuristicListener,
 ) *model.HeuristicResult {
-	if params.Criteria.Len() < 2 {
-		return &model.HeuristicResult{
-			DMP: params,
-		}
+	if current.Criteria.Len() < 2 {
+		return &model.HeuristicResult{DMP: current}
 	}
 	parsedProps := parseProps(props)
 	generator := c.generatorSource(parsedProps.RandomSeed)
-	c2m := selectCriteriaToMix(params, generator)
-	allAlternatives := params.AllAlternatives()
-	targetValRange := targetValuesRange(&allAlternatives, params, listener)
+	c2m := selectCriteriaToMix(original, generator)
+	allAlternatives := original.AllAlternatives()
+	targetValRange := targetValuesRange(&allAlternatives, original, listener)
 	mixResult := c2m.mix(&allAlternatives, targetValRange, parsedProps)
 	newCriterion := c2m.Criterion()
-	criterionParams := createNewCriterion(listener, params, newCriterion, generator)
-	newMethodParams := (*listener).Merge(params.MethodParameters, criterionParams)
+	criterionParams := createNewCriterion(listener, original, newCriterion, generator)
+	newMethodParams := (*listener).Merge(current.MethodParameters, criterionParams)
 	newAlternatives := updateAlternatives(allAlternatives, newCriterion, mixResult)
-	newParams := updateDMParams(params, newAlternatives, newCriterion, newMethodParams)
+	newParams := updateDMParams(current, newAlternatives, newCriterion, newMethodParams)
 	return &model.HeuristicResult{
 		DMP:   &newParams,
 		Props: prepareMixedCriterion(c2m, mixResult, newCriterion, criterionParams),
