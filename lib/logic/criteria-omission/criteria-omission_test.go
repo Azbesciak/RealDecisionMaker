@@ -9,12 +9,12 @@ import (
 
 func TestCriteriaOmission_splitCriteria(t *testing.T) {
 	criteria := &model.Criteria{
-		model.Criterion{Id: "1"},
-		model.Criterion{Id: "2"},
-		model.Criterion{Id: "3"},
-		model.Criterion{Id: "4"},
-		model.Criterion{Id: "5"},
-		model.Criterion{Id: "6"},
+		{Id: "1"},
+		{Id: "2"},
+		{Id: "3"},
+		{Id: "4"},
+		{Id: "5"},
+		{Id: "6"},
 	}
 	validateOmission(t, criteria, 0, []string{}, []string{"1", "2", "3", "4", "5", "6"})
 	validateOmission(t, criteria, 1, []string{"1", "2", "3", "4", "5", "6"}, []string{})
