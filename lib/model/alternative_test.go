@@ -14,7 +14,7 @@ func TestPreserveCriteriaForAlternatives(t *testing.T) {
 	checkAlternativeHasOnlyCriteria(t, testAlternatives, []string{"1", "4"})
 	checkAlternativeHasOnlyCriteria(t, testAlternatives, []string{"2", "3"})
 	checkAlternativeHasOnlyCriteria(t, testAlternatives, []string{"3"})
-	defer utils.ExpectError(t, "criterion '789' not found for alternative '{1 map[1:10 2:20 3:20 4:5]}'")()
+	defer utils.ExpectError(t, "alternative '1' does not have value for criterion '789'")()
 	checkAlternativeHasOnlyCriteria(t, testAlternatives, []string{"789"})
 }
 
