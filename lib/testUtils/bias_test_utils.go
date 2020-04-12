@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestBiasRanking(index int, t *testing.T, heu model.BiasListener, params *model.DecisionMakingParams, expectedOrder []string) {
-	ranked := heu.RankCriteriaAscending(params)
+func TestBiasRanking(index int, t *testing.T, bias model.BiasListener, params *model.DecisionMakingParams, expectedOrder []string) {
+	ranked := bias.RankCriteriaAscending(params)
 	if ranked.Len() != len(expectedOrder) {
 		t.Errorf("lengths differ, expected %d, got %d", len(expectedOrder), ranked.Len())
 		return

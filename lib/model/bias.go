@@ -39,8 +39,8 @@ type BiasedResult struct {
 
 func AsBiasesMap(h *Biases) *BiasMap {
 	result := make(BiasMap, len(*h))
-	for _, heu := range *h {
-		result[heu.Identifier()] = heu
+	for _, bias := range *h {
+		result[bias.Identifier()] = bias
 	}
 	return &result
 }
@@ -51,7 +51,7 @@ func ChooseBiases(available *BiasMap, choose *BiasesParams) *BiasesWithProps {
 		if props.Disabled {
 			continue
 		}
-		heu, ok := (*available)[props.Name]
+		bias, ok := (*available)[props.Name]
 		if !ok {
 			var keys []string
 			for k := range *available {
@@ -59,7 +59,7 @@ func ChooseBiases(available *BiasMap, choose *BiasesParams) *BiasesWithProps {
 			}
 			panic(fmt.Errorf("bias '%s' not found, available are '%s'", props.Name, keys))
 		}
-		result = append(result, BiasWithProps{Bias: &heu, Props: &props})
+		result = append(result, BiasWithProps{Bias: &bias, Props: &props})
 	}
 	return &result
 }
