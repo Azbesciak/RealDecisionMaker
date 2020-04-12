@@ -5,20 +5,20 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
-type OwaHeuristic struct {
+type OwaBiasListener struct {
 }
 
-func (h *OwaHeuristic) Identifier() string {
+func (h *OwaBiasListener) Identifier() string {
 	return methodName
 }
 
-func (h *OwaHeuristic) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
+func (h *OwaBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldParams := params.(owaParams)
 	newParams := addition.(owaParams)
 	return *oldParams.withWeight(newParams.minWeight())
 }
 
-func (h *OwaHeuristic) OnCriterionAdded(
+func (h *OwaBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
 	previousRankedCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -29,7 +29,7 @@ func (h *OwaHeuristic) OnCriterionAdded(
 	return owaParams{weights: &[]model.Weight{newWeight}}
 }
 
-func (h *OwaHeuristic) OnCriteriaRemoved(
+func (h *OwaBiasListener) OnCriteriaRemoved(
 	removedCriteria *model.Criteria,
 	leftCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -38,7 +38,7 @@ func (h *OwaHeuristic) OnCriteriaRemoved(
 	return *owaPar.withoutNWorstWeights(len(*removedCriteria))
 }
 
-func (h *OwaHeuristic) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (h *OwaBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
 	weights := *model.PrepareCumulatedWeightsMap(params, model.WeightIdentity)
 	return params.Criteria.SortByWeights(weights)
 }

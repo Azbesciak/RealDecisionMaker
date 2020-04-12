@@ -16,7 +16,7 @@ func (c *CriteriaOmission) addCriterion(
 	parsedProps CriteriaOmissionParams,
 	originalParams *model.DecisionMakingParams,
 	resParams *model.DecisionMakingParams,
-	listener *model.HeuristicListener,
+	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
 	if parsedProps.AddCriterionProbability > 0 {
 		generator := c.generatorSource(parsedProps.RandomSeed)
@@ -32,7 +32,7 @@ func addedCriterionName() string {
 }
 
 func (c *CriteriaOmission) generateNewCriterion(
-	listener *model.HeuristicListener,
+	listener *model.BiasListener,
 	originalParams *model.DecisionMakingParams,
 	resParams *model.DecisionMakingParams,
 	valueGenerator utils.ValueGenerator,

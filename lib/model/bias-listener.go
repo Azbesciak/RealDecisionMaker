@@ -28,7 +28,7 @@ type CriteriaRanker interface {
 	RankCriteriaAscending(params *DecisionMakingParams) *Criteria
 }
 
-type HeuristicListener interface {
+type BiasListener interface {
 	utils.Identifiable
 	CriterionAdder
 	CriterionRemover
@@ -36,19 +36,19 @@ type HeuristicListener interface {
 	MethodParametersMerger
 }
 
-type HeuristicListeners struct {
-	Listeners []HeuristicListener
+type BiasListeners struct {
+	Listeners []BiasListener
 }
 
-func (pf *HeuristicListeners) Get(index int) utils.Identifiable {
+func (pf *BiasListeners) Get(index int) utils.Identifiable {
 	return pf.Listeners[index]
 }
 
-func (pf *HeuristicListeners) Len() int {
+func (pf *BiasListeners) Len() int {
 	return len(pf.Listeners)
 }
 
-func (pf *HeuristicListeners) Fetch(listenerName string) *HeuristicListener {
+func (pf *BiasListeners) Fetch(listenerName string) *BiasListener {
 	preferenceFunMap := utils.AsMap(pf)
 	fun, ok := (*preferenceFunMap)[listenerName]
 	if !ok {
@@ -56,9 +56,9 @@ func (pf *HeuristicListeners) Fetch(listenerName string) *HeuristicListener {
 		for _, k := range pf.Listeners {
 			keys = append(keys, k.Identifier())
 		}
-		panic(fmt.Errorf("heuristic listener for '%s' not found, available are '%s'", listenerName, keys))
+		panic(fmt.Errorf("bias listener for '%s' not found, available are '%s'", listenerName, keys))
 	}
-	listener := fun.(HeuristicListener)
+	listener := fun.(BiasListener)
 	return &listener
 }
 

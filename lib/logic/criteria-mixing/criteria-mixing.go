@@ -51,11 +51,11 @@ func (c *CriteriaMixing) Identifier() string {
 
 func (c *CriteriaMixing) Apply(
 	original, current *model.DecisionMakingParams,
-	props *model.HeuristicProps,
-	listener *model.HeuristicListener,
-) *model.HeuristicResult {
+	props *model.BiasProps,
+	listener *model.BiasListener,
+) *model.BiasedResult {
 	if current.Criteria.Len() < 2 {
-		return &model.HeuristicResult{DMP: current}
+		return &model.BiasedResult{DMP: current}
 	}
 	parsedProps := parseProps(props)
 	generator := c.generatorSource(parsedProps.RandomSeed)
@@ -68,7 +68,7 @@ func (c *CriteriaMixing) Apply(
 	newMethodParams := (*listener).Merge(current.MethodParameters, criterionParams)
 	newAlternatives := updateAlternatives(allAlternatives, newCriterion, mixResult)
 	newParams := updateDMParams(current, newAlternatives, newCriterion, newMethodParams)
-	return &model.HeuristicResult{
+	return &model.BiasedResult{
 		DMP:   &newParams,
 		Props: prepareMixedCriterion(c2m, mixResult, newCriterion, criterionParams),
 	}
@@ -95,7 +95,7 @@ func updateAlternatives(allAlternatives []model.AlternativeWithCriteria, newCrit
 }
 
 func createNewCriterion(
-	listener *model.HeuristicListener,
+	listener *model.BiasListener,
 	params *model.DecisionMakingParams,
 	newCriterion model.Criterion,
 	generator utils.ValueGenerator,
@@ -143,7 +143,7 @@ type criteriaToMix struct {
 func targetValuesRange(
 	alternatives *[]model.AlternativeWithCriteria,
 	params *model.DecisionMakingParams,
-	listener *model.HeuristicListener,
+	listener *model.BiasListener,
 ) *utils.ValueRange {
 	ranked := (*listener).RankCriteriaAscending(params)
 	weakestCriterion := (*ranked)[0]
@@ -211,7 +211,7 @@ func rescaleCriterion(c *model.Criterion, alternatives *[]model.AlternativeWithC
 	return values
 }
 
-func parseProps(props *model.HeuristicProps) *CriteriaMixingParams {
+func parseProps(props *model.BiasProps) *CriteriaMixingParams {
 	parsedProps := CriteriaMixingParams{}
 	utils.DecodeToStruct(*props, &parsedProps)
 	parsedProps.validate()

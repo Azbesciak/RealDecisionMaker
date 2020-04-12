@@ -10,20 +10,20 @@ type DummyMethodParameters struct {
 	Criteria []string
 }
 
-type DummyHeuListener struct {
+type DummyBiasListener struct {
 }
 
-func (d *DummyHeuListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
+func (d *DummyBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	prevParams := params.(DummyMethodParameters)
 	addedParams := addition.(DummyMethodParameters)
 	return DummyMethodParameters{Criteria: append(prevParams.Criteria, addedParams.Criteria...)}
 }
 
-func (d *DummyHeuListener) Identifier() string {
+func (d *DummyBiasListener) Identifier() string {
 	panic("should not call identifier in test")
 }
 
-func (d *DummyHeuListener) OnCriterionAdded(
+func (d *DummyBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
 	previousRankedCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -32,11 +32,11 @@ func (d *DummyHeuListener) OnCriterionAdded(
 	return DummyMethodParameters{Criteria: []string{criterion.Id}}
 }
 
-func (d *DummyHeuListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
+func (d *DummyBiasListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
 	return DummyMethodParameters{Criteria: *leftCriteria.Names()}
 }
 
-func (d *DummyHeuListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (d *DummyBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
 	criteria := params.Criteria.ShallowCopy()
 	sort.Slice(*criteria, func(i, j int) bool {
 		return (*criteria)[i].Id < (*criteria)[j].Id

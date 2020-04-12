@@ -28,8 +28,8 @@ func TestFatigue_Apply(t *testing.T) {
 		{Id: "2", Type: model.Gain},
 		{Id: "3", Type: model.Gain},
 	}
-	listener := model.HeuristicListener(&testUtils.DummyHeuListener{})
-	m := model.HeuristicProps(map[string]interface{}{
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
+	m := model.BiasProps(map[string]interface{}{
 		"function": FatConstFunc,
 		"params": map[string]interface{}{
 			"value": 0.5,
@@ -57,7 +57,7 @@ func TestFatigue_Apply(t *testing.T) {
 	checkProps(t, expected, result.Props)
 }
 
-func checkProps(t *testing.T, expected FatigueResult, actual model.HeuristicProps) {
+func checkProps(t *testing.T, expected FatigueResult, actual model.BiasProps) {
 	v, ok := actual.(FatigueResult)
 	if !ok {
 		t.Errorf("expected instance of FatigueResult")

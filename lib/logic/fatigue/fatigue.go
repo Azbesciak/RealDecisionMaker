@@ -41,9 +41,9 @@ func (f *Fatigue) Identifier() string {
 
 func (f *Fatigue) Apply(
 	original, current *model.DecisionMakingParams,
-	props *model.HeuristicProps,
-	listener *model.HeuristicListener,
-) *model.HeuristicResult {
+	props *model.BiasProps,
+	listener *model.BiasListener,
+) *model.BiasedResult {
 	parsedProps := parseProps(props)
 	fun := f.getFatigueFunction(parsedProps)
 	funParams := parseFatigueFuncParams(fun, parsedProps)
@@ -67,8 +67,8 @@ func prepareResult(
 	consideredAlts []model.AlternativeWithCriteria,
 	current *model.DecisionMakingParams,
 	fatigueRatio float64,
-) *model.HeuristicResult {
-	return &model.HeuristicResult{
+) *model.BiasedResult {
+	return &model.BiasedResult{
 		DMP: &model.DecisionMakingParams{
 			NotConsideredAlternatives: notConsideredAlts,
 			ConsideredAlternatives:    consideredAlts,
@@ -112,7 +112,7 @@ func parseFatigueFuncParams(fun FatigueFunction, parsedProps *FatigueParams) Fat
 	return funParams
 }
 
-func parseProps(props *model.HeuristicProps) *FatigueParams {
+func parseProps(props *model.BiasProps) *FatigueParams {
 	parsedProps := FatigueParams{}
 	utils.DecodeToStruct(*props, &parsedProps)
 	return &parsedProps

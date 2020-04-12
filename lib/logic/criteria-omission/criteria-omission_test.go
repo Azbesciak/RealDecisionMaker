@@ -41,8 +41,8 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		{Id: "2", Type: model.Gain},
 		{Id: "3", Type: model.Gain},
 	}
-	listener := model.HeuristicListener(&testUtils.DummyHeuListener{})
-	m := model.HeuristicProps(map[string]interface{}{
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
+	m := model.BiasProps(map[string]interface{}{
 		"addCriterionProbability": 0.5,
 		"omittedCriteriaRatio":    0.4,
 		"randomSeed":              0,
@@ -81,7 +81,7 @@ func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omi
 	testUtils.CheckCount(t, "keep", kept, division.kept)
 }
 
-func checkProps(t *testing.T, actual model.HeuristicProps, expected CriteriaOmissionResult) {
+func checkProps(t *testing.T, actual model.BiasProps, expected CriteriaOmissionResult) {
 	r, ok := actual.(CriteriaOmissionResult)
 	if !ok {
 		t.Errorf("expected instance of CriteriaOmissionResult")

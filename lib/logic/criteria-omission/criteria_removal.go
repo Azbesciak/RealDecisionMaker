@@ -8,7 +8,7 @@ import (
 func omitCriteria(
 	parsedProps *CriteriaOmissionParams,
 	current *model.DecisionMakingParams,
-	listener *model.HeuristicListener,
+	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, *model.Criteria) {
 	omissionPartition := splitCriteriaToOmit(parsedProps.OmittedCriteriaRatio, &current.Criteria)
 	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.omitted, omissionPartition.kept, current.MethodParameters)

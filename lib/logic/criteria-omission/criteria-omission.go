@@ -30,17 +30,17 @@ func (c *CriteriaOmission) Identifier() string {
 
 func (c *CriteriaOmission) Apply(
 	original, current *model.DecisionMakingParams,
-	props *model.HeuristicProps,
-	listener *model.HeuristicListener,
-) *model.HeuristicResult {
+	props *model.BiasProps,
+	listener *model.BiasListener,
+) *model.BiasedResult {
 	parsedProps := *parseProps(props)
 	if parsedProps.OmittedCriteriaRatio == 0 && parsedProps.AddCriterionProbability == 0 {
-		return &model.HeuristicResult{DMP: current, Props: CriteriaOmissionResult{}}
+		return &model.BiasedResult{DMP: current, Props: CriteriaOmissionResult{}}
 	}
 	paramsWithSortedCriteria := paramsWithSortedCriteria(original, listener)
 	resParams, omitted := omitCriteria(&parsedProps, paramsWithSortedCriteria, listener)
 	resParams, addedCriterion := c.addCriterion(parsedProps, paramsWithSortedCriteria, resParams, listener)
-	return &model.HeuristicResult{
+	return &model.BiasedResult{
 		DMP: resParams,
 		Props: CriteriaOmissionResult{
 			OmittedCriteria: *omitted,
@@ -51,7 +51,7 @@ func (c *CriteriaOmission) Apply(
 
 func paramsWithSortedCriteria(
 	params *model.DecisionMakingParams,
-	listener *model.HeuristicListener,
+	listener *model.BiasListener,
 ) *model.DecisionMakingParams {
 	return &model.DecisionMakingParams{
 		NotConsideredAlternatives: params.NotConsideredAlternatives,
@@ -61,7 +61,7 @@ func paramsWithSortedCriteria(
 	}
 }
 
-func parseProps(props *model.HeuristicProps) *CriteriaOmissionParams {
+func parseProps(props *model.BiasProps) *CriteriaOmissionParams {
 	parsedProps := CriteriaOmissionParams{}
 	utils.DecodeToStruct(*props, &parsedProps)
 	parsedProps.validate()

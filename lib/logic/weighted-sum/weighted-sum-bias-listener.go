@@ -5,21 +5,21 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
-type WeightedSumHeuristic struct {
+type WeightedSumBiasListener struct {
 }
 
-func (w *WeightedSumHeuristic) Identifier() string {
+func (w *WeightedSumBiasListener) Identifier() string {
 	return methodName
 }
 
-func (w *WeightedSumHeuristic) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
+func (w *WeightedSumBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldWeights := *params.(weightedSumParams).weightedCriteria
 	addedWeights := *addition.(weightedSumParams).weightedCriteria
 	merged := append(oldWeights, addedWeights...)
 	return weightedSumParams{weightedCriteria: &merged}
 }
 
-func (w *WeightedSumHeuristic) OnCriterionAdded(
+func (w *WeightedSumBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
 	previousRankedCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -34,7 +34,7 @@ func (w *WeightedSumHeuristic) OnCriterionAdded(
 	return weightedSumParams{weightedCriteria: &newCriterionWeight}
 }
 
-func (w *WeightedSumHeuristic) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
+func (w *WeightedSumBiasListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
 	wParams := params.(weightedSumParams)
 	result := make([]model.WeightedCriterion, len(*leftCriteria))
 	for i, c := range *leftCriteria {
@@ -43,7 +43,7 @@ func (w *WeightedSumHeuristic) OnCriteriaRemoved(removedCriteria *model.Criteria
 	return weightedSumParams{weightedCriteria: &result}
 }
 
-func (w *WeightedSumHeuristic) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (w *WeightedSumBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
 	wParams := params.MethodParameters.(weightedSumParams)
 	weights := model.PrepareCumulatedWeightsMap(params, func(criterion string, value model.Weight) model.Weight {
 		cryt := wParams.Criterion(criterion)

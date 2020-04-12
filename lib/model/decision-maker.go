@@ -10,7 +10,7 @@ import (
 
 type DecisionMaker struct {
 	PreferenceFunction string                    `json:"preferenceFunction"`
-	Heuristics         HeuristicsParams          `json:"heuristics"`
+	Biases             BiasesParams              `json:"biases"`
 	KnownAlternatives  []AlternativeWithCriteria `json:"knownAlternatives"`
 	ChoseToMake        []Alternative             `json:"choseToMake"`
 	Criteria           Criteria                  `json:"criteria"`
@@ -73,24 +73,24 @@ func FetchAlternatives(a *[]AlternativeWithCriteria, ids *[]Alternative) *[]Alte
 }
 
 type DecisionMakerChoice struct {
-	Result     AlternativesRanking `json:"result"`
-	Heuristics HeuristicsParams    `json:"heuristics"`
+	Result AlternativesRanking `json:"result"`
+	Biases BiasesParams        `json:"biases"`
 }
 
 func (dm *DecisionMaker) MakeDecision(
 	preferenceFunctions PreferenceFunctions,
-	heuristicListeners HeuristicListeners,
-	availableHeuristics *HeuristicsMap,
+	biasListeners BiasListeners,
+	availableBiases *BiasMap,
 ) *DecisionMakerChoice {
 	if IsStringBlank(&dm.PreferenceFunction) {
 		panic(fmt.Errorf("preference function must not be empty"))
 	}
 	preferenceFunction := preferenceFunctions.Fetch(dm.PreferenceFunction)
 	params := dm.prepareParams(preferenceFunction)
-	chosenHeuristics := ChooseHeuristics(availableHeuristics, &dm.Heuristics)
-	processedParams, heuristicProps := dm.processHeuristics(chosenHeuristics, params, &heuristicListeners)
+	chosenBiases := ChooseBiases(availableBiases, &dm.Biases)
+	processedParams, biasesProps := dm.processBiases(chosenBiases, params, &biasListeners)
 	res := (*preferenceFunction).Evaluate(processedParams)
-	return &DecisionMakerChoice{*res, *heuristicProps}
+	return &DecisionMakerChoice{*res, *biasesProps}
 }
 
 func (dm *DecisionMaker) prepareParams(preferenceFunction *PreferenceFunction) *DecisionMakingParams {
@@ -112,22 +112,22 @@ func (dm *DecisionMaker) NotConsideredAlternatives() *[]AlternativeWithCriteria 
 	return &result
 }
 
-func (dm *DecisionMaker) processHeuristics(
-	heuristics *HeuristicsWithProps,
+func (dm *DecisionMaker) processBiases(
+	biases *BiasesWithProps,
 	params *DecisionMakingParams,
-	listeners *HeuristicListeners,
-) (*DecisionMakingParams, *HeuristicsParams) {
-	heuristicsToProcessCount := len(*heuristics)
-	result := make(HeuristicsParams, heuristicsToProcessCount)
+	listeners *BiasListeners,
+) (*DecisionMakingParams, *BiasesParams) {
+	biasesToProcessCount := len(*biases)
+	result := make(BiasesParams, biasesToProcessCount)
 	current := params
-	if heuristicsToProcessCount == 0 {
+	if biasesToProcessCount == 0 {
 		return current, &result
 	}
 	listener := listeners.Fetch(dm.PreferenceFunction)
-	for i, h := range *heuristics {
-		res := (*h.Heuristic).Apply(params, current, &h.Props.Props, listener)
+	for i, h := range *biases {
+		res := (*h.Bias).Apply(params, current, &h.Props.Props, listener)
 		current = res.DMP
-		result[i] = *UpdateHeuristicProps(h.Props, res.Props)
+		result[i] = *UpdateBiasesProps(h.Props, res.Props)
 	}
 	return current, &result
 }

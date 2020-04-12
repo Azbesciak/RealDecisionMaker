@@ -6,14 +6,14 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
-type ElectreIIIHeuristic struct {
+type ElectreIIIBiasLIstener struct {
 }
 
-func (e *ElectreIIIHeuristic) Identifier() string {
+func (e *ElectreIIIBiasLIstener) Identifier() string {
 	return methodName
 }
 
-func (e *ElectreIIIHeuristic) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
+func (e *ElectreIIIBiasLIstener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldEleParams := params.(electreIIIParams)
 	newEleParams := addition.(electreIIIParams)
 	newCriteria := make(ElectreCriteria, len(*oldEleParams.criteria)+len(*newEleParams.criteria))
@@ -30,7 +30,7 @@ func (e *ElectreIIIHeuristic) Merge(params model.MethodParameters, addition mode
 	return electreIIIParams{criteria: &newCriteria, distillationFun: oldEleParams.distillationFun}
 }
 
-func (e *ElectreIIIHeuristic) OnCriterionAdded(
+func (e *ElectreIIIBiasLIstener) OnCriterionAdded(
 	criterion *model.Criterion,
 	previousRankedCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -48,7 +48,7 @@ func (e *ElectreIIIHeuristic) OnCriterionAdded(
 	}}
 }
 
-func (e *ElectreIIIHeuristic) OnCriteriaRemoved(
+func (e *ElectreIIIBiasLIstener) OnCriteriaRemoved(
 	removedCriteria *model.Criteria,
 	leftCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -65,7 +65,7 @@ func (e *ElectreIIIHeuristic) OnCriteriaRemoved(
 	return electreIIIParams{criteria: &resCriteria, distillationFun: eleParams.distillationFun}
 }
 
-func (e *ElectreIIIHeuristic) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (e *ElectreIIIBiasLIstener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
 	eleParams := params.MethodParameters.(electreIIIParams)
 	weights := make(model.Weights, len(*eleParams.criteria))
 	for k, v := range *eleParams.criteria {

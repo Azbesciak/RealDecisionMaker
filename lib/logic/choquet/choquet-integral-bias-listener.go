@@ -6,14 +6,14 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
-type ChoquetIntegralHeuristic struct {
+type ChoquetIntegralBiasListener struct {
 }
 
-func (c *ChoquetIntegralHeuristic) Identifier() string {
+func (c *ChoquetIntegralBiasListener) Identifier() string {
 	return methodName
 }
 
-func (c *ChoquetIntegralHeuristic) OnCriterionAdded(
+func (c *ChoquetIntegralBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
 	previousRankedCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -40,7 +40,7 @@ func (c *ChoquetIntegralHeuristic) OnCriterionAdded(
 	return choquetParams{weights: &newWeights}
 }
 
-func (c *ChoquetIntegralHeuristic) OnCriteriaRemoved(
+func (c *ChoquetIntegralBiasListener) OnCriteriaRemoved(
 	removedCriteria *model.Criteria,
 	leftCriteria *model.Criteria,
 	params model.MethodParameters,
@@ -60,7 +60,7 @@ weightSearch:
 	return choquetParams{weights: &filteredWeights}
 }
 
-func (c *ChoquetIntegralHeuristic) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (c *ChoquetIntegralBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
 	criteriaWeights := decomposeWeights(params)
 	return params.Criteria.SortByWeights(*criteriaWeights)
 }
@@ -88,7 +88,7 @@ func decomposeWeights(params *model.DecisionMakingParams) *model.Weights {
 	return &weights
 }
 
-func (c *ChoquetIntegralHeuristic) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
+func (c *ChoquetIntegralBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldWeights := *params.(choquetParams).weights
 	addedWeights := *addition.(choquetParams).weights
 	result := make(model.Weights, len(oldWeights)+len(addedWeights))

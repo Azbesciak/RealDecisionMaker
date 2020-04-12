@@ -29,8 +29,8 @@ func TestCriteriaMixing_Apply(t *testing.T) {
 		{Id: "2", Type: model.Gain},
 		{Id: "3", Type: model.Gain},
 	}
-	listener := model.HeuristicListener(&testUtils.DummyHeuListener{})
-	m := model.HeuristicProps(map[string]interface{}{
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
+	m := model.BiasProps(map[string]interface{}{
 		"mixingRatio": testMixing,
 		"randomSeed":  0,
 	})
@@ -64,7 +64,7 @@ func TestCriteriaMixing_Apply(t *testing.T) {
 	checkProps(t, expected, result.Props)
 }
 
-func checkProps(t *testing.T, expected MixedCriterion, actual model.HeuristicProps) {
+func checkProps(t *testing.T, expected MixedCriterion, actual model.BiasProps) {
 	v, ok := actual.(MixedCriterion)
 	if !ok {
 		t.Errorf("expected instance of MixedCriterion")
