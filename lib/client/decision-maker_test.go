@@ -1,9 +1,9 @@
 package client
 
 import (
-	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/electreIII"
-	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/owa"
-	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/weighted-sum"
+	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/preference-func/electreIII"
+	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/preference-func/owa"
+	. "github.com/Azbesciak/RealDecisionMaker/lib/logic/preference-func/weighted-sum"
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"reflect"
