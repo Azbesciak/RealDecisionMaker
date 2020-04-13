@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"sort"
+	"strings"
 )
 
 //go:generate easytags $GOFILE json:camel
@@ -47,7 +48,29 @@ func (c *Criteria) SortByWeights(weights Weights) *Criteria {
 }
 
 func (c *Criteria) Weight(weights Weights, criterionIndex int) Weight {
-	return weights[c.Get(criterionIndex).Identifier()]
+	return c.FindWeight(&weights, &(*c)[criterionIndex])
+}
+
+type namedWeight struct {
+	name   string
+	weight Weight
+}
+
+func (c *Criteria) FindWeight(weights *Weights, criterion *Criterion) Weight {
+	if v, ok := (*weights)[criterion.Id]; !ok {
+		criteria := make([]namedWeight, len(*c))
+		i := 0
+		for crit, value := range *weights {
+			criteria[i] = namedWeight{crit, value}
+			i++
+		}
+		sort.SliceStable(criteria, func(i, j int) bool {
+			return strings.Compare(criteria[i].name, criteria[j].name) < 0
+		})
+		panic(fmt.Errorf("weight for criterion '%s' not found in criteria %v", criterion.Id, criteria))
+	} else {
+		return v
+	}
 }
 
 func (c *Criteria) First() Criterion {

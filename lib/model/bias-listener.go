@@ -67,6 +67,9 @@ func PrepareCumulatedWeightsMap(
 	mapper func(criterion string, value Weight) Weight,
 ) *Weights {
 	weights := make(Weights, len(params.Criteria))
+	for _, c := range params.Criteria {
+		weights[c.Id] = 0
+	}
 	for _, a := range params.ConsideredAlternatives {
 		for crit, v := range a.Criteria {
 			w, ok := weights[crit]

@@ -27,10 +27,7 @@ func (w *WeightedSumPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
 	weights := ExtractWeights(dm)
 	weightedCriteria := make([]WeightedCriterion, len(dm.Criteria))
 	for i, c := range dm.Criteria {
-		value, ok := weights[c.Id]
-		if !ok {
-			panic(fmt.Errorf("value for criterion '%s' not found in weights '%v'", c.Id, weights))
-		}
+		value := dm.Criteria.FindWeight(&weights, &c)
 		weightedCriteria[i] = WeightedCriterion{
 			Criterion: c,
 			Weight:    value,
