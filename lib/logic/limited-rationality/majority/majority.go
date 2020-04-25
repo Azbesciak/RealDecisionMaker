@@ -15,9 +15,9 @@ const eps = 1e-6
 const methodName = "majorityHeuristic"
 
 type MajorityHeuristicParams struct {
-	Weights       model.Weights     `json:"weights"`
-	CurrentChoice model.Alternative `json:"currentChoice"`
-	RandomSeed    int64             `json:"randomSeed"`
+	weights       model.Weights
+	currentChoice model.Alternative
+	randomSeed    int64
 }
 
 func (m *Majority) Identifier() string {
@@ -28,11 +28,11 @@ func (m *Majority) MethodParameters() interface{} {
 	return model.WeightsParamOnly()
 }
 
-func (m *Majority) Evaluate(dm *model.DecisionMaker) *model.AlternativesRanking {
-	params := m.parseParams(dm)
-	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.Weights)
-	generator := m.generator(params.RandomSeed)
-	considered := *dm.AlternativesToConsider()
+func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesRanking {
+	params := dm.MethodParameters.(MajorityHeuristicParams)
+	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.weights)
+	generator := m.generator(params.randomSeed)
+	considered := dm.ConsideredAlternatives
 	current, considered := fetchInitialAlternative(dm, params, generator, considered)
 	var sameBuffer []model.AlternativeResult
 	var worseThanCurrent [][]model.AlternativeResult
@@ -121,11 +121,12 @@ func compare(criteriaWithWeights *[]model.WeightedCriterion, a1, a2 *model.Alter
 }
 
 func fetchInitialAlternative(
-	dm *model.DecisionMaker, params MajorityHeuristicParams,
+	dm *model.DecisionMakingParams, params MajorityHeuristicParams,
 	generator utils.ValueGenerator, alternatives []model.AlternativeWithCriteria,
 ) (model.AlternativeWithCriteria, []model.AlternativeWithCriteria) {
-	if len(params.CurrentChoice) > 0 {
-		alt := dm.Alternative(params.CurrentChoice)
+	if len(params.currentChoice) > 0 {
+		allAlternatives := dm.AllAlternatives()
+		alt := model.FetchAlternative(&allAlternatives, params.currentChoice)
 		return alt, model.RemoveAlternative(alternatives, alt)
 	} else {
 		return removeRandomAlternative(generator, alternatives)
@@ -138,7 +139,7 @@ func removeRandomAlternative(generator utils.ValueGenerator, alternatives []mode
 	return alternative, model.RemoveAlternativeAt(alternatives, index)
 }
 
-func (m *Majority) parseParams(dm *model.DecisionMaker) MajorityHeuristicParams {
+func (m *Majority) ParseParams(dm *model.DecisionMaker) interface{} {
 	var params MajorityHeuristicParams
 	utils.DecodeToStruct(dm.MethodParameters, &params)
 	return params

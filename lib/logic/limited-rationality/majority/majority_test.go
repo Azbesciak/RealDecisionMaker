@@ -52,17 +52,16 @@ var cur = model.AlternativeWithCriteria{
 }
 
 func TestMajority_Evaluate(t *testing.T) {
-	dm := model.DecisionMaker{
-		PreferenceFunction: methodName,
-		Biases:             nil,
-		KnownAlternatives:  []model.AlternativeWithCriteria{cur, a4, a1, a2, a3},
-		ChoseToMake:        []string{"a", "b", "c"},
-		Criteria:           criteria,
-		MethodParameters: map[string]interface{}{
-			"weights": map[string]float64{
+	dm := model.DecisionMakingParams{
+		ConsideredAlternatives:    []model.AlternativeWithCriteria{a1, a2, a3},
+		NotConsideredAlternatives: []model.AlternativeWithCriteria{a4, cur},
+		Criteria:                  criteria,
+		MethodParameters: MajorityHeuristicParams{
+			weights: map[string]float64{
 				"1": 1, "2": 2, "3": 1,
 			},
-			"currentChoice": "cur",
+			currentChoice: "cur",
+			randomSeed:    0,
 		},
 	}
 	actual := _majority.Evaluate(&dm)
