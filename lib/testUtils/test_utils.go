@@ -7,15 +7,20 @@ import (
 	"testing"
 )
 
-func CompareSize(expectedRanking, ranking *AlternativesRanking, t *testing.T) {
+func compareSize(expectedRanking, ranking *AlternativesRanking, t *testing.T) bool {
 	expectedRankingSize := len(*expectedRanking)
 	receivedRankingSize := len(*ranking)
 	if receivedRankingSize != expectedRankingSize {
 		t.Errorf("Expected ranking of length %d , got %d", expectedRankingSize, receivedRankingSize)
+		return false
 	}
+	return true
 }
 
 func CompareRankings(expected, received *AlternativesRanking, t *testing.T) {
+	if !compareSize(expected, received, t) {
+		return
+	}
 	for i, e := range *expected {
 		rec := (*received)[i]
 		if e.Alternative.Id != rec.Alternative.Id {

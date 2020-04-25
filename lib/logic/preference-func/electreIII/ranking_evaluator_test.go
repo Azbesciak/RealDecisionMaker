@@ -25,7 +25,6 @@ func TestEvaluateRanking_PowerStation(t *testing.T) {
 		DummyRankingEntry(altsMap, "AUT"),
 		DummyRankingEntry(altsMap, "FRA", "BEL", "AUT"),
 	}
-	CompareSize(&expectedRanking, ranking, t)
 	CompareRankings(&expectedRanking, ranking, t)
 }
 
@@ -48,6 +47,5 @@ func TestEvaluateRanking_Example(t *testing.T) {
 		DummyRankingEntry(altsMap, "4", "3", "5"),
 		DummyRankingEntry(altsMap, "5", "3"),
 	}
-	CompareSize(&expectedRanking, ranking, t)
 	CompareRankings(&expectedRanking, ranking, t)
 }

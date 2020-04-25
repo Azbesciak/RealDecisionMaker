@@ -25,6 +25,5 @@ func TestAlternativeResults_Ranking(t *testing.T) {
 		DummyRankingEntry(altsMap, "7", "4"),
 		DummyRankingEntry(altsMap, "4"),
 	}
-	CompareSize(&expectedRanking, ranking, t)
 	CompareRankings(&expectedRanking, ranking, t)
 }
