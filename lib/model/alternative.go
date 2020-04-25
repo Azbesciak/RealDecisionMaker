@@ -191,3 +191,16 @@ type AlternativesRankEntry struct {
 	BetterThanOrSameAs Alternatives `json:"betterThanOrSameAs"` // preference >=
 }
 type AlternativesRanking []AlternativesRankEntry
+
+func RemoveAlternative(alternatives []AlternativeWithCriteria, alternative AlternativeWithCriteria) []AlternativeWithCriteria {
+	for i, v := range alternatives {
+		if v.Id == alternative.Id {
+			return append(alternatives[:i], alternatives[i+1:]...)
+		}
+	}
+	return alternatives
+}
+
+func RemoveAlternativeAt(alternatives []AlternativeWithCriteria, index int) []AlternativeWithCriteria {
+	return append(alternatives[:index], alternatives[index+1:]...)
+}
