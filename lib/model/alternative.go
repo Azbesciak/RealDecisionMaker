@@ -13,6 +13,10 @@ type AlternativeResult struct {
 	Value       Weight                  `json:"value"`
 }
 
+func (a *AlternativeResult) String() string {
+	return fmt.Sprintf("alternative: %s, value: %f", a.Alternative.Id, a.Value)
+}
+
 func (a *AlternativeResult) Identifier() string {
 	return a.Alternative.Id
 }
@@ -86,6 +90,10 @@ type Alternative = string
 type AlternativeWithCriteria struct {
 	Id       Alternative `json:"id"`
 	Criteria Weights     `json:"criteria"`
+}
+
+func (a *AlternativeWithCriteria) String() string {
+	return fmt.Sprintf("alternative: %s, criteria: %v", a.Id, a.Criteria)
 }
 
 func (a *AlternativeWithCriteria) CriterionValue(criterion *Criterion) Weight {
