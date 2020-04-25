@@ -36,11 +36,7 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		{Id: "a", Criteria: model.Weights{"1": 0, "2": 3, "3": 1}},
 		{Id: "b", Criteria: model.Weights{"1": 0, "2": 5, "3": 0}},
 	}
-	criteria := model.Criteria{
-		{Id: "1", Type: model.Gain},
-		{Id: "2", Type: model.Gain},
-		{Id: "3", Type: model.Gain},
-	}
+	criteria := testUtils.GenerateCriteria(3)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	m := model.BiasProps(map[string]interface{}{
 		"addCriterionProbability": 0.5,

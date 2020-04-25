@@ -4,6 +4,7 @@ import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -98,4 +99,12 @@ func CyclicRandomGenerator(start, cycle int64) func(seed int64) utils.ValueGener
 			return float64(counter) / float64(cycle)
 		}
 	}
+}
+
+func GenerateCriteria(number int) Criteria {
+	criteria := make(Criteria, number)
+	for i := 0; i < number; i++ {
+		criteria[i] = Criterion{Id: strconv.Itoa(i + 1), Type: Gain}
+	}
+	return criteria
 }
