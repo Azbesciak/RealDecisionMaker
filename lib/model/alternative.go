@@ -132,6 +132,17 @@ func SortAlternativesByName(alternatives *[]AlternativeWithCriteria) *[]Alternat
 	return &res
 }
 
+func ShuffleAlternatives(alternatives *[]AlternativeWithCriteria, generator utils.ValueGenerator) *[]AlternativeWithCriteria {
+	alternativesCount := len(*alternatives)
+	copied := make([]AlternativeWithCriteria, alternativesCount)
+	copy(copied, *alternatives)
+	for i := alternativesCount - 1; i > 0; i-- { // Fisher–Yates shuffle
+		j := int(generator() * float64(i))
+		copied[i], copied[j] = copied[j], copied[i]
+	}
+	return &copied
+}
+
 func AddCriterionToAlternatives(
 	alternatives *[]AlternativeWithCriteria,
 	newCriterion *Criterion,

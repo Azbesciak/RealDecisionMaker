@@ -1,6 +1,7 @@
 package majority
 
 import (
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
@@ -20,6 +21,14 @@ type MajorityHeuristicParams struct {
 	randomSeed    int64
 }
 
+func (m *MajorityHeuristicParams) CurrentChoice() string {
+	return m.currentChoice
+}
+
+func (m *MajorityHeuristicParams) RandomSeed() int64 {
+	return m.randomSeed
+}
+
 func (m *Majority) Identifier() string {
 	return methodName
 }
@@ -32,14 +41,11 @@ func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesR
 	params := dm.MethodParameters.(MajorityHeuristicParams)
 	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.weights)
 	generator := m.generator(params.randomSeed)
-	considered := dm.ConsideredAlternatives
-	current, considered := fetchInitialAlternative(dm, params, generator, considered)
+	current, considered := limitedRationality.GetAlternativesSearchOrder(dm, &params, generator)
 	var sameBuffer []model.AlternativeResult
 	var worseThanCurrent [][]model.AlternativeResult
 	var currentEvaluation model.Weight = 0
-	for len(considered) > 0 {
-		another, con := removeRandomAlternative(generator, considered)
-		considered = con
+	for _, another := range considered {
 		s1, s2 := compare(criteriaWithWeights, &current, &another)
 		worseThanCurrent, sameBuffer, current, currentEvaluation =
 			takeBetter(s1, s2, sameBuffer, another, current, worseThanCurrent)
@@ -118,25 +124,6 @@ func compare(criteriaWithWeights *[]model.WeightedCriterion, a1, a2 *model.Alter
 		}
 	}
 	return a1Score, a2Score
-}
-
-func fetchInitialAlternative(
-	dm *model.DecisionMakingParams, params MajorityHeuristicParams,
-	generator utils.ValueGenerator, alternatives []model.AlternativeWithCriteria,
-) (model.AlternativeWithCriteria, []model.AlternativeWithCriteria) {
-	if len(params.currentChoice) > 0 {
-		allAlternatives := dm.AllAlternatives()
-		alt := model.FetchAlternative(&allAlternatives, params.currentChoice)
-		return alt, model.RemoveAlternative(alternatives, alt)
-	} else {
-		return removeRandomAlternative(generator, alternatives)
-	}
-}
-
-func removeRandomAlternative(generator utils.ValueGenerator, alternatives []model.AlternativeWithCriteria) (model.AlternativeWithCriteria, []model.AlternativeWithCriteria) {
-	index := int(generator()*float64(len(alternatives))) % len(alternatives)
-	alternative := alternatives[index]
-	return alternative, model.RemoveAlternativeAt(alternatives, index)
 }
 
 func (m *Majority) ParseParams(dm *model.DecisionMaker) interface{} {
