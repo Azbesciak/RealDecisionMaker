@@ -25,15 +25,8 @@ func (p *weightedSumParams) Criterion(criterion string) WeightedCriterion {
 
 func (w *WeightedSumPreferenceFunc) ParseParams(dm *DecisionMaker) interface{} {
 	weights := ExtractWeights(dm)
-	weightedCriteria := make([]WeightedCriterion, len(dm.Criteria))
-	for i, c := range dm.Criteria {
-		value := dm.Criteria.FindWeight(&weights, &c)
-		weightedCriteria[i] = WeightedCriterion{
-			Criterion: c,
-			Weight:    value,
-		}
-	}
-	return weightedSumParams{weightedCriteria: &weightedCriteria}
+	weightedCriteria := dm.Criteria.ZipWithWeights(&weights)
+	return weightedSumParams{weightedCriteria: weightedCriteria}
 }
 
 func (w *WeightedSumPreferenceFunc) Identifier() string {

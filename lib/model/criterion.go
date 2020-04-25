@@ -109,4 +109,16 @@ type WeightedCriterion struct {
 	Weight Weight `json:"weight"`
 }
 
+func (c *Criteria) ZipWithWeights(weights *Weights) *[]WeightedCriterion {
+	weightedCriteria := make([]WeightedCriterion, len(*c))
+	for i, crit := range *c {
+		value := c.FindWeight(weights, &crit)
+		weightedCriteria[i] = WeightedCriterion{
+			Criterion: crit,
+			Weight:    value,
+		}
+	}
+	return &weightedCriteria
+}
+
 type Weights map[string]Weight
