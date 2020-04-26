@@ -33,6 +33,12 @@ func CompareRankings(expected, received *AlternativesRanking, t *testing.T) {
 				e.Alternative.Id, i, e.BetterThanOrSameAs, rec.BetterThanOrSameAs,
 			)
 		}
+		if !utils.FloatsAreEqual(e.Value, rec.Value, 1e-6) {
+			t.Errorf(
+				"Invalid value for id '%s' at position %d, expected '%v', got '%v'",
+				e.Alternative.Id, i, e.Value, rec.Value,
+			)
+		}
 	}
 }
 
