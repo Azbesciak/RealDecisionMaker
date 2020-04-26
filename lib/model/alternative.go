@@ -203,6 +203,12 @@ type AlternativesRankEntry struct {
 }
 type AlternativesRanking []AlternativesRankEntry
 
+func (r *AlternativesRanking) ReverseOrder() {
+	for i, j := 0, len(*r)-1; i < j; i, j = i+1, j-1 {
+		(*r)[i], (*r)[j] = (*r)[j], (*r)[i]
+	}
+}
+
 func RemoveAlternative(alternatives []AlternativeWithCriteria, alternative AlternativeWithCriteria) []AlternativeWithCriteria {
 	for i, v := range alternatives {
 		if v.Id == alternative.Id {

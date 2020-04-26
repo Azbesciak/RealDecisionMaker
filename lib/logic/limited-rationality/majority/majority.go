@@ -60,7 +60,7 @@ func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesR
 
 func prepareRanking(ranking [][]model.AlternativeResult) *model.AlternativesRanking {
 	worseThanCurrent := make([]string, 0)
-	var result model.AlternativesRanking
+	var result = make(model.AlternativesRanking, 0)
 	for _, equivalentEntries := range ranking {
 		var sameAlternativesId []string
 		for i, r := range equivalentEntries {
@@ -78,6 +78,7 @@ func prepareRanking(ranking [][]model.AlternativeResult) *model.AlternativesRank
 		}
 		worseThanCurrent = append(worseThanCurrent, sameAlternativesId...)
 	}
+	result.ReverseOrder()
 	return &result
 }
 

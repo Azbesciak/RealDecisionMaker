@@ -68,17 +68,10 @@ func TestMajority_Evaluate(t *testing.T) {
 	expected := model.AlternativesRanking{
 		{
 			AlternativeResult: model.AlternativeResult{
-				Alternative: cur,
-				Value:       0,
+				Alternative: a1,
+				Value:       2,
 			},
-			BetterThanOrSameAs: []string{},
-		},
-		{
-			AlternativeResult: model.AlternativeResult{
-				Alternative: a3,
-				Value:       3,
-			},
-			BetterThanOrSameAs: []string{cur.Id},
+			BetterThanOrSameAs: []string{cur.Id, a3.Id, a2.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
@@ -89,10 +82,17 @@ func TestMajority_Evaluate(t *testing.T) {
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
-				Alternative: a1,
-				Value:       2,
+				Alternative: a3,
+				Value:       0,
 			},
-			BetterThanOrSameAs: []string{cur.Id, a3.Id, a2.Id},
+			BetterThanOrSameAs: []string{cur.Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: cur,
+				Value:       0,
+			},
+			BetterThanOrSameAs: []string{},
 		},
 	}
 	testUtils.CompareRankings(&expected, actual, t)
