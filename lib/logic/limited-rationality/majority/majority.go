@@ -16,17 +16,17 @@ const eps = 1e-6
 const methodName = "majorityHeuristic"
 
 type MajorityHeuristicParams struct {
-	weights       model.Weights
-	currentChoice model.Alternative
-	randomSeed    int64
+	Weights model.Weights     `json:"weights"`
+	Current model.Alternative `json:"currentChoice"`
+	Seed    int64             `json:"randomSeed"`
 }
 
 func (m *MajorityHeuristicParams) CurrentChoice() string {
-	return m.currentChoice
+	return m.Current
 }
 
 func (m *MajorityHeuristicParams) RandomSeed() int64 {
-	return m.randomSeed
+	return m.Seed
 }
 
 func (m *Majority) Identifier() string {
@@ -39,8 +39,8 @@ func (m *Majority) MethodParameters() interface{} {
 
 func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesRanking {
 	params := dm.MethodParameters.(MajorityHeuristicParams)
-	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.weights)
-	generator := m.generator(params.randomSeed)
+	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.Weights)
+	generator := m.generator(params.Seed)
 	current, considered := limitedRationality.GetAlternativesSearchOrder(dm, &params, generator)
 	var sameBuffer []model.AlternativeResult
 	var worseThanCurrent [][]model.AlternativeResult

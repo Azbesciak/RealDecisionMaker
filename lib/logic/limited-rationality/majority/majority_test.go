@@ -57,11 +57,11 @@ func TestMajority_Evaluate(t *testing.T) {
 		NotConsideredAlternatives: []model.AlternativeWithCriteria{a4, cur},
 		Criteria:                  criteria,
 		MethodParameters: MajorityHeuristicParams{
-			weights: map[string]float64{
+			Weights: map[string]float64{
 				"1": 1, "2": 2, "3": 1,
 			},
-			currentChoice: "cur",
-			randomSeed:    0,
+			Current: "cur",
+			Seed:    0,
 		},
 	}
 	actual := _majority.Evaluate(&dm)
