@@ -77,12 +77,16 @@ func (c *Criteria) First() Criterion {
 	return (*c)[0]
 }
 
-func (c Criterion) Multiplier() int8 {
+func (c *Criterion) Multiplier() int8 {
 	if c.Type == Cost {
 		return -1
 	} else {
 		return 1
 	}
+}
+
+func (c *Criterion) IsGain() bool {
+	return c.Multiplier() == 1
 }
 
 func (c *Criteria) Names() *[]string {

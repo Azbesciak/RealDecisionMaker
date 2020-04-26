@@ -66,28 +66,48 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 		{
 			AlternativeResult: model.AlternativeResult{
 				Alternative: a2,
-				Value:       7,
+				Evaluation: SatisfactionEvaluation{
+					SatisfiedThresholds: model.Weights{
+						"1": 3, "2": 3, "3": 3,
+					},
+					ThresholdsIndex: 7,
+				},
 			},
 			BetterThanOrSameAs: []string{a1.Id, a3.Id, cur.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
 				Alternative: a1,
-				Value:       8,
+				Evaluation: SatisfactionEvaluation{
+					SatisfiedThresholds: model.Weights{
+						"1": 2, "2": 2, "3": 2,
+					},
+					ThresholdsIndex: 8,
+				},
 			},
 			BetterThanOrSameAs: []string{a3.Id, cur.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
 				Alternative: a3,
-				Value:       8,
+				Evaluation: SatisfactionEvaluation{
+					SatisfiedThresholds: model.Weights{
+						"1": 2, "2": 2, "3": 2,
+					},
+					ThresholdsIndex: 8,
+				},
 			},
 			BetterThanOrSameAs: []string{cur.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
 				Alternative: cur,
-				Value:       10,
+				Evaluation: SatisfactionEvaluation{
+					SatisfiedThresholds: model.Weights{
+						"1": 0, "2": 0, "3": 0,
+					},
+					ThresholdsIndex: 10,
+				},
 			},
 			BetterThanOrSameAs: []string{},
 		},

@@ -42,7 +42,7 @@ func choquetIntegral(
 ) *model.AlternativeResult {
 	sortedCriteria := prepareCriteriaInAscendingOrder(alternative)
 	result, _ := computeTotalWeight(sortedCriteria, weights)
-	return &model.AlternativeResult{Alternative: *alternative, Value: result}
+	return model.ValueAlternativeResult(alternative, result)
 }
 
 type weightComponent struct {

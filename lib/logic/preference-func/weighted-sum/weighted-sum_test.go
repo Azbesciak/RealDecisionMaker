@@ -20,8 +20,8 @@ func TestValidFunc(t *testing.T) {
 		},
 	}
 	res := WeightedSum(alternative, criteria)
-	if !utils.FloatsAreEqual(-190.0, res.Value, 0.01) {
-		t.Error("invalid result", res.Value)
+	if !utils.FloatsAreEqual(-190.0, res.Value(), 0.01) {
+		t.Error("invalid result", res.Value())
 	}
 }
 

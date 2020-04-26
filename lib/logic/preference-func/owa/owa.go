@@ -56,7 +56,7 @@ func owa(alternative *model.AlternativeWithCriteria, sortedWeights *[]model.Weig
 	validateSameCriteriaAndWeightsCount(alternative, sortedWeights)
 	sortedAlternativeCriteriaWeights := sortAlternativeCriteriaWeights(alternative)
 	total := calculateTotalAlternativeValue(sortedWeights, sortedAlternativeCriteriaWeights)
-	return &model.AlternativeResult{Alternative: *alternative, Value: total}
+	return model.ValueAlternativeResult(alternative, total)
 }
 
 func calculateTotalAlternativeValue(sortedWeights *[]model.Weight, sortedCriteriaWeights *[]model.Weight) model.Weight {

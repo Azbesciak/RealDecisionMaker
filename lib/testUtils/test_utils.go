@@ -3,7 +3,8 @@ package testUtils
 import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"reflect"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"strconv"
 	"testing"
 )
@@ -27,16 +28,18 @@ func CompareRankings(expected, received *AlternativesRanking, t *testing.T) {
 		if e.Alternative.Id != rec.Alternative.Id {
 			t.Errorf("Expected id of '%s' at position %d, got '%s'", e.Alternative.Id, i, rec.Alternative.Id)
 		}
-		if !reflect.DeepEqual(e.BetterThanOrSameAs, rec.BetterThanOrSameAs) {
+
+		if !cmp.Equal(e.BetterThanOrSameAs, rec.BetterThanOrSameAs) {
 			t.Errorf(
 				"Invalid Preferrence of id '%s' at position %d, expected '%s', got '%s'",
 				e.Alternative.Id, i, e.BetterThanOrSameAs, rec.BetterThanOrSameAs,
 			)
 		}
-		if !utils.FloatsAreEqual(e.Value, rec.Value, 1e-6) {
+
+		if !cmp.Equal(e.Evaluation, rec.Evaluation, cmpopts.EquateApprox(0, 1e-8)) {
 			t.Errorf(
-				"Invalid value for id '%s' at position %d, expected '%v', got '%v'",
-				e.Alternative.Id, i, e.Value, rec.Value,
+				"Invalid evaluation for id '%s' at position %d, expected '%v', got '%v'",
+				e.Alternative.Id, i, e.Evaluation, rec.Evaluation,
 			)
 		}
 	}
@@ -73,13 +76,7 @@ func DummyRankingEntry(alts AltsMap, thisAlt string, betterThanOrSameAs ...Alter
 }
 
 func DummyAlternative(id string, value Weight) AlternativeResult {
-	return AlternativeResult{
-		Alternative: AlternativeWithCriteria{
-			Id:       id,
-			Criteria: nil,
-		},
-		Value: value,
-	}
+	return *ValueAlternativeResult(&AlternativeWithCriteria{Id: id}, value)
 }
 
 func ValidateWeights(t *testing.T, name string, expected, actual Weights) {

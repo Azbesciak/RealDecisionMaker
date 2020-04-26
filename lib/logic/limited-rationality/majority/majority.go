@@ -52,10 +52,18 @@ func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesR
 	}
 	sameBuffer = append(sameBuffer, model.AlternativeResult{
 		Alternative: current,
-		Value:       currentEvaluation,
+		Evaluation: MajorityEvaluation{
+			Value: currentEvaluation,
+		},
 	})
 	worseThanCurrent = append(worseThanCurrent, sameBuffer)
 	return prepareRanking(worseThanCurrent)
+}
+
+type MajorityEvaluation struct {
+	Value                    float64           `json:"value"`
+	ComparedWith             model.Alternative `json:"comparedWith"`
+	ComparedAlternativeValue float64           `json:"comparedAlternativeValue"`
 }
 
 func prepareRanking(ranking [][]model.AlternativeResult) *model.AlternativesRanking {
@@ -90,18 +98,30 @@ func takeBetter(s1, s2 model.Weight, sameBuffer []model.AlternativeResult,
 	if utils.FloatsAreEqual(s1, s2, eps) {
 		sameBuffer = append(sameBuffer, model.AlternativeResult{
 			Alternative: another,
-			Value:       s2,
+			Evaluation: MajorityEvaluation{
+				Value:                    s2,
+				ComparedWith:             current.Id,
+				ComparedAlternativeValue: s1,
+			},
 		})
 	} else if s2 < s1 {
 		worseThanCurrent = append(worseThanCurrent, []model.AlternativeResult{{
 			Alternative: another,
-			Value:       s2,
+			Evaluation: MajorityEvaluation{
+				Value:                    s2,
+				ComparedWith:             current.Id,
+				ComparedAlternativeValue: s1,
+			},
 		}})
 	} else {
 		currentEvaluation = s2
 		sameBuffer = append(sameBuffer, model.AlternativeResult{
 			Alternative: current,
-			Value:       s1,
+			Evaluation: MajorityEvaluation{
+				Value:                    s1,
+				ComparedWith:             another.Id,
+				ComparedAlternativeValue: s2,
+			},
 		})
 		current = another
 		worseThanCurrent = append(worseThanCurrent, sameBuffer)

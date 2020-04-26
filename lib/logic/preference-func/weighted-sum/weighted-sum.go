@@ -50,5 +50,5 @@ func WeightedSum(alternative AlternativeWithCriteria, criteria []WeightedCriteri
 	for _, criterion := range criteria {
 		total += alternative.CriterionValue(&criterion.Criterion)
 	}
-	return &AlternativeResult{Alternative: alternative, Value: total}
+	return ValueAlternativeResult(&alternative, total)
 }

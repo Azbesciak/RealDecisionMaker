@@ -10,11 +10,22 @@ import (
 //go:generate easytags $GOFILE json:camel
 type AlternativeResult struct {
 	Alternative AlternativeWithCriteria `json:"alternative"`
-	Value       Weight                  `json:"value"`
+	Evaluation  interface{}             `json:"evaluation"`
+}
+
+func ValueAlternativeResult(alternative *AlternativeWithCriteria, value float64) *AlternativeResult {
+	return &AlternativeResult{
+		Alternative: *alternative,
+		Evaluation:  EvaluationSingleValue{Value: value},
+	}
+}
+
+type EvaluationSingleValue struct {
+	Value float64 `json:"value"`
 }
 
 func (a *AlternativeResult) String() string {
-	return fmt.Sprintf("alternative: %s, value: %f", a.Alternative.Id, a.Value)
+	return fmt.Sprintf("alternative: %s, evaluation: %v", a.Alternative.Id, a.Evaluation)
 }
 
 func (a *AlternativeResult) Identifier() string {
@@ -26,8 +37,16 @@ const roundPrecision = 1e8
 func (a *AlternativeResult) rounded() *AlternativeResult {
 	return &AlternativeResult{
 		Alternative: a.Alternative,
-		Value:       math.Round(a.Value*roundPrecision) / roundPrecision,
+		Evaluation:  EvaluationSingleValue{math.Round(a.Value()*roundPrecision) / roundPrecision},
 	}
+}
+
+func (a *AlternativeResult) Value() float64 {
+	value, ok := a.Evaluation.(EvaluationSingleValue)
+	if !ok {
+		panic(fmt.Errorf("evaluation must be instance of "))
+	}
+	return value.Value
 }
 
 type AlternativeResults []AlternativeResult
@@ -37,10 +56,12 @@ func (a *AlternativeResults) Len() int {
 }
 
 func (a *AlternativeResults) Less(i, j int) bool {
-	if (*a)[i].Value == (*a)[j].Value {
-		return (*a)[i].Alternative.Id < (*a)[j].Alternative.Id
+	a1, a2 := (*a)[i], (*a)[j]
+	v1, v2 := a1.Value(), a2.Value()
+	if v1 == v2 {
+		return a1.Alternative.Id < a2.Alternative.Id
 	}
-	return (*a)[i].Value > (*a)[j].Value
+	return v1 > v2
 }
 
 func (a *AlternativeResults) Swap(i, j int) {
@@ -64,16 +85,16 @@ func (a *AlternativeResults) Ranking() *AlternativesRanking {
 func (a *AlternativeResult) positionInRanking(allAlternatives *AlternativeResults) *AlternativesRankEntry {
 	var betterThanOrSameAs = Alternatives{}
 	wasLowerValueFound := false
-	nextLowerThanAltValue := a.Value
+	nextLowerThanAltValue := a.Value()
 	for _, r := range *allAlternatives {
-		if r.Value == a.Value && r.Identifier() != a.Identifier() {
+		if r.Value() == a.Value() && r.Identifier() != a.Identifier() {
 			betterThanOrSameAs = append(betterThanOrSameAs, r.Identifier())
-		} else if r.Value < a.Value {
+		} else if r.Value() < a.Value() {
 			if !wasLowerValueFound {
 				wasLowerValueFound = true
-				nextLowerThanAltValue = r.Value
+				nextLowerThanAltValue = r.Value()
 			}
-			if r.Value < nextLowerThanAltValue {
+			if r.Value() < nextLowerThanAltValue {
 				break
 			}
 			betterThanOrSameAs = append(betterThanOrSameAs, r.Identifier())

@@ -26,6 +26,11 @@ type SatisfactionParameters struct {
 	Current  model.Alternative `json:"currentChoice"`
 }
 
+type SatisfactionEvaluation struct {
+	SatisfiedThresholds model.Weights `json:"satisfiedThresholds"`
+	ThresholdsIndex     int           `json:"thresholdsIndex"`
+}
+
 func (s *SatisfactionParameters) CurrentChoice() string {
 	return s.Current
 }
@@ -51,9 +56,25 @@ func (s *Satisfaction) Evaluate(dmp *model.DecisionMakingParams) *model.Alternat
 	generator := s.generator(params.RandomSeed())
 	current, considered := limitedRationality.GetAlternativesSearchOrder(dmp, &params, generator)
 	leftToChoice, result, resultIds, resultInsertIndex, thresholdIndex := checkWithinSatisfactionLevels(dmp, current, considered, satisfactionLevels)
-	fillRemainingAlternatives(leftToChoice, thresholdIndex, resultInsertIndex, result, resultIds)
+	fillRemainingAlternatives(leftToChoice, thresholdIndex, resultInsertIndex, result, resultIds, weightsSupplier(dmp))
 	ranking := prepareRanking(result, resultIds)
 	return &ranking
+}
+
+func weightsSupplier(dmp *model.DecisionMakingParams) func() model.Weights {
+	return func() model.Weights {
+		alternatives := dmp.AllAlternatives()
+		weights := make(model.Weights, len(dmp.Criteria))
+		for _, c := range dmp.Criteria {
+			valRange := model.CriteriaValuesRange(&alternatives, &c)
+			if c.IsGain() {
+				weights[c.Id] = valRange.Min
+			} else {
+				weights[c.Id] = valRange.Max
+			}
+		}
+		return weights
+	}
 }
 
 func fillRemainingAlternatives(
@@ -61,11 +82,13 @@ func fillRemainingAlternatives(
 	thresholdIndex, resultInsertIndex int,
 	result model.AlternativeResults,
 	resultIds []model.Alternative,
+	lowestThresholdSup func() model.Weights,
 ) {
 	if len(leftToChoice) > 0 {
 		thresholdIndex += 1
+		lowestThresholds := lowestThresholdSup()
 		for _, a := range leftToChoice {
-			resultInsertIndex = updateResult(result, resultInsertIndex, a, thresholdIndex, resultIds)
+			resultInsertIndex = updateResult(result, resultInsertIndex, a, thresholdIndex, resultIds, &lowestThresholds)
 		}
 	}
 }
@@ -88,7 +111,7 @@ func checkWithinSatisfactionLevels(
 		for _, a := range leftToChoice {
 			if isGoodEnough(a, thresholds) {
 				leftToChoice = model.RemoveAlternative(leftToChoice, a)
-				resultInsertIndex = updateResult(result, resultInsertIndex, a, thresholdIndex, resultIds)
+				resultInsertIndex = updateResult(result, resultInsertIndex, a, thresholdIndex, resultIds, &t)
 			}
 		}
 		if len(leftToChoice) == 0 {
@@ -122,10 +145,14 @@ func updateResult(
 	alternative model.AlternativeWithCriteria,
 	alternativeValue int,
 	resultIds []model.Alternative,
+	thresholds *model.Weights,
 ) int {
 	result[resultInsertIndex] = model.AlternativeResult{
 		Alternative: alternative,
-		Value:       float64(alternativeValue),
+		Evaluation: SatisfactionEvaluation{
+			ThresholdsIndex:     alternativeValue,
+			SatisfiedThresholds: *thresholds,
+		},
 	}
 	resultIds[resultInsertIndex] = alternative.Id
 	return resultInsertIndex + 1

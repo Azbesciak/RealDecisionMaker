@@ -6,16 +6,29 @@ import (
 	"testing"
 )
 
+func electreIIIRankingEntry(id string, ascending, descending int) AlternativeResult {
+	return AlternativeResult{
+		Alternative: AlternativeWithCriteria{Id: id},
+		Evaluation: ElectreIIIEvaluation{
+			AscendingIndex:  ascending,
+			DescendingIndex: descending,
+		},
+	}
+}
+
+func electreIIIResults(ids *[]string, ascending, descending *[]int) AlternativeResults {
+	result := make(AlternativeResults, len(*ids))
+	for i, id := range *ids {
+		result[i] = electreIIIRankingEntry(id, (*ascending)[i], (*descending)[i])
+	}
+	return result
+}
+
 func TestEvaluateRanking_PowerStation(t *testing.T) {
 	ascending := &[]int{2, 3, 1, 3, 3}
 	descending := &[]int{3, 4, 2, 5, 1}
-	alts := AlternativeResults{
-		DummyAlternative("ITA", 0),
-		DummyAlternative("BEL", 0),
-		DummyAlternative("GER", 0),
-		DummyAlternative("AUT", 0),
-		DummyAlternative("FRA", 0),
-	}
+	ids := &[]string{"ITA", "BEL", "GER", "AUT", "FRA"}
+	alts := electreIIIResults(ids, ascending, descending)
 	altsMap := AlternativesResultToMap(&alts)
 	ranking := EvaluateRanking(ascending, descending, ExtractAlternativesFromResults(&alts))
 	expectedRanking := AlternativesRanking{
@@ -31,13 +44,8 @@ func TestEvaluateRanking_PowerStation(t *testing.T) {
 func TestEvaluateRanking_Example(t *testing.T) {
 	ascending := &[]int{1, 2, 3, 3, 3}
 	descending := &[]int{1, 1, 3, 2, 3}
-	alts := AlternativeResults{
-		DummyAlternative("1", 0),
-		DummyAlternative("2", 0),
-		DummyAlternative("3", 0),
-		DummyAlternative("4", 0),
-		DummyAlternative("5", 0),
-	}
+	ids := &[]string{"1", "2", "3", "4", "5"}
+	alts := electreIIIResults(ids, ascending, descending)
 	altsMap := AlternativesResultToMap(&alts)
 	ranking := EvaluateRanking(ascending, descending, ExtractAlternativesFromResults(&alts))
 	expectedRanking := AlternativesRanking{

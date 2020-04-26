@@ -18,13 +18,13 @@ func TestOWAResult(t *testing.T) {
 	}
 	result := OWA(criteria, []model.Weight{1, 2, 3, 4})
 	var expected model.Weight = 4*60 + 30*3 + 10*2 + 5*1
-	if result.Value != expected {
-		t.Errorf("Expected %f, got %f", expected, result.Value)
+	if result.Value() != expected {
+		t.Errorf("Expected %f, got %f", expected, result.Value())
 	}
 	result = OWA(criteria, []model.Weight{6, 4, 3, 4})
 	expected = 6*60 + 30*4 + 10*4 + 5*3
-	if result.Value != expected {
-		t.Errorf("Expected %f, got %f", expected, result.Value)
+	if result.Value() != expected {
+		t.Errorf("Expected %f, got %f", expected, result.Value())
 	}
 }
 
