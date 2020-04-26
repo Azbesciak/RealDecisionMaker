@@ -41,7 +41,7 @@ func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesR
 	params := dm.MethodParameters.(MajorityHeuristicParams)
 	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.Weights)
 	generator := m.generator(params.Seed)
-	current, considered := limitedRationality.GetAlternativesSearchOrder(dm, &params, generator)
+	current, considered := limited_rationality.GetAlternativesSearchOrder(dm, &params, generator)
 	var sameBuffer []model.AlternativeResult
 	var worseThanCurrent [][]model.AlternativeResult
 	var currentEvaluation model.Weight = 0

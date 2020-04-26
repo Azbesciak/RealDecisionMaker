@@ -1,4 +1,4 @@
-package limitedRationality
+package limited_rationality
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"

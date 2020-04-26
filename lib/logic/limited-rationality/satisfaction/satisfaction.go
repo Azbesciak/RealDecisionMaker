@@ -54,7 +54,7 @@ func (s *Satisfaction) Evaluate(dmp *model.DecisionMakingParams) *model.Alternat
 	satisfactionLevels := s.getSatisfactionLevels(&params)
 	satisfactionLevels.Initialize(dmp)
 	generator := s.generator(params.RandomSeed())
-	current, considered := limitedRationality.GetAlternativesSearchOrder(dmp, &params, generator)
+	current, considered := limited_rationality.GetAlternativesSearchOrder(dmp, &params, generator)
 	leftToChoice, result, resultIds, resultInsertIndex, thresholdIndex := checkWithinSatisfactionLevels(dmp, current, considered, satisfactionLevels)
 	fillRemainingAlternatives(leftToChoice, thresholdIndex, resultInsertIndex, result, resultIds, weightsSupplier(dmp))
 	ranking := prepareRanking(result, resultIds)
