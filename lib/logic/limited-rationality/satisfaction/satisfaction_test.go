@@ -15,7 +15,7 @@ var _satisfaction = Satisfaction{
 	},
 	functions: []SatisfactionLevelsSource{
 		&IdealSubtrCoefficientSatisfaction,
-		&IdealMulCoefficientSatisfaction,
+		&IdealDecreasingMulCoefficientSatisfaction,
 	},
 }
 

@@ -1,39 +1,37 @@
 package satisfaction
 
 import (
-	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"math"
 )
 
 //go:generate easytags $GOFILE json:camel
 
 type idealCoefficientSatisfactionLevels struct {
 	Coefficient          float64 `json:"coefficient"`
+	MaxValue             float64 `json:"maxValue"`
 	MinValue             float64 `json:"minValue"`
 	currentValue         float64
 	criteria             model.Criteria
 	criteriaValuesRanges []utils.ValueRange
-	coefficientManager   CoefficientManager
+	manager              CoefficientManager
 }
 
-type CoefficientManager = func(current, coefficient float64) float64
+type CoefficientManager interface {
+	Validate(params *idealCoefficientSatisfactionLevels)
+	UpdateValue(current, coefficient float64) float64
+	InitialValue(params *idealCoefficientSatisfactionLevels) float64
+}
 
 func (s *idealCoefficientSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams) {
-	if s.Coefficient <= 0 || s.Coefficient >= 1 {
-		panic(fmt.Errorf("satisfaction Coefficient degradation level must be in range (0,1), got %f", s.Coefficient))
-	}
-	if s.MinValue <= 0 {
-		panic(fmt.Errorf("minimum satisfaction Coefficient level must be positive value, got %f", s.MinValue))
-	}
+	s.manager.Validate(s)
 	s.criteria = dmp.Criteria
 	s.criteriaValuesRanges = make([]utils.ValueRange, len(dmp.Criteria))
 	alternatives := dmp.AllAlternatives()
 	for i, c := range s.criteria {
 		s.criteriaValuesRanges[i] = *model.CriteriaValuesRange(&alternatives, &c)
 	}
-	s.currentValue = 1
+	s.currentValue = s.manager.InitialValue(s)
 }
 
 func (s *idealCoefficientSatisfactionLevels) HasNext() bool {
@@ -51,7 +49,7 @@ func (s *idealCoefficientSatisfactionLevels) Next() model.Weights {
 			weights[c.Id] = valRange.Max - delta
 		}
 	}
-	s.currentValue = s.coefficientManager(s.currentValue, s.Coefficient)
+	s.currentValue = s.manager.UpdateValue(s.currentValue, s.Coefficient)
 	return weights
 }
 
@@ -60,26 +58,12 @@ type IdealCoefficientSatisfactionLevelsSource struct {
 	coefficientManager CoefficientManager
 }
 
-var IdealMulCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{
-	name: "idealMulCoefficient",
-	coefficientManager: func(current, coefficient float64) float64 {
-		return current * coefficient
-	},
-}
-
-var IdealSubtrCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{
-	name: "idealSubtCoefficient",
-	coefficientManager: func(current, coefficient float64) float64 {
-		return math.Max(current-coefficient, 0)
-	},
-}
-
 func (s *IdealCoefficientSatisfactionLevelsSource) Name() string {
 	return s.name
 }
 
 func (s *IdealCoefficientSatisfactionLevelsSource) BlankParams() SatisfactionLevels {
 	return &idealCoefficientSatisfactionLevels{
-		coefficientManager: s.coefficientManager,
+		manager: s.coefficientManager,
 	}
 }
