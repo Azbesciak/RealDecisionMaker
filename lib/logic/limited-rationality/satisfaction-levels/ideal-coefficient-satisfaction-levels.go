@@ -1,4 +1,4 @@
-package satisfaction
+package satisfaction_levels
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"

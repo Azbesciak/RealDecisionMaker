@@ -1,6 +1,7 @@
 package satisfaction
 
 import (
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality/satisfaction-levels"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
@@ -13,9 +14,9 @@ var _satisfaction = Satisfaction{
 			return 1
 		}
 	},
-	functions: []SatisfactionLevelsSource{
-		&IdealSubtrCoefficientSatisfaction,
-		&IdealDecreasingMulCoefficientSatisfaction,
+	functions: []satisfaction_levels.SatisfactionLevelsSource{
+		&satisfaction_levels.IdealSubtrCoefficientSatisfaction,
+		&satisfaction_levels.IdealDecreasingMulCoefficientSatisfaction,
 	},
 }
 
@@ -52,10 +53,11 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 		NotConsideredAlternatives: []model.AlternativeWithCriteria{a4, cur},
 		Criteria:                  criteria,
 		MethodParameters: SatisfactionParameters{
-			Function: IdealSubtrCoefficientSatisfaction.name,
+			Function: satisfaction_levels.IdealSubtrCoefficientSatisfaction.Name(),
 			Params: map[string]interface{}{
 				"Coefficient": 0.1,
 				"MinValue":    0.1,
+				"MaxValue":    1.0,
 			},
 			Seed:    0,
 			Current: "cur",

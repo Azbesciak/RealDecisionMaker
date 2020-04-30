@@ -3,6 +3,7 @@ package satisfaction
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality"
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality/satisfaction-levels"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
@@ -12,7 +13,7 @@ const methodName = "satisfactionHeuristic"
 //go:generate easytags $GOFILE json:camel
 type Satisfaction struct {
 	generator utils.SeededValueGenerator
-	functions []SatisfactionLevelsSource
+	functions []satisfaction_levels.SatisfactionLevelsSource
 }
 
 func (s *Satisfaction) Identifier() string {
@@ -97,7 +98,7 @@ func checkWithinSatisfactionLevels(
 	dmp *model.DecisionMakingParams,
 	current model.AlternativeWithCriteria,
 	considered []model.AlternativeWithCriteria,
-	satisfactionLevels SatisfactionLevels,
+	satisfactionLevels satisfaction_levels.SatisfactionLevels,
 ) ([]model.AlternativeWithCriteria, model.AlternativeResults, []model.Alternative, int, int) {
 	leftToChoice := append([]model.AlternativeWithCriteria{current}, considered...)
 	result := make(model.AlternativeResults, len(leftToChoice))
@@ -121,7 +122,7 @@ func checkWithinSatisfactionLevels(
 	return leftToChoice, result, resultIds, resultInsertIndex, thresholdIndex
 }
 
-func (s *Satisfaction) getSatisfactionLevels(satisfactionParams *SatisfactionParameters) SatisfactionLevels {
+func (s *Satisfaction) getSatisfactionLevels(satisfactionParams *SatisfactionParameters) satisfaction_levels.SatisfactionLevels {
 	if len(satisfactionParams.Function) == 0 {
 		panic(fmt.Errorf("satisfaction thresholds function not provided"))
 	}

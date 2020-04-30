@@ -1,6 +1,8 @@
-package satisfaction
+package satisfaction_levels
 
-import "github.com/Azbesciak/RealDecisionMaker/lib/model"
+import (
+	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+)
 
 //go:generate easytags $GOFILE json:camel
 type thresholdSatisfactionLevels struct {

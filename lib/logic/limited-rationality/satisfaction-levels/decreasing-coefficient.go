@@ -1,4 +1,4 @@
-package satisfaction
+package satisfaction_levels
 
 import (
 	"fmt"
@@ -11,13 +11,13 @@ type DecreasingCoefficientManager struct {
 
 func (d *DecreasingCoefficientManager) Validate(params *idealCoefficientSatisfactionLevels) {
 	if params.Coefficient <= 0 || params.Coefficient >= 1 {
-		panic(fmt.Errorf("satisfaction Coefficient degradation level must be in range (0,1), got %f", params.Coefficient))
+		panic(fmt.Errorf("satisfaction coefficient degradation level must be in range (0,1), got %f", params.Coefficient))
 	}
 	if params.MinValue <= 0 {
-		panic(fmt.Errorf("minimum satisfaction Coefficient level must be positive value, got %f", params.MinValue))
+		panic(fmt.Errorf("minimum satisfaction coefficient level must be positive value, got %f", params.MinValue))
 	}
 	if params.MaxValue > 1 {
-		panic(fmt.Errorf("max satisfaction Coefficient level cannot be greater than 1, got %f", params.MinValue))
+		panic(fmt.Errorf("max satisfaction coefficient level cannot be greater than 1, got %f", params.MinValue))
 	}
 }
 
@@ -30,7 +30,7 @@ func (d *DecreasingCoefficientManager) InitialValue(params *idealCoefficientSati
 }
 
 var IdealDecreasingMulCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{
-	name: "idealMulCoefficient",
+	name: "idealMultipliedCoefficient",
 	coefficientManager: &DecreasingCoefficientManager{
 		updateCoefficient: func(current, coefficient float64) float64 {
 			return current * coefficient
@@ -39,7 +39,7 @@ var IdealDecreasingMulCoefficientSatisfaction = IdealCoefficientSatisfactionLeve
 }
 
 var IdealSubtrCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{
-	name: "idealSubtCoefficient",
+	name: "idealSubtractiveCoefficient",
 	coefficientManager: &IncreasingCoefficientManager{
 		updateCoefficient: func(current, coefficient float64) float64 {
 			return math.Max(current-coefficient, 0)
