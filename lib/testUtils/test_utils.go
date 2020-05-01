@@ -36,13 +36,17 @@ func CompareRankings(expected, received *AlternativesRanking, t *testing.T) {
 			)
 		}
 
-		if !cmp.Equal(e.Evaluation, rec.Evaluation, cmpopts.EquateApprox(0, 1e-8)) {
+		if Differs(e.Evaluation, rec.Evaluation) {
 			t.Errorf(
 				"Invalid evaluation for id '%s' at position %d, expected '%v', got '%v'",
 				e.Alternative.Id, i, e.Evaluation, rec.Evaluation,
 			)
 		}
 	}
+}
+
+func Differs(a, b interface{}) bool {
+	return !cmp.Equal(a, b, cmpopts.EquateApprox(0, 1e-8))
 }
 
 type AltsMap = *map[string]AlternativeResult
