@@ -17,7 +17,7 @@ func (i *IncreasingCoefficientManager) Validate(params *idealCoefficientSatisfac
 		panic(fmt.Errorf("minimum satisfaction coefficient level must be non-negative value, got %f", params.MinValue))
 	}
 	if params.MaxValue >= 1 {
-		panic(fmt.Errorf("max satisfaction coefficient level must be lower than 1, got %f", params.MinValue))
+		panic(fmt.Errorf("max satisfaction coefficient level must be lower than 1, got %f", params.MaxValue))
 	}
 }
 
@@ -40,7 +40,7 @@ var IdealIncreasingMulCoefficientSatisfaction = IdealCoefficientSatisfactionLeve
 
 var IdealAdditiveCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{
 	name: "idealAdditiveCoefficient",
-	coefficientManager: &DecreasingCoefficientManager{
+	coefficientManager: &IncreasingCoefficientManager{
 		updateCoefficient: func(current, coefficient float64) float64 {
 			return math.Max(current+coefficient, 1)
 		},
