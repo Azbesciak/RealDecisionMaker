@@ -1,7 +1,6 @@
 package satisfaction
 
 import (
-	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality/satisfaction-levels"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
@@ -52,7 +51,7 @@ func (s *Satisfaction) ParseParams(dm *model.DecisionMaker) interface{} {
 
 func (s *Satisfaction) Evaluate(dmp *model.DecisionMakingParams) *model.AlternativesRanking {
 	params := dmp.MethodParameters.(SatisfactionParameters)
-	satisfactionLevels := s.getSatisfactionLevels(&params)
+	satisfactionLevels := satisfaction_levels.Find(params.Function, params.Params, s.functions)
 	satisfactionLevels.Initialize(dmp)
 	generator := s.generator(params.RandomSeed())
 	current, considered := limited_rationality.GetAlternativesSearchOrder(dmp, &params, generator)
@@ -120,24 +119,6 @@ func checkWithinSatisfactionLevels(
 		}
 	}
 	return leftToChoice, result, resultIds, resultInsertIndex, thresholdIndex
-}
-
-func (s *Satisfaction) getSatisfactionLevels(satisfactionParams *SatisfactionParameters) satisfaction_levels.SatisfactionLevels {
-	if len(satisfactionParams.Function) == 0 {
-		panic(fmt.Errorf("satisfaction thresholds function not provided"))
-	}
-	for _, f := range s.functions {
-		if f.Name() == satisfactionParams.Function {
-			functionParams := f.BlankParams()
-			utils.DecodeToStruct(satisfactionParams.Params, functionParams)
-			return functionParams
-		}
-	}
-	names := make([]string, len(s.functions))
-	for i, f := range s.functions {
-		names[i] = f.Name()
-	}
-	panic(fmt.Errorf("satisfaction thresholds function '%s' not found in functions %v", satisfactionParams.Function, names))
 }
 
 func updateResult(
