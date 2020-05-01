@@ -58,7 +58,7 @@ func (s *Satisfaction) Evaluate(dmp *model.DecisionMakingParams) *model.Alternat
 	current, considered := limited_rationality.GetAlternativesSearchOrder(dmp, &params, generator)
 	leftToChoice, result, resultIds, resultInsertIndex, thresholdIndex := checkWithinSatisfactionLevels(dmp, current, considered, satisfactionLevels)
 	fillRemainingAlternatives(leftToChoice, thresholdIndex, resultInsertIndex, result, resultIds, weightsSupplier(dmp))
-	ranking := prepareRanking(result, resultIds)
+	ranking := limited_rationality.PrepareSequentialRanking(result, resultIds)
 	return &ranking
 }
 
@@ -157,18 +157,6 @@ func updateResult(
 	}
 	resultIds[resultInsertIndex] = alternative.Id
 	return resultInsertIndex + 1
-}
-
-func prepareRanking(result model.AlternativeResults, resultIds []model.Alternative) model.AlternativesRanking {
-	resultsCount := len(result)
-	ranking := make(model.AlternativesRanking, resultsCount)
-	for i, r := range result {
-		ranking[i] = model.AlternativesRankEntry{
-			AlternativeResult:  r,
-			BetterThanOrSameAs: resultIds[i+1:],
-		}
-	}
-	return ranking
 }
 
 func isGoodEnough(alternative model.AlternativeWithCriteria, thresholds *[]model.WeightedCriterion) bool {

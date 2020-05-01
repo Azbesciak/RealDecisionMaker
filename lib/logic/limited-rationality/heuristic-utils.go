@@ -25,3 +25,15 @@ func GetAlternativesSearchOrder(
 		return alternatives[0], alternatives[1:]
 	}
 }
+
+func PrepareSequentialRanking(result model.AlternativeResults, resultIds []model.Alternative) model.AlternativesRanking {
+	resultsCount := len(result)
+	ranking := make(model.AlternativesRanking, resultsCount)
+	for i, r := range result {
+		ranking[i] = model.AlternativesRankEntry{
+			AlternativeResult:  r,
+			BetterThanOrSameAs: resultIds[i+1:],
+		}
+	}
+	return ranking
+}
