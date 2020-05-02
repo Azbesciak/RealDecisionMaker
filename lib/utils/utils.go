@@ -127,3 +127,5 @@ func NewValueInRangeGenerator(generator ValueGenerator, valueRange *ValueRange) 
 		return generator()*dif + valueRange.Min
 	}
 }
+
+type Map = map[string]interface{}
