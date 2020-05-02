@@ -116,3 +116,44 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 	}
 	testUtils.CompareRankings(&expected, actual, t)
 }
+
+func TestSatisfaction_ParseParams(t *testing.T) {
+	expected := SatisfactionParameters{
+		Function: satisfaction_levels.IdealDecreasingMulCoefficientSatisfaction.Name(),
+		Params: utils.Map{
+			"minValue":    0.01,
+			"maxValue":    1,
+			"coefficient": 0.2,
+		},
+		Seed:    159,
+		Current: "a",
+	}
+	actual := _satisfaction.ParseParams(&model.DecisionMaker{
+		PreferenceFunction: methodName,
+		KnownAlternatives: []model.AlternativeWithCriteria{{
+			Id:       "a",
+			Criteria: model.Weights{"1": 1, "2": 2},
+		}, {
+			Id:       "b",
+			Criteria: model.Weights{"1": 2, "2": 1},
+		}},
+		ChoseToMake: model.Alternatives{"a", "b"},
+		Criteria:    testUtils.GenerateCriteria(2),
+		MethodParameters: utils.Map{
+			"function": "idealMultipliedCoefficient",
+			"params": utils.Map{
+				"minValue":    0.01,
+				"maxValue":    1,
+				"coefficient": 0.2,
+			},
+			"seed":    159,
+			"current": "a",
+		},
+	})
+
+	if _, ok := actual.(SatisfactionParameters); !ok {
+		t.Errorf("expected Satisfaction parameters")
+	} else if testUtils.Differs(expected, actual) {
+		t.Errorf("different than expected: %v vs %v", expected, actual)
+	}
+}
