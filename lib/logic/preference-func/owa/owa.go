@@ -21,14 +21,19 @@ func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 	if weightsCount != len(dm.Criteria) {
 		panic(fmt.Errorf("weights count (%d) not equal to criteria count (%d) for OWA", weightsCount, len(dm.Criteria)))
 	}
-	var weights = make([]model.Weight, weightsCount)
-	i := 0
-	for _, v := range originalWeights {
-		weights[i] = v
-		i++
-	}
+	weights := toArray(originalWeights)
 	_sortWeightsMutate(&weights)
 	return owaParams{weights: &weights}
+}
+
+func toArray(weights model.Weights) []model.Weight {
+	result := make([]model.Weight, len(weights))
+	i := 0
+	for _, v := range weights {
+		result[i] = v
+		i++
+	}
+	return result
 }
 
 func (O *OWAPreferenceFunc) Identifier() string {
@@ -90,12 +95,11 @@ func (o *owaParams) withoutNWorstWeights(n int) *owaParams {
 	return &owaParams{weights: &res}
 }
 
-func (o *owaParams) withWeight(weight model.Weight) *owaParams {
-	weights := append([]model.Weight{weight}, *o.weights...)
-	if weight > weights[1] {
-		_sortWeightsMutate(&weights)
-	}
-	return &owaParams{weights: &weights}
+func (o *owaParams) withWeights(weights model.WeightType) *owaParams {
+	newWeights := toArray(weights.Weights)
+	result := append(newWeights, *o.weights...)
+	_sortWeightsMutate(&result)
+	return &owaParams{weights: &result}
 }
 
 func (o *owaParams) minWeight() float64 {

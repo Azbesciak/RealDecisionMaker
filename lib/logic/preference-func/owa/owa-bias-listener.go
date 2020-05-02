@@ -14,8 +14,8 @@ func (h *OwaBiasListener) Identifier() string {
 
 func (h *OwaBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldParams := params.(owaParams)
-	newParams := addition.(owaParams)
-	return *oldParams.withWeight(newParams.minWeight())
+	newParams := addition.(model.WeightType)
+	return *oldParams.withWeights(newParams)
 }
 
 func (h *OwaBiasListener) OnCriterionAdded(
@@ -26,7 +26,7 @@ func (h *OwaBiasListener) OnCriterionAdded(
 ) model.MethodParameters {
 	owaPar := params.(owaParams)
 	newWeight := generator() * owaPar.minWeight()
-	return owaParams{weights: &[]model.Weight{newWeight}}
+	return model.SingleWeight(criterion, newWeight)
 }
 
 func (h *OwaBiasListener) OnCriteriaRemoved(
