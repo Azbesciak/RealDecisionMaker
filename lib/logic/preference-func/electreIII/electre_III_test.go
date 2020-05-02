@@ -1,6 +1,7 @@
 package electreIII
 
 import (
+	"encoding/json"
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
@@ -104,5 +105,24 @@ func validate(t *testing.T, expected, result float64, a1, a2 *AlternativeWithCri
 			"alterative 1: '%s', 2: '%s', criterion '%s': expected %s to be %v, got %v",
 			a1.Id, a2.Id, criterion.Id, typ, expected, result,
 		)
+	}
+}
+
+func TestJsonMarshaling(t *testing.T) {
+	expected := electreIIIParams{
+		Criteria:        electreIIICriteria,
+		DistillationFun: nil,
+	}
+	res, err := json.Marshal(expected)
+	if err != nil {
+		t.Errorf("could not marshal electre III params: %v", err)
+		return
+	}
+	actual := electreIIIParams{}
+	err = json.Unmarshal(res, &actual)
+	if err != nil {
+		t.Errorf("could not unmarshal electre III params: %v", err)
+	} else if utils.Differs(expected, actual) {
+		t.Errorf("results differ, expected %v actual %v", expected, actual)
 	}
 }

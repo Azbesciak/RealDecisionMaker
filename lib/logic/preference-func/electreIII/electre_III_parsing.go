@@ -6,9 +6,10 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
+//go:generate easytags $GOFILE json:camel
 type electreIIIParams struct {
-	criteria        *ElectreCriteria
-	distillationFun *LinearFunctionParameters
+	Criteria        *ElectreCriteria          `json:"criteria"`
+	DistillationFun *LinearFunctionParameters `json:"distillationFun,omitempty"`
 }
 
 const distillationFun = "electreDistillation"
@@ -16,22 +17,22 @@ const criteria = "electreCriteria"
 
 func (e *ElectreIIIPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 	return electreIIIParams{
-		criteria:        extractElectreIIICriteria(dm),
-		distillationFun: getDistillationFunc(dm),
+		Criteria:        extractElectreIIICriteria(dm),
+		DistillationFun: getDistillationFunc(dm),
 	}
 }
 
 func extractElectreIIICriteria(dm *model.DecisionMaker) *ElectreCriteria {
 	potentialEleCriteria, ok := dm.MethodParameters[criteria]
 	if !ok {
-		panic(fmt.Errorf("criteria for electre not found in methodParameters: %v", dm.MethodParameters))
+		panic(fmt.Errorf("Criteria for electre not found in methodParameters: %v", dm.MethodParameters))
 	}
 	electreCriteria := make(ElectreCriteria)
 	utils.DecodeToStruct(potentialEleCriteria, &electreCriteria)
 	for _, criterion := range dm.Criteria {
 		electreCriterion, cOk := electreCriteria[criterion.Id]
 		if !cOk {
-			panic(fmt.Errorf("criterion '%s' not found in electre criteria: %v", criterion.Id, electreCriteria))
+			panic(fmt.Errorf("criterion '%s' not found in electre Criteria: %v", criterion.Id, electreCriteria))
 		}
 		validateParameters(&criterion, &electreCriterion)
 	}

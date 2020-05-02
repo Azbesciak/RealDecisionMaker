@@ -7,12 +7,13 @@ import (
 
 const methodName = "electreIII"
 
+//go:generate easytags $GOFILE json:camel
 type ElectreIIIPreferenceFunc struct {
 }
 
 type ElectreIIIInputParams struct {
 	Criteria        ElectreCriteria          `json:"criteria"`
-	DistillationFun LinearFunctionParameters `json:"distillationFun"`
+	DistillationFun LinearFunctionParameters `json:"distillationFun,omitempty"`
 }
 
 func (e *ElectreIIIPreferenceFunc) Identifier() string {
@@ -25,7 +26,7 @@ func (e *ElectreIIIPreferenceFunc) MethodParameters() interface{} {
 
 func (e *ElectreIIIPreferenceFunc) Evaluate(dmp *DecisionMakingParams) *AlternativesRanking {
 	params := dmp.MethodParameters.(electreIIIParams)
-	return ElectreIII(dmp.ConsideredAlternatives, dmp.Criteria, params.criteria, params.distillationFun)
+	return ElectreIII(dmp.ConsideredAlternatives, dmp.Criteria, params.Criteria, params.DistillationFun)
 }
 
 func ElectreIII(
@@ -146,22 +147,22 @@ func calculateElectreResult(c1Val, c2Val Weight, c *Criterion, ths *ElectreCrite
 }
 
 type ElectreResult struct {
-	C float64
-	D float64
+	C float64 `json:"c"`
+	D float64 `json:"d"`
 }
 
 type ElectreCriteria = map[string]ElectreCriterion
 
 type ElectreCriterion struct {
-	K float64
-	Q LinearFunctionParameters
-	P LinearFunctionParameters
-	V LinearFunctionParameters
+	K float64                  `json:"k"`
+	Q LinearFunctionParameters `json:"q"`
+	P LinearFunctionParameters `json:"p"`
+	V LinearFunctionParameters `json:"v"`
 }
 
 type LinearFunctionParameters struct {
-	A float64
-	B float64
+	A float64 `json:"a"`
+	B float64 `json:"b"`
 }
 
 func (f *LinearFunctionParameters) String() string {
@@ -176,8 +177,8 @@ func (f *LinearFunctionParameters) evaluate(value float64) (result float64, ok b
 }
 
 type AlternativesMatrix struct {
-	Alternatives *Alternatives
-	Values       *Matrix
+	Alternatives *Alternatives `json:"alternatives"`
+	Values       *Matrix       `json:"values"`
 }
 
 type electreIIISingleResult struct {

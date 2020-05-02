@@ -16,18 +16,18 @@ func (e *ElectreIIIBiasLIstener) Identifier() string {
 func (e *ElectreIIIBiasLIstener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldEleParams := params.(electreIIIParams)
 	newEleParams := addition.(electreIIIParams)
-	newCriteria := make(ElectreCriteria, len(*oldEleParams.criteria)+len(*newEleParams.criteria))
-	for c, v := range *oldEleParams.criteria {
+	newCriteria := make(ElectreCriteria, len(*oldEleParams.Criteria)+len(*newEleParams.Criteria))
+	for c, v := range *oldEleParams.Criteria {
 		newCriteria[c] = v
 	}
-	for c, v := range *newEleParams.criteria {
+	for c, v := range *newEleParams.Criteria {
 		_, ok := newCriteria[c]
 		if ok {
-			panic(fmt.Errorf("criterion '%s' already exist in params in electre criteria, merge %v with %v", c, *oldEleParams.criteria, *newEleParams.criteria))
+			panic(fmt.Errorf("criterion '%s' already exist in params in electre Criteria, merge %v with %v", c, *oldEleParams.Criteria, *newEleParams.Criteria))
 		}
 		newCriteria[c] = v
 	}
-	return electreIIIParams{criteria: &newCriteria, distillationFun: oldEleParams.distillationFun}
+	return electreIIIParams{Criteria: &newCriteria, DistillationFun: oldEleParams.DistillationFun}
 }
 
 func (e *ElectreIIIBiasLIstener) OnCriterionAdded(
@@ -37,8 +37,8 @@ func (e *ElectreIIIBiasLIstener) OnCriterionAdded(
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
 	eleParams := params.(electreIIIParams)
-	weakestCriterion := (*eleParams.criteria)[previousRankedCriteria.First().Id]
-	return electreIIIParams{criteria: &ElectreCriteria{
+	weakestCriterion := (*eleParams.Criteria)[previousRankedCriteria.First().Id]
+	return electreIIIParams{Criteria: &ElectreCriteria{
 		criterion.Id: ElectreCriterion{
 			K: generator() * weakestCriterion.K,
 			Q: weakestCriterion.Q,
@@ -56,19 +56,19 @@ func (e *ElectreIIIBiasLIstener) OnCriteriaRemoved(
 	eleParams := params.(electreIIIParams)
 	resCriteria := make(ElectreCriteria, len(*leftCriteria))
 	for _, c := range *leftCriteria {
-		criterion, ok := (*eleParams.criteria)[c.Id]
+		criterion, ok := (*eleParams.Criteria)[c.Id]
 		if !ok {
-			panic(fmt.Errorf("criterion '%s' not found in electre criteria %v", c.Id, *eleParams.criteria))
+			panic(fmt.Errorf("criterion '%s' not found in electre Criteria %v", c.Id, *eleParams.Criteria))
 		}
 		resCriteria[c.Id] = criterion
 	}
-	return electreIIIParams{criteria: &resCriteria, distillationFun: eleParams.distillationFun}
+	return electreIIIParams{Criteria: &resCriteria, DistillationFun: eleParams.DistillationFun}
 }
 
 func (e *ElectreIIIBiasLIstener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
 	eleParams := params.MethodParameters.(electreIIIParams)
-	weights := make(model.Weights, len(*eleParams.criteria))
-	for k, v := range *eleParams.criteria {
+	weights := make(model.Weights, len(*eleParams.Criteria))
+	for k, v := range *eleParams.Criteria {
 		weights[k] = v.K
 	}
 	return params.Criteria.SortByWeights(weights)
