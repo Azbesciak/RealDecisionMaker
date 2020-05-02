@@ -122,3 +122,35 @@ func TestMajority_compare(t *testing.T) {
 		t.Errorf("expected same values, got %f, expected 2", s1)
 	}
 }
+
+func TestMajority_ParseParams(t *testing.T) {
+	expected := MajorityHeuristicParams{
+		Weights: model.Weights{
+			"1": 111, "2": 2, "3": 0,
+		},
+		Current: "1234",
+		Seed:    951,
+	}
+	actual := _majority.ParseParams(&model.DecisionMaker{
+		PreferenceFunction: methodName,
+		KnownAlternatives: []model.AlternativeWithCriteria{{
+			Id:       "1111",
+			Criteria: model.Weights{"1": 3, "2": 7, "3": 10},
+		}, {
+			Id:       "1234",
+			Criteria: model.Weights{"1": 101, "2": 18, "3": 6},
+		}},
+		ChoseToMake: model.Alternatives{"1111", "1234"},
+		Criteria:    testUtils.GenerateCriteria(3),
+		MethodParameters: utils.Map{
+			"weights": utils.Map{"1": 111, "2": 2, "3": 0},
+			"current": "1234",
+			"seed":    951,
+		},
+	})
+	if _, ok := actual.(MajorityHeuristicParams); !ok {
+		t.Errorf("expected MajorityHeuristicParams")
+	} else if testUtils.Differs(expected, actual) {
+		t.Errorf("expected %v, got %v", expected, actual)
+	}
+}
