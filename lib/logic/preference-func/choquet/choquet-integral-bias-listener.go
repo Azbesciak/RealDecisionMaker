@@ -91,15 +91,5 @@ func decomposeWeights(params *model.DecisionMakingParams) *model.Weights {
 func (c *ChoquetIntegralBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldWeights := *params.(choquetParams).weights
 	addedWeights := *addition.(choquetParams).weights
-	result := make(model.Weights, len(oldWeights)+len(addedWeights))
-	for cryt, w := range oldWeights {
-		result[cryt] = w
-	}
-	for cryt, w := range addedWeights {
-		if _, ok := result[cryt]; ok {
-			panic(fmt.Errorf("criterion '%s' from %v already exists in %v", cryt, addedWeights, oldWeights))
-		}
-		result[cryt] = w
-	}
-	return choquetParams{weights: &result}
+	return choquetParams{weights: oldWeights.Merge(&addedWeights)}
 }

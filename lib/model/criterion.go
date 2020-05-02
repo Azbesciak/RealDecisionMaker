@@ -58,19 +58,24 @@ type namedWeight struct {
 
 func (c *Criteria) FindWeight(weights *Weights, criterion *Criterion) Weight {
 	if v, ok := (*weights)[criterion.Id]; !ok {
-		criteria := make([]namedWeight, len(*c))
-		i := 0
-		for crit, value := range *weights {
-			criteria[i] = namedWeight{crit, value}
-			i++
-		}
-		sort.SliceStable(criteria, func(i, j int) bool {
-			return strings.Compare(criteria[i].name, criteria[j].name) < 0
-		})
+		criteria := weightsValues(weights)
 		panic(fmt.Errorf("weight for criterion '%s' not found in criteria %v", criterion.Id, criteria))
 	} else {
 		return v
 	}
+}
+
+func weightsValues(weights *Weights) []namedWeight {
+	criteria := make([]namedWeight, len(*weights))
+	i := 0
+	for crit, value := range *weights {
+		criteria[i] = namedWeight{crit, value}
+		i++
+	}
+	sort.SliceStable(criteria, func(i, j int) bool {
+		return strings.Compare(criteria[i].name, criteria[j].name) < 0
+	})
+	return criteria
 }
 
 func (c *Criteria) First() Criterion {
@@ -126,3 +131,19 @@ func (c *Criteria) ZipWithWeights(weights *Weights) *[]WeightedCriterion {
 }
 
 type Weights map[string]Weight
+
+func (w *Weights) Merge(other *Weights) *Weights {
+	result := make(Weights, len(*other)+len(*w))
+	for cryt, weight := range *w {
+		result[cryt] = weight
+	}
+	for cryt, weight := range *other {
+		if _, ok := result[cryt]; ok {
+			oldWeights := weightsValues(w)
+			newWeights := weightsValues(other)
+			panic(fmt.Errorf("criterion '%s' from %v already exists in %v", cryt, oldWeights, newWeights))
+		}
+		result[cryt] = weight
+	}
+	return &result
+}
