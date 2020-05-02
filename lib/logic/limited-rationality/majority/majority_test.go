@@ -150,7 +150,7 @@ func TestMajority_ParseParams(t *testing.T) {
 	})
 	if _, ok := actual.(MajorityHeuristicParams); !ok {
 		t.Errorf("expected MajorityHeuristicParams")
-	} else if testUtils.Differs(expected, actual) {
+	} else if utils.Differs(expected, actual) {
 		t.Errorf("expected %v, got %v", expected, actual)
 	}
 }

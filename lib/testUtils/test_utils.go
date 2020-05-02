@@ -3,8 +3,6 @@ package testUtils
 import (
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"strconv"
 	"testing"
 )
@@ -29,24 +27,20 @@ func CompareRankings(expected, received *AlternativesRanking, t *testing.T) {
 			t.Errorf("Expected id of '%s' at position %d, got '%s'", e.Alternative.Id, i, rec.Alternative.Id)
 		}
 
-		if !cmp.Equal(e.BetterThanOrSameAs, rec.BetterThanOrSameAs) {
+		if utils.Differs(e.BetterThanOrSameAs, rec.BetterThanOrSameAs) {
 			t.Errorf(
 				"Invalid Preferrence of id '%s' at position %d, expected '%s', got '%s'",
 				e.Alternative.Id, i, e.BetterThanOrSameAs, rec.BetterThanOrSameAs,
 			)
 		}
 
-		if Differs(e.Evaluation, rec.Evaluation) {
+		if utils.Differs(e.Evaluation, rec.Evaluation) {
 			t.Errorf(
 				"Invalid evaluation for id '%s' at position %d, expected '%v', got '%v'",
 				e.Alternative.Id, i, e.Evaluation, rec.Evaluation,
 			)
 		}
 	}
-}
-
-func Differs(a, b interface{}) bool {
-	return !cmp.Equal(a, b, cmpopts.EquateApprox(0, 1e-8))
 }
 
 type AltsMap = *map[string]AlternativeResult

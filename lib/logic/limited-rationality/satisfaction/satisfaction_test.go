@@ -153,7 +153,7 @@ func TestSatisfaction_ParseParams(t *testing.T) {
 
 	if _, ok := actual.(SatisfactionParameters); !ok {
 		t.Errorf("expected Satisfaction parameters")
-	} else if testUtils.Differs(expected, actual) {
+	} else if utils.Differs(expected, actual) {
 		t.Errorf("different than expected: %v vs %v", expected, actual)
 	}
 }

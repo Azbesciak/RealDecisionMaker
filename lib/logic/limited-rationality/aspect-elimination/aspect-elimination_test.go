@@ -4,6 +4,7 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality/satisfaction-levels"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
 )
 
@@ -112,10 +113,10 @@ func compareParams(t *testing.T, expected AspectEliminationHeuristicParams, actu
 		t.Errorf("expected AspectEliminationHeuristicParams as params")
 		return
 	}
-	if testUtils.Differs(expected.Weights, parsed.Weights) {
+	if utils.Differs(expected.Weights, parsed.Weights) {
 		t.Errorf("different weights, expected %v, got %v", expected.Weights, parsed.Weights)
 	}
-	if testUtils.Differs(expected.Params, parsed.Params) {
+	if utils.Differs(expected.Params, parsed.Params) {
 		t.Errorf("different params, expected %v, got %v", expected.Params, parsed.Params)
 	}
 	if expected.Seed != parsed.Seed {
