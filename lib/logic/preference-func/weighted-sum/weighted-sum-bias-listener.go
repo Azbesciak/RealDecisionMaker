@@ -12,9 +12,14 @@ func (w *WeightedSumBiasListener) Identifier() string {
 	return methodName
 }
 
+type WeightedSumAddedCriterion struct {
+	Weights model.Weights `json:"weights"`
+	weights []model.WeightedCriterion
+}
+
 func (w *WeightedSumBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldWeights := *params.(weightedSumParams).weightedCriteria
-	addedWeights := *addition.(weightedSumParams).weightedCriteria
+	addedWeights := addition.(WeightedSumAddedCriterion).weights
 	merged := append(oldWeights, addedWeights...)
 	return weightedSumParams{weightedCriteria: &merged}
 }
@@ -27,11 +32,15 @@ func (w *WeightedSumBiasListener) OnCriterionAdded(
 ) model.AddedCriterionParams {
 	wParams := params.(weightedSumParams)
 	leastImportantParam := wParams.Criterion(previousRankedCriteria.First().Identifier())
-	newCriterionWeight := []model.WeightedCriterion{{
+	newCriterionWeight := generator() * leastImportantParam.Weight
+	newCriterion := []model.WeightedCriterion{{
 		Criterion: *criterion,
-		Weight:    generator() * leastImportantParam.Weight,
+		Weight:    newCriterionWeight,
 	}}
-	return weightedSumParams{weightedCriteria: &newCriterionWeight}
+	return WeightedSumAddedCriterion{
+		Weights: model.Weights{criterion.Id: newCriterionWeight},
+		weights: newCriterion,
+	}
 }
 
 func (w *WeightedSumBiasListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {

@@ -3,6 +3,7 @@ package weighted_sum
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
 )
 
@@ -46,4 +47,55 @@ func assignCriteria(criteria []model.Criterion, criteriaWeights []model.Weight) 
 		}
 	}
 	return weightedCriteria
+}
+
+func TestWSCriterionAdding(t *testing.T) {
+	generator := testUtils.CyclicRandomGenerator(0, 2)
+	criterion := &model.Criterion{Id: "3", Type: model.Cost}
+	c1 := model.Criterion{Id: "1", Type: model.Gain}
+	c2 := model.Criterion{Id: "2", Type: model.Cost}
+	addedCriterion := bias.OnCriterionAdded(
+		criterion,
+		&model.Criteria{c1, c2},
+		weightedSumParams{
+			weightedCriteria: &[]model.WeightedCriterion{{
+				Criterion: c1,
+				Weight:    12,
+			}, {
+				Criterion: c2,
+				Weight:    5,
+			}},
+		},
+		generator(123),
+	)
+	expected := WeightedSumAddedCriterion{
+		Weights: model.Weights{criterion.Id: 6},
+		weights: []model.WeightedCriterion{{*criterion, 6}},
+	}
+	if utils.Differs(expected, addedCriterion) {
+		t.Errorf("wrong value for owa bias add result, expected %v, got %v", expected, addedCriterion)
+	}
+}
+
+func TestWSCriterionMerging(t *testing.T) {
+	c1 := model.Criterion{Id: "1", Type: model.Gain}
+	c2 := model.Criterion{Id: "2", Type: model.Cost}
+	c1w := model.WeightedCriterion{Criterion: c1, Weight: 12}
+	c2w := model.WeightedCriterion{Criterion: c2, Weight: 5}
+
+	c3 := model.Criterion{Id: "3", Type: model.Cost}
+	c3w := model.WeightedCriterion{Criterion: c3, Weight: 2.5}
+
+	added := WeightedSumAddedCriterion{
+		Weights: model.Weights{c3.Id: c3w.Weight},
+		weights: []model.WeightedCriterion{c3w},
+	}
+	current := weightedSumParams{weightedCriteria: &[]model.WeightedCriterion{c1w, c2w}}
+	actual := bias.Merge(current, added)
+	expected := weightedSumParams{weightedCriteria: &[]model.WeightedCriterion{c1w, c2w, c3w}}
+	if wsParsed, ok := actual.(weightedSumParams); !ok {
+		t.Errorf("invalid result type from weighted sum, expected weightedSumParams")
+	} else if utils.Differs(expected.weightedCriteria, wsParsed.weightedCriteria) {
+		t.Errorf("wrong value for weighted sum bias merge result, expected %v, got %v", expected, actual)
+	}
 }
