@@ -86,3 +86,8 @@ func PrepareCumulatedWeightsMap(
 func WeightIdentity(criterion string, value Weight) Weight {
 	return value
 }
+
+func NewCriterionValue(previousWeights *Weights, previousRankedCriteria *Criteria, generator *utils.ValueGenerator) Weight {
+	weight := (*previousWeights)[previousRankedCriteria.First().Identifier()]
+	return (*generator)() * weight
+}

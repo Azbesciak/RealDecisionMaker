@@ -18,7 +18,11 @@ func Rank(dmp *DecisionMakingParams, pref AlternativeWeightFunction) *Alternativ
 const WeightsParam = "weights"
 
 type WeightType struct {
-	Weights `json:"weights"`
+	Weights Weights `json:"weights"`
+}
+
+func SingleWeight(criterion *Criterion, value Weight) WeightType {
+	return WeightType{Weights: Weights{criterion.Id: value}}
 }
 
 func WeightsParamOnly() interface{} {

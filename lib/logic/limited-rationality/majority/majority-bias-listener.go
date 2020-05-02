@@ -19,12 +19,8 @@ func (m *MajorityBiasListener) OnCriterionAdded(
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
 	wParams := params.(MajorityHeuristicParams)
-	leastImportantParam := wParams.Weights[previousRankedCriteria.First().Identifier()]
-	newWeight := generator() * leastImportantParam
-	return model.WeightedCriterion{
-		Criterion: *criterion,
-		Weight:    newWeight,
-	}
+	newWeight := model.NewCriterionValue(&wParams.Weights, previousRankedCriteria, &generator)
+	return model.SingleWeight(criterion, newWeight)
 }
 
 func (m *MajorityBiasListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
@@ -44,9 +40,9 @@ func (m *MajorityBiasListener) RankCriteriaAscending(params *model.DecisionMakin
 
 func (m *MajorityBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
 	oldParams := params.(MajorityHeuristicParams)
-	newParams := addition.(model.WeightedCriterion)
+	newParams := addition.(model.WeightType)
 	return MajorityHeuristicParams{
-		Weights: *oldParams.Weights.Merge(newParams.AsWeights()),
+		Weights: *oldParams.Weights.Merge(&newParams.Weights),
 		Current: oldParams.Current,
 		Seed:    oldParams.Seed,
 	}
