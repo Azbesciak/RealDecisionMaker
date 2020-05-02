@@ -130,7 +130,24 @@ func (c *Criteria) ZipWithWeights(weights *Weights) *[]WeightedCriterion {
 	return &weightedCriteria
 }
 
+func (c *WeightedCriterion) AsWeights() *Weights {
+	return &Weights{c.Id: c.Weight}
+}
+
 type Weights map[string]Weight
+
+func (w *Weights) PreserveOnly(criteria *Criteria) *Weights {
+	cpy := make(Weights, len(*criteria))
+	for _, c := range *criteria {
+		if v, ok := (*w)[c.Id]; !ok {
+			values := weightsValues(w)
+			panic(fmt.Errorf("criterion %s not found in %v", c.Id, values))
+		} else {
+			cpy[c.Id] = v
+		}
+	}
+	return &cpy
+}
 
 func (w *Weights) Merge(other *Weights) *Weights {
 	result := make(Weights, len(*other)+len(*w))
