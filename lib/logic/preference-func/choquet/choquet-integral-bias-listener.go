@@ -46,16 +46,11 @@ func (c *ChoquetIntegralBiasListener) OnCriteriaRemoved(
 	params model.MethodParameters,
 ) model.MethodParameters {
 	cParams := params.(choquetParams)
-	filteredWeights := make(model.Weights, PowerSetSize(len(*leftCriteria)))
-weightSearch:
-	for cryt, v := range *cParams.weights {
-		contained := containedCriteria(cryt)
-		for _, someCryt := range *removedCriteria {
-			if utils.ContainsString(&contained, &someCryt.Id) {
-				continue weightSearch
-			}
-		}
-		filteredWeights[cryt] = v
+	expectedSet := *PowerSet(*leftCriteria.Names())
+	filteredWeights := make(model.Weights, len(expectedSet))
+	for _, criteria := range expectedSet {
+		key := criterionKey(&criteria)
+		filteredWeights[key] = cParams.weights.Fetch(key)
 	}
 	return choquetParams{weights: &filteredWeights}
 }

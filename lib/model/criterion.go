@@ -136,15 +136,19 @@ func (c *WeightedCriterion) AsWeights() *Weights {
 
 type Weights map[string]Weight
 
+func (w *Weights) Fetch(key string) Weight {
+	if v, ok := (*w)[key]; !ok {
+		values := weightsValues(w)
+		panic(fmt.Errorf("criterion %s not found in %v", key, values))
+	} else {
+		return v
+	}
+}
+
 func (w *Weights) PreserveOnly(criteria *Criteria) *Weights {
 	cpy := make(Weights, len(*criteria))
 	for _, c := range *criteria {
-		if v, ok := (*w)[c.Id]; !ok {
-			values := weightsValues(w)
-			panic(fmt.Errorf("criterion %s not found in %v", c.Id, values))
-		} else {
-			cpy[c.Id] = v
-		}
+		cpy[c.Id] = w.Fetch(c.Id)
 	}
 	return &cpy
 }

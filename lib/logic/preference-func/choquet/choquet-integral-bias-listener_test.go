@@ -3,10 +3,11 @@ package choquet
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
 )
 
-var wsTestCriteria = model.Criteria{{Id: "1"}, {Id: "2"}, {Id: "3"}}
+var wsTestCriteria = testUtils.GenerateCriteria(3)
 var bias = &ChoquetIntegralBiasListener{}
 
 type cw struct {
@@ -88,4 +89,37 @@ func TestChoquetIntegralBias_RankCriteriaAscending_EqualWeights(t *testing.T) {
 		Alts{{"1": 1, "2": 1000, "3": 3}, {"1": 2, "2": 600, "3": -2}},
 		cw{_1: 1, _2: 1, _3: 1, _12: 1, _13: 1, _23: 1, _123: 1},
 	), []string{"3", "1", "2"})
+}
+
+func TestChoquetIntegralBiasListener_OnCriteriaRemoved_criteriaOrder(t *testing.T) {
+	original := *cw{_1: 1, _2: 2, _3: 3, _12: 12, _13: 13, _23: 23, _123: 123}.toMap()
+	expected := model.Weights{"2": 2, "3": 3, "2,3": 23}
+	removed := wsTestCriteria[:1]
+	left := model.Criteria{wsTestCriteria[2], wsTestCriteria[1]}
+	testChoquetRemoval(t, original, expected, removed, left)
+}
+
+func TestChoquetIntegralBiasListener_OnCriteriaRemoved(t *testing.T) {
+	original := *cw{_1: 1, _2: 2, _3: 3, _12: 12, _13: 13, _23: 23, _123: 123}.toMap()
+	expected := model.Weights{"2": 2, "3": 3, "2,3": 23}
+	removed := wsTestCriteria[:1]
+	left := wsTestCriteria[1:]
+	testChoquetRemoval(t, original, expected, removed, left)
+}
+
+func TestChoquetIntegralBiasListener_OnCriteriaRemoved_more(t *testing.T) {
+	original := *cw{_1: 1, _2: 2, _3: 3, _12: 12, _13: 13, _23: 23, _123: 123}.toMap()
+	expected := model.Weights{"2": 2}
+	removed := model.Criteria{wsTestCriteria[0], wsTestCriteria[2]}
+	left := model.Criteria{wsTestCriteria[1]}
+	testChoquetRemoval(t, original, expected, removed, left)
+}
+
+func testChoquetRemoval(t *testing.T, original, expected model.Weights, removed, left model.Criteria) {
+	actual := bias.OnCriteriaRemoved(&removed, &left, choquetParams{weights: &original})
+	if a, ok := actual.(choquetParams); !ok {
+		t.Errorf("Expected instance of choquetParams")
+	} else if utils.Differs(expected, *a.weights) {
+		t.Errorf("Different weights in choquet, expected %v, got %v", expected, *a.weights)
+	}
 }
