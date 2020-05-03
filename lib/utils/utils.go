@@ -132,6 +132,7 @@ func NewValueInRangeGenerator(generator ValueGenerator, valueRange *ValueRange) 
 }
 
 type Map = map[string]interface{}
+type Array = []interface{}
 
 func Differs(a, b interface{}) bool {
 	return !cmp.Equal(a, b, cmpopts.EquateApprox(0, 1e-8), cmp.Exporter(func(r reflect.Type) bool {
