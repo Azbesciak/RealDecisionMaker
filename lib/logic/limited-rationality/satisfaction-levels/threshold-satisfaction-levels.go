@@ -34,6 +34,95 @@ func (t *ThresholdSatisfactionLevels) Next() model.Weights {
 }
 
 type ThresholdSatisfactionLevelsSource struct {
+	ascending bool
+}
+
+type ThresholdsUpdate struct {
+	Thresholds []model.Weights `json:"thresholds"`
+}
+
+func (t *ThresholdSatisfactionLevelsSource) OnCriterionAdded(
+	criterion *model.Criterion,
+	previousRankedCriteria *model.Criteria,
+	params SatisfactionLevels,
+	generator utils.ValueGenerator,
+) ParamsAddition {
+	pParams := fetchParams(params)
+	thresholdsValues := assignNewThresholds(pParams, previousRankedCriteria, generator)
+	sortThresholds(thresholdsValues, t.ascending)
+	thresholds := mapThresholdsToEntries(criterion, thresholdsValues)
+	return ThresholdsUpdate{Thresholds: thresholds}
+}
+
+func mapThresholdsToEntries(criterion *model.Criterion, thresholdsValues []model.Weight) []model.Weights {
+	thresholds := make([]model.Weights, len(thresholdsValues))
+	for i, threshold := range thresholdsValues {
+		thresholds[i] = model.Weights{criterion.Id: threshold}
+	}
+	return thresholds
+}
+
+func assignNewThresholds(params *ThresholdSatisfactionLevels, previousRankedCriteria *model.Criteria, generator utils.ValueGenerator) []model.Weight {
+	thresholds := make([]model.Weight, len(params.Thresholds))
+	referenceCriterion := previousRankedCriteria.First()
+	for i, threshold := range params.Thresholds {
+		thresholds[i] = threshold.Fetch(referenceCriterion.Id) * generator()
+	}
+	return thresholds
+}
+
+func sortThresholds(thresholds []model.Weight, ascending bool) {
+	sort.Slice(thresholds, func(i, j int) bool {
+		less := thresholds[i] < thresholds[j]
+		if ascending {
+			return less
+		} else {
+			return !less
+		}
+	})
+}
+
+func (t *ThresholdSatisfactionLevelsSource) OnCriteriaRemoved(leftCriteria *model.Criteria, params SatisfactionLevels) SatisfactionLevels {
+	pParams := fetchParams(params)
+	thresholds := pParams.preserveLeftThresholds(leftCriteria)
+	return &ThresholdSatisfactionLevels{
+		Thresholds:   thresholds,
+		currentIndex: pParams.currentIndex,
+	}
+}
+
+func (t *ThresholdSatisfactionLevels) preserveLeftThresholds(leftCriteria *model.Criteria) []model.Weights {
+	thresholds := make([]model.Weights, len(t.Thresholds))
+	for i, threshold := range t.Thresholds {
+		thresholds[i] = *threshold.PreserveOnly(leftCriteria)
+	}
+	return thresholds
+}
+
+func (t *ThresholdSatisfactionLevelsSource) Merge(params SatisfactionLevels, addition ParamsAddition) SatisfactionLevels {
+	pParams := fetchParams(params)
+	add := addition.(ThresholdsUpdate)
+	newThresholds := pParams.merge(add)
+	return &ThresholdSatisfactionLevels{
+		Thresholds:   newThresholds,
+		currentIndex: pParams.currentIndex,
+	}
+}
+
+func (t *ThresholdSatisfactionLevels) merge(add ThresholdsUpdate) []model.Weights {
+	newThresholds := make([]model.Weights, len(t.Thresholds))
+	for i, thresholds := range t.Thresholds {
+		newThresholds[i] = *thresholds.Merge(&add.Thresholds[i])
+	}
+	return newThresholds
+}
+
+func fetchParams(params SatisfactionLevels) *ThresholdSatisfactionLevels {
+	if p, ok := params.(*ThresholdSatisfactionLevels); !ok {
+		panic(fmt.Errorf("threshold params shold be instance of ThresholdSatisfactionLevels"))
+	} else {
+		return p
+	}
 }
 
 const Thresholds = "thresholds"
@@ -44,4 +133,12 @@ func (t *ThresholdSatisfactionLevelsSource) Identifier() string {
 
 func (t *ThresholdSatisfactionLevelsSource) BlankParams() SatisfactionLevels {
 	return &ThresholdSatisfactionLevels{}
+}
+
+var IncreasingThresholds = ThresholdSatisfactionLevelsSource{
+	ascending: true,
+}
+
+var DecreasingThresholds = ThresholdSatisfactionLevelsSource{
+	ascending: false,
 }
