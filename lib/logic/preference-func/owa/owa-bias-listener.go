@@ -35,7 +35,7 @@ func (h *OwaBiasListener) OnCriteriaRemoved(
 	params model.MethodParameters,
 ) model.MethodParameters {
 	owaPar := params.(owaParams)
-	return *owaPar.withoutNWorstWeights(len(*removedCriteria))
+	return *owaPar.takeNBest(len(*leftCriteria))
 }
 
 func (h *OwaBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {

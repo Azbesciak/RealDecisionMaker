@@ -90,8 +90,12 @@ func sortWeights(weights *[]model.Weight) *[]model.Weight {
 	return &tmpWeights
 }
 
-func (o *owaParams) withoutNWorstWeights(n int) *owaParams {
-	res := (*o.weights)[n:]
+func (o *owaParams) takeNBest(n int) *owaParams {
+	skip := len(*o.weights) - n
+	if skip < 0 {
+		skip = 0
+	}
+	res := (*o.weights)[skip:]
 	return &owaParams{weights: &res}
 }
 

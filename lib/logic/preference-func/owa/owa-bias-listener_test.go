@@ -52,3 +52,36 @@ func TestOwaCriterionMerging(t *testing.T) {
 		t.Errorf("wrong value for owa bias merge result, expected %v, got %v", expected, actual)
 	}
 }
+
+func TestOwaBiasListener_OnCriteriaRemoved(t *testing.T) {
+	removed := owaTestCriteria[:1]
+	left := owaTestCriteria[1:]
+	expected := []model.Weight{2, 3}
+	original := []model.Weight{1, 2, 3}
+	testRemoval(t, removed, left, original, expected)
+}
+
+func TestOwaBiasListener_OnCriteriaRemoved_OnlyLeftConsidered(t *testing.T) {
+	removed := owaTestCriteria
+	left := owaTestCriteria
+	expected := []model.Weight{1, 2, 3}
+	original := []model.Weight{1, 2, 3}
+	testRemoval(t, removed, left, original, expected)
+}
+
+func TestOwaBiasListener_OnCriteriaRemoved_nothingLeft(t *testing.T) {
+	removed := owaTestCriteria
+	left := model.Criteria{}
+	expected := make([]model.Weight, 0)
+	original := []model.Weight{1, 2, 3}
+	testRemoval(t, removed, left, original, expected)
+}
+
+func testRemoval(t *testing.T, removed model.Criteria, left model.Criteria, original []model.Weight, expected []model.Weight) {
+	actual := bias.OnCriteriaRemoved(&removed, &left, owaParams{weights: &original})
+	if a, ok := actual.(owaParams); !ok {
+		t.Errorf("expected owaParams result type")
+	} else if utils.Differs(expected, *a.weights) {
+		t.Errorf("expected owa weights %v, got %v", expected, *a.weights)
+	}
+}
