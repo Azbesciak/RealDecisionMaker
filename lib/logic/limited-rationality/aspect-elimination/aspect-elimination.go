@@ -26,6 +26,15 @@ type AspectEliminationHeuristicParams struct {
 	Weights  model.Weights `json:"weights"`
 }
 
+func (a *AspectEliminationHeuristicParams) with(params interface{}, weights *model.Weights) AspectEliminationHeuristicParams {
+	return AspectEliminationHeuristicParams{
+		Function: a.Function,
+		Params:   params,
+		Seed:     a.Seed,
+		Weights:  *weights,
+	}
+}
+
 const methodName = "aspectEliminationHeuristic"
 
 func (a *AspectEliminationHeuristic) Identifier() string {

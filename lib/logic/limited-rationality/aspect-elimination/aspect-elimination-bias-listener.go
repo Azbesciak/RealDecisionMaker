@@ -37,10 +37,7 @@ func (a *AspectEliminationBiasListener) OnCriterionAdded(
 }
 
 func (a *AspectEliminationBiasListener) getMethodParams(pParams AspectEliminationHeuristicParams) (satisfaction_levels.SatisfactionLevelsUpdateListener, satisfaction_levels.SatisfactionLevels) {
-	listener := *a.satisfactionLevelsUpdateListeners.Fetch(pParams.Function)
-	methodParams := listener.BlankParams()
-	utils.DecodeToStruct(pParams.Params, &methodParams)
-	return listener, methodParams
+	return a.satisfactionLevelsUpdateListeners.Get(pParams.Function, pParams.Params)
 }
 
 func (a *AspectEliminationBiasListener) OnCriteriaRemoved(
@@ -50,12 +47,7 @@ func (a *AspectEliminationBiasListener) OnCriteriaRemoved(
 	pParams := params.(AspectEliminationHeuristicParams)
 	listener, methodParams := a.getMethodParams(pParams)
 	afterRemoveParams := listener.OnCriteriaRemoved(leftCriteria, methodParams)
-	return AspectEliminationHeuristicParams{
-		Function: pParams.Function,
-		Params:   afterRemoveParams,
-		Seed:     pParams.Seed,
-		Weights:  *pParams.Weights.PreserveOnly(leftCriteria),
-	}
+	return pParams.with(afterRemoveParams, pParams.Weights.PreserveOnly(leftCriteria))
 }
 
 func (a *AspectEliminationBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
@@ -67,10 +59,5 @@ func (a *AspectEliminationBiasListener) Merge(params model.MethodParameters, add
 	pParams := params.(AspectEliminationHeuristicParams)
 	aParams := addition.(aspectEliminationAddedCriterion)
 	listener, methodParams := a.getMethodParams(pParams)
-	return AspectEliminationHeuristicParams{
-		Function: pParams.Function,
-		Params:   listener.Merge(methodParams, aParams.Params),
-		Seed:     pParams.Seed,
-		Weights:  *pParams.Weights.Merge(&aParams.Weights),
-	}
+	return pParams.with(listener.Merge(methodParams, aParams.Params), pParams.Weights.Merge(&aParams.Weights))
 }
