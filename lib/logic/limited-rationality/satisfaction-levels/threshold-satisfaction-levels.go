@@ -26,10 +26,12 @@ func (t *thresholdSatisfactionLevels) Next() model.Weights {
 type ThresholdSatisfactionLevelsSource struct {
 }
 
-func (t ThresholdSatisfactionLevelsSource) Name() string {
-	return "thresholds"
+const Thresholds = "thresholds"
+
+func (t *ThresholdSatisfactionLevelsSource) Identifier() string {
+	return Thresholds
 }
 
-func (t ThresholdSatisfactionLevelsSource) BlankParams() SatisfactionLevels {
+func (t *ThresholdSatisfactionLevelsSource) BlankParams() SatisfactionLevels {
 	return &thresholdSatisfactionLevels{}
 }

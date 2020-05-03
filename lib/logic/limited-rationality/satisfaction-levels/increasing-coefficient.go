@@ -29,8 +29,10 @@ func (i *IncreasingCoefficientManager) InitialValue(params *idealCoefficientSati
 	return params.MinValue
 }
 
+const IdealIncreasingMul = "idealMultipliedCoefficient"
+
 var IdealIncreasingMulCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{
-	name: "idealMultipliedCoefficient",
+	id: IdealIncreasingMul,
 	coefficientManager: &IncreasingCoefficientManager{
 		updateCoefficient: func(current, coefficient float64) float64 {
 			return current * coefficient
@@ -38,8 +40,10 @@ var IdealIncreasingMulCoefficientSatisfaction = IdealCoefficientSatisfactionLeve
 	},
 }
 
+const IdealAdditive = "idealAdditiveCoefficient"
+
 var IdealAdditiveCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{
-	name: "idealAdditiveCoefficient",
+	id: IdealAdditive,
 	coefficientManager: &IncreasingCoefficientManager{
 		updateCoefficient: func(current, coefficient float64) float64 {
 			return math.Max(current+coefficient, 1)

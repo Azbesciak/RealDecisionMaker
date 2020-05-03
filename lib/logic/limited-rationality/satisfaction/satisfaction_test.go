@@ -53,7 +53,7 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 		NotConsideredAlternatives: []model.AlternativeWithCriteria{a4, cur},
 		Criteria:                  criteria,
 		MethodParameters: SatisfactionParameters{
-			Function: satisfaction_levels.IdealSubtrCoefficientSatisfaction.Name(),
+			Function: satisfaction_levels.IdealSubtrCoefficientSatisfaction.Identifier(),
 			Params: map[string]interface{}{
 				"Coefficient": 0.1,
 				"MinValue":    0.1,
@@ -119,7 +119,7 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 
 func TestSatisfaction_ParseParams(t *testing.T) {
 	expected := SatisfactionParameters{
-		Function: satisfaction_levels.IdealDecreasingMulCoefficientSatisfaction.Name(),
+		Function: satisfaction_levels.IdealDecreasingMulCoefficientSatisfaction.Identifier(),
 		Params: utils.Map{
 			"minValue":    0.01,
 			"maxValue":    1,

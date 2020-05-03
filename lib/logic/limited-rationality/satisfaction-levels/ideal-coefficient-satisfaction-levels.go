@@ -54,12 +54,12 @@ func (s *idealCoefficientSatisfactionLevels) Next() model.Weights {
 }
 
 type IdealCoefficientSatisfactionLevelsSource struct {
-	name               string
+	id                 string
 	coefficientManager CoefficientManager
 }
 
-func (s *IdealCoefficientSatisfactionLevelsSource) Name() string {
-	return s.name
+func (s *IdealCoefficientSatisfactionLevelsSource) Identifier() string {
+	return s.id
 }
 
 func (s *IdealCoefficientSatisfactionLevelsSource) BlankParams() SatisfactionLevels {

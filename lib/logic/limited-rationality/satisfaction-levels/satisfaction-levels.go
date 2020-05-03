@@ -13,7 +13,7 @@ type SatisfactionLevels interface {
 }
 
 type SatisfactionLevelsSource interface {
-	Name() string
+	utils.Identifiable
 	BlankParams() SatisfactionLevels
 }
 
@@ -22,7 +22,7 @@ func Find(function string, params interface{}, functions []SatisfactionLevelsSou
 		panic(fmt.Errorf("satisfaction thresholds function not provided"))
 	}
 	for _, f := range functions {
-		if f.Name() == function {
+		if f.Identifier() == function {
 			functionParams := f.BlankParams()
 			utils.DecodeToStruct(params, functionParams)
 			return functionParams
@@ -30,7 +30,7 @@ func Find(function string, params interface{}, functions []SatisfactionLevelsSou
 	}
 	names := make([]string, len(functions))
 	for i, f := range functions {
-		names[i] = f.Name()
+		names[i] = f.Identifier()
 	}
 	panic(fmt.Errorf("satisfaction thresholds function '%s' not found in functions %v", function, names))
 }
