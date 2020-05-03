@@ -58,6 +58,18 @@ type IdealCoefficientSatisfactionLevelsSource struct {
 	coefficientManager CoefficientManager
 }
 
+func (s *IdealCoefficientSatisfactionLevelsSource) OnCriterionAdded(criterion *model.Criterion, previousRankedCriteria *model.Criteria, params SatisfactionLevels, generator utils.ValueGenerator) ParamsAddition {
+	return nil
+}
+
+func (s *IdealCoefficientSatisfactionLevelsSource) OnCriteriaRemoved(leftCriteria *model.Criteria, params SatisfactionLevels) SatisfactionLevels {
+	return params
+}
+
+func (s *IdealCoefficientSatisfactionLevelsSource) Merge(params SatisfactionLevels, addition ParamsAddition) SatisfactionLevels {
+	return params
+}
+
 func (s *IdealCoefficientSatisfactionLevelsSource) Identifier() string {
 	return s.id
 }
