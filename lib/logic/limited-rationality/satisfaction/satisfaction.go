@@ -26,6 +26,15 @@ type SatisfactionParameters struct {
 	Current  model.Alternative `json:"currentChoice"`
 }
 
+func (s *SatisfactionParameters) with(params interface{}) SatisfactionParameters {
+	return SatisfactionParameters{
+		Function: s.Function,
+		Params:   params,
+		Seed:     s.Seed,
+		Current:  s.Current,
+	}
+}
+
 type SatisfactionEvaluation struct {
 	SatisfiedThresholds model.Weights `json:"satisfiedThresholds"`
 	ThresholdsIndex     int           `json:"thresholdsIndex"`
