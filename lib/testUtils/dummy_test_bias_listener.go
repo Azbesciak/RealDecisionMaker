@@ -32,7 +32,7 @@ func (d *DummyBiasListener) OnCriterionAdded(
 	return DummyMethodParameters{Criteria: []string{criterion.Id}}
 }
 
-func (d *DummyBiasListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
+func (d *DummyBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
 	return DummyMethodParameters{Criteria: *leftCriteria.Names()}
 }
 

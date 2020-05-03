@@ -11,7 +11,7 @@ func omitCriteria(
 	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, *model.Criteria) {
 	omissionPartition := splitCriteriaToOmit(parsedProps.OmittedCriteriaRatio, &current.Criteria)
-	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.omitted, omissionPartition.kept, current.MethodParameters)
+	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.kept, current.MethodParameters)
 	consideredAlternatives := model.PreserveCriteriaForAlternatives(&current.ConsideredAlternatives, omissionPartition.kept)
 	notConsideredAlternatives := model.PreserveCriteriaForAlternatives(&current.NotConsideredAlternatives, omissionPartition.kept)
 	return &model.DecisionMakingParams{

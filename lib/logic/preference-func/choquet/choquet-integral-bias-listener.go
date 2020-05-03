@@ -41,7 +41,6 @@ func (c *ChoquetIntegralBiasListener) OnCriterionAdded(
 }
 
 func (c *ChoquetIntegralBiasListener) OnCriteriaRemoved(
-	removedCriteria *model.Criteria,
 	leftCriteria *model.Criteria,
 	params model.MethodParameters,
 ) model.MethodParameters {

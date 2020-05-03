@@ -43,7 +43,7 @@ func (w *WeightedSumBiasListener) OnCriterionAdded(
 	}
 }
 
-func (w *WeightedSumBiasListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
+func (w *WeightedSumBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
 	wParams := params.(weightedSumParams)
 	result := make([]model.WeightedCriterion, len(*leftCriteria))
 	for i, c := range *leftCriteria {

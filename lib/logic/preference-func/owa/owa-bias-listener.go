@@ -30,7 +30,6 @@ func (h *OwaBiasListener) OnCriterionAdded(
 }
 
 func (h *OwaBiasListener) OnCriteriaRemoved(
-	removedCriteria *model.Criteria,
 	leftCriteria *model.Criteria,
 	params model.MethodParameters,
 ) model.MethodParameters {

@@ -21,7 +21,7 @@ type MethodParametersMerger interface {
 }
 
 type CriterionRemover interface {
-	OnCriteriaRemoved(removedCriteria *Criteria, leftCriteria *Criteria, params MethodParameters) MethodParameters
+	OnCriteriaRemoved(leftCriteria *Criteria, params MethodParameters) MethodParameters
 }
 
 type CriteriaRanker interface {

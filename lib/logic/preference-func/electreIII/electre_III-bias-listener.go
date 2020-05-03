@@ -49,7 +49,6 @@ func (e *ElectreIIIBiasLIstener) OnCriterionAdded(
 }
 
 func (e *ElectreIIIBiasLIstener) OnCriteriaRemoved(
-	removedCriteria *model.Criteria,
 	leftCriteria *model.Criteria,
 	params model.MethodParameters,
 ) model.MethodParameters {

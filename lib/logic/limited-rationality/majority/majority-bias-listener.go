@@ -23,7 +23,7 @@ func (m *MajorityBiasListener) OnCriterionAdded(
 	return model.SingleWeight(criterion, newWeight)
 }
 
-func (m *MajorityBiasListener) OnCriteriaRemoved(removedCriteria *model.Criteria, leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
+func (m *MajorityBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, params model.MethodParameters) model.MethodParameters {
 	wParams := params.(MajorityHeuristicParams)
 	leftWeights := wParams.Weights.PreserveOnly(leftCriteria)
 	return MajorityHeuristicParams{

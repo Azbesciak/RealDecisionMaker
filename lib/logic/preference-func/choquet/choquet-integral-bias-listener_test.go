@@ -94,29 +94,26 @@ func TestChoquetIntegralBias_RankCriteriaAscending_EqualWeights(t *testing.T) {
 func TestChoquetIntegralBiasListener_OnCriteriaRemoved_criteriaOrder(t *testing.T) {
 	original := *cw{_1: 1, _2: 2, _3: 3, _12: 12, _13: 13, _23: 23, _123: 123}.toMap()
 	expected := model.Weights{"2": 2, "3": 3, "2,3": 23}
-	removed := wsTestCriteria[:1]
 	left := model.Criteria{wsTestCriteria[2], wsTestCriteria[1]}
-	testChoquetRemoval(t, original, expected, removed, left)
+	testChoquetRemoval(t, original, expected, left)
 }
 
 func TestChoquetIntegralBiasListener_OnCriteriaRemoved(t *testing.T) {
 	original := *cw{_1: 1, _2: 2, _3: 3, _12: 12, _13: 13, _23: 23, _123: 123}.toMap()
 	expected := model.Weights{"2": 2, "3": 3, "2,3": 23}
-	removed := wsTestCriteria[:1]
 	left := wsTestCriteria[1:]
-	testChoquetRemoval(t, original, expected, removed, left)
+	testChoquetRemoval(t, original, expected, left)
 }
 
 func TestChoquetIntegralBiasListener_OnCriteriaRemoved_more(t *testing.T) {
 	original := *cw{_1: 1, _2: 2, _3: 3, _12: 12, _13: 13, _23: 23, _123: 123}.toMap()
 	expected := model.Weights{"2": 2}
-	removed := model.Criteria{wsTestCriteria[0], wsTestCriteria[2]}
 	left := model.Criteria{wsTestCriteria[1]}
-	testChoquetRemoval(t, original, expected, removed, left)
+	testChoquetRemoval(t, original, expected, left)
 }
 
-func testChoquetRemoval(t *testing.T, original, expected model.Weights, removed, left model.Criteria) {
-	actual := bias.OnCriteriaRemoved(&removed, &left, choquetParams{weights: &original})
+func testChoquetRemoval(t *testing.T, original, expected model.Weights, left model.Criteria) {
+	actual := bias.OnCriteriaRemoved(&left, choquetParams{weights: &original})
 	if a, ok := actual.(choquetParams); !ok {
 		t.Errorf("Expected instance of choquetParams")
 	} else if utils.Differs(expected, *a.weights) {
