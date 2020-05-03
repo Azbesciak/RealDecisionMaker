@@ -58,17 +58,17 @@ type namedWeight struct {
 
 func (c *Criteria) FindWeight(weights *Weights, criterion *Criterion) Weight {
 	if v, ok := (*weights)[criterion.Id]; !ok {
-		criteria := weightsValues(weights)
+		criteria := weights.AsKeyValue()
 		panic(fmt.Errorf("weight for criterion '%s' not found in criteria %v", criterion.Id, criteria))
 	} else {
 		return v
 	}
 }
 
-func weightsValues(weights *Weights) []namedWeight {
-	criteria := make([]namedWeight, len(*weights))
+func (w *Weights) AsKeyValue() []namedWeight {
+	criteria := make([]namedWeight, len(*w))
 	i := 0
-	for crit, value := range *weights {
+	for crit, value := range *w {
 		criteria[i] = namedWeight{crit, value}
 		i++
 	}
@@ -138,7 +138,7 @@ type Weights map[string]Weight
 
 func (w *Weights) Fetch(key string) Weight {
 	if v, ok := (*w)[key]; !ok {
-		values := weightsValues(w)
+		values := w.AsKeyValue()
 		panic(fmt.Errorf("criterion %s not found in %v", key, values))
 	} else {
 		return v
@@ -160,8 +160,8 @@ func (w *Weights) Merge(other *Weights) *Weights {
 	}
 	for cryt, weight := range *other {
 		if _, ok := result[cryt]; ok {
-			oldWeights := weightsValues(w)
-			newWeights := weightsValues(other)
+			oldWeights := w.AsKeyValue()
+			newWeights := other.AsKeyValue()
 			panic(fmt.Errorf("criterion '%s' from %v already exists in %v", cryt, oldWeights, newWeights))
 		}
 		result[cryt] = weight
