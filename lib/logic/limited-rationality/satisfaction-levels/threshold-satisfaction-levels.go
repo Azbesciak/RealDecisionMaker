@@ -1,6 +1,7 @@
 package satisfaction_levels
 
 import (
+	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 )
 
@@ -12,6 +13,13 @@ type thresholdSatisfactionLevels struct {
 
 func (t *thresholdSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams) {
 	t.currentIndex = -1
+	for i, threshold := range t.Thresholds {
+		for _, c := range dmp.Criteria {
+			if _, ok := threshold[c.Id]; !ok {
+				panic(fmt.Errorf("value of criterion '%s' for threshold %d not found in %v", c.Id, i, threshold.AsKeyValue()))
+			}
+		}
+	}
 }
 
 func (t *thresholdSatisfactionLevels) HasNext() bool {
