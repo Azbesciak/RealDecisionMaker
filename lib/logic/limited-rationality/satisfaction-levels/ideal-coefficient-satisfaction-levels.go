@@ -7,7 +7,7 @@ import (
 
 //go:generate easytags $GOFILE json:camel
 
-type idealCoefficientSatisfactionLevels struct {
+type IdealCoefficientSatisfactionLevels struct {
 	Coefficient          float64 `json:"coefficient"`
 	MaxValue             float64 `json:"maxValue"`
 	MinValue             float64 `json:"minValue"`
@@ -18,12 +18,12 @@ type idealCoefficientSatisfactionLevels struct {
 }
 
 type CoefficientManager interface {
-	Validate(params *idealCoefficientSatisfactionLevels)
+	Validate(params *IdealCoefficientSatisfactionLevels)
 	UpdateValue(current, coefficient float64) float64
-	InitialValue(params *idealCoefficientSatisfactionLevels) float64
+	InitialValue(params *IdealCoefficientSatisfactionLevels) float64
 }
 
-func (s *idealCoefficientSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams) {
+func (s *IdealCoefficientSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams) {
 	s.manager.Validate(s)
 	s.criteria = dmp.Criteria
 	s.criteriaValuesRanges = make([]utils.ValueRange, len(dmp.Criteria))
@@ -34,11 +34,11 @@ func (s *idealCoefficientSatisfactionLevels) Initialize(dmp *model.DecisionMakin
 	s.currentValue = s.manager.InitialValue(s)
 }
 
-func (s *idealCoefficientSatisfactionLevels) HasNext() bool {
+func (s *IdealCoefficientSatisfactionLevels) HasNext() bool {
 	return s.currentValue > s.MinValue
 }
 
-func (s *idealCoefficientSatisfactionLevels) Next() model.Weights {
+func (s *IdealCoefficientSatisfactionLevels) Next() model.Weights {
 	weights := make(model.Weights, len(s.criteria))
 	for i, c := range s.criteria {
 		valRange := s.criteriaValuesRanges[i]
@@ -63,7 +63,7 @@ func (s *IdealCoefficientSatisfactionLevelsSource) Identifier() string {
 }
 
 func (s *IdealCoefficientSatisfactionLevelsSource) BlankParams() SatisfactionLevels {
-	return &idealCoefficientSatisfactionLevels{
+	return &IdealCoefficientSatisfactionLevels{
 		manager: s.coefficientManager,
 	}
 }

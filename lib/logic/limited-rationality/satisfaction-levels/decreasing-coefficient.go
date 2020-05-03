@@ -9,7 +9,7 @@ type DecreasingCoefficientManager struct {
 	updateCoefficient func(current, coefficient float64) float64
 }
 
-func (d *DecreasingCoefficientManager) Validate(params *idealCoefficientSatisfactionLevels) {
+func (d *DecreasingCoefficientManager) Validate(params *IdealCoefficientSatisfactionLevels) {
 	if params.Coefficient <= 0 || params.Coefficient >= 1 {
 		panic(fmt.Errorf("satisfaction coefficient degradation level must be in range (0,1), got %f", params.Coefficient))
 	}
@@ -25,7 +25,7 @@ func (d *DecreasingCoefficientManager) UpdateValue(current, coefficient float64)
 	return d.updateCoefficient(current, coefficient)
 }
 
-func (d *DecreasingCoefficientManager) InitialValue(params *idealCoefficientSatisfactionLevels) float64 {
+func (d *DecreasingCoefficientManager) InitialValue(params *IdealCoefficientSatisfactionLevels) float64 {
 	return params.MaxValue
 }
 

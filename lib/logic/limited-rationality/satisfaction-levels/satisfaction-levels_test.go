@@ -9,7 +9,7 @@ import (
 
 func TestThresholdSatisfactionLevels_Initialize(t *testing.T) {
 	criteria := testUtils.GenerateCriteria(3)
-	valid := thresholdSatisfactionLevels{
+	valid := ThresholdSatisfactionLevels{
 		Thresholds: []model.Weights{{
 			"1": 1, "2": 2, "3": 3,
 		}, {
@@ -19,7 +19,7 @@ func TestThresholdSatisfactionLevels_Initialize(t *testing.T) {
 	}
 	dmp := &model.DecisionMakingParams{Criteria: criteria}
 	valid.Initialize(dmp)
-	invalid := thresholdSatisfactionLevels{
+	invalid := ThresholdSatisfactionLevels{
 		Thresholds: []model.Weights{{
 			"1": 1, "2": 2, "3": 3,
 		}, {

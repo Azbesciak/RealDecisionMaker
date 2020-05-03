@@ -3,15 +3,17 @@ package satisfaction_levels
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
+	"sort"
 )
 
 //go:generate easytags $GOFILE json:camel
-type thresholdSatisfactionLevels struct {
+type ThresholdSatisfactionLevels struct {
 	Thresholds   []model.Weights `json:"thresholds"`
 	currentIndex int
 }
 
-func (t *thresholdSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams) {
+func (t *ThresholdSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams) {
 	t.currentIndex = -1
 	for i, threshold := range t.Thresholds {
 		for _, c := range dmp.Criteria {
@@ -22,11 +24,11 @@ func (t *thresholdSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams
 	}
 }
 
-func (t *thresholdSatisfactionLevels) HasNext() bool {
+func (t *ThresholdSatisfactionLevels) HasNext() bool {
 	return t.currentIndex+1 < len(t.Thresholds)
 }
 
-func (t *thresholdSatisfactionLevels) Next() model.Weights {
+func (t *ThresholdSatisfactionLevels) Next() model.Weights {
 	t.currentIndex += 1
 	return t.Thresholds[t.currentIndex]
 }
@@ -41,5 +43,5 @@ func (t *ThresholdSatisfactionLevelsSource) Identifier() string {
 }
 
 func (t *ThresholdSatisfactionLevelsSource) BlankParams() SatisfactionLevels {
-	return &thresholdSatisfactionLevels{}
+	return &ThresholdSatisfactionLevels{}
 }
