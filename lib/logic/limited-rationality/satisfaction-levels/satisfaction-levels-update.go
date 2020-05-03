@@ -51,3 +51,10 @@ func (sl *SatisfactionLevelsUpdateListeners) Fetch(listenerName string) *Satisfa
 	listener := fun.(SatisfactionLevelsUpdateListener)
 	return &listener
 }
+
+func (sl *SatisfactionLevelsUpdateListeners) Get(listenerName string, params interface{}) (SatisfactionLevelsUpdateListener, SatisfactionLevels) {
+	listener := *sl.Fetch(listenerName)
+	methodParams := listener.BlankParams()
+	utils.DecodeToStruct(params, &methodParams)
+	return listener, methodParams
+}
