@@ -12,9 +12,13 @@ type SatisfactionLevels interface {
 	Next() model.Weights
 }
 
+type SatisfactionParamsSource interface {
+	BlankParams() SatisfactionLevels
+}
+
 type SatisfactionLevelsSource interface {
 	utils.Identifiable
-	BlankParams() SatisfactionLevels
+	SatisfactionParamsSource
 }
 
 func Find(function string, params interface{}, functions []SatisfactionLevelsSource) SatisfactionLevels {
