@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"math"
 )
 
 //go:generate easytags $GOFILE json:camel
@@ -61,7 +60,8 @@ func (c *CriteriaMixing) Apply(
 	generator := c.generatorSource(parsedProps.RandomSeed)
 	c2m := selectCriteriaToMix(original, generator)
 	allAlternatives := original.AllAlternatives()
-	targetValRange := targetValuesRange(&allAlternatives, original, listener)
+	weakestCriterion := weakestCriterion(original, listener)
+	targetValRange := model.ValuesRangeWithGroundZero(&allAlternatives, &weakestCriterion)
 	mixResult := c2m.mix(&allAlternatives, targetValRange, parsedProps)
 	newCriterion := c2m.Criterion()
 	criterionParams := createNewCriterion(listener, original, newCriterion, generator)
@@ -140,20 +140,9 @@ type criteriaToMix struct {
 	c1, c2 model.Criterion
 }
 
-func targetValuesRange(
-	alternatives *[]model.AlternativeWithCriteria,
-	params *model.DecisionMakingParams,
-	listener *model.BiasListener,
-) *utils.ValueRange {
+func weakestCriterion(params *model.DecisionMakingParams, listener *model.BiasListener) model.Criterion {
 	ranked := (*listener).RankCriteriaAscending(params)
-	weakestCriterion := (*ranked)[0]
-	valRange := model.CriteriaValuesRange(alternatives, &weakestCriterion)
-	minAbs := math.Abs(valRange.Min)
-	maxAbs := math.Abs(valRange.Max)
-	return &utils.ValueRange{
-		Min: 0,
-		Max: math.Max(math.Max(minAbs, maxAbs), valRange.Diff()),
-	}
+	return (*ranked)[0]
 }
 
 func (c *criteriaToMix) mix(
@@ -161,8 +150,8 @@ func (c *criteriaToMix) mix(
 	targetValuesRange *utils.ValueRange,
 	props *CriteriaMixingParams,
 ) *mixResult {
-	c1Values := rescaleCriterion(&c.c1, allAlternatives, targetValuesRange)
-	c2Values := rescaleCriterion(&c.c2, allAlternatives, targetValuesRange)
+	c1Values := model.RescaleCriterion(&c.c1, allAlternatives, targetValuesRange)
+	c2Values := model.RescaleCriterion(&c.c2, allAlternatives, targetValuesRange)
 	resultValues := make(model.Weights, len(c2Values))
 	for a, c1Value := range c1Values {
 		c2Value, ok := c2Values[a]
@@ -188,27 +177,6 @@ func (c *criteriaToMix) Criterion() model.Criterion {
 
 type mixResult struct {
 	c1, c2, result model.Weights
-}
-
-func rescaleCriterion(c *model.Criterion, alternatives *[]model.AlternativeWithCriteria, target *utils.ValueRange) model.Weights {
-	currentRange := model.CriteriaValuesRange(alternatives, c)
-	values := make(model.Weights, len(*alternatives))
-	targetDif := target.Diff()
-	currentDif := currentRange.Diff()
-	scale := 0.0
-	if currentDif != 0 {
-		scale = targetDif / currentDif
-	}
-	for _, a := range *alternatives {
-		value := a.CriterionRawValue(c)
-		if c.Type == model.Cost {
-			value = (currentRange.Max-value)*scale + target.Min
-		} else {
-			value = (value-currentRange.Min)*scale + target.Min
-		}
-		values[a.Id] = value
-	}
-	return values
 }
 
 func parseProps(props *model.BiasProps) *CriteriaMixingParams {
