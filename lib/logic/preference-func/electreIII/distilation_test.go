@@ -2,6 +2,7 @@ package electreIII
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"reflect"
 	"testing"
 )
@@ -54,7 +55,7 @@ func check(
 	t *testing.T,
 	data *AlternativesMatrix,
 	rankingProvider func(matrix *AlternativesMatrix,
-		distillationFun *LinearFunctionParameters) *[]int,
+		distillationFun *utils.LinearFunctionParameters) *[]int,
 	expected []int, rankingType string,
 ) {
 	actual := rankingProvider(data, &DefaultDistillationFunc)

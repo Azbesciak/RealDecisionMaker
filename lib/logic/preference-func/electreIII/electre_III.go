@@ -3,6 +3,7 @@ package electreIII
 import (
 	"fmt"
 	. "github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
 const methodName = "electreIII"
@@ -12,8 +13,8 @@ type ElectreIIIPreferenceFunc struct {
 }
 
 type ElectreIIIInputParams struct {
-	Criteria        ElectreCriteria          `json:"criteria"`
-	DistillationFun LinearFunctionParameters `json:"distillationFun,omitempty"`
+	Criteria        ElectreCriteria                `json:"criteria"`
+	DistillationFun utils.LinearFunctionParameters `json:"distillationFun,omitempty"`
 }
 
 func (e *ElectreIIIPreferenceFunc) Identifier() string {
@@ -33,7 +34,7 @@ func ElectreIII(
 	alternatives []AlternativeWithCriteria,
 	criteria Criteria,
 	electreCriteria *ElectreCriteria,
-	distillationFun *LinearFunctionParameters,
+	distillationFun *utils.LinearFunctionParameters,
 ) *AlternativesRanking {
 	matrix := evaluateCredibilityMatrix(&alternatives, &criteria, electreCriteria)
 	ascending := RankAscending(matrix, distillationFun)
@@ -128,15 +129,15 @@ func calculateElectreResult(c1Val, c2Val Weight, c *Criterion, ths *ElectreCrite
 	}
 	originalFirstCriterionValue := c1Val * Weight(c.Multiplier())
 	criteriaValueDifference := c2Val - c1Val
-	q, qok := ths.Q.evaluate(originalFirstCriterionValue)
+	q, qok := ths.Q.Evaluate(originalFirstCriterionValue)
 	if qok && q >= criteriaValueDifference {
 		return &ElectreResult{C: 1}
 	}
-	p, pok := ths.P.evaluate(originalFirstCriterionValue)
+	p, pok := ths.P.Evaluate(originalFirstCriterionValue)
 	if pok && p >= criteriaValueDifference {
 		return &ElectreResult{C: 1 - (criteriaValueDifference-q)/(p-q)}
 	}
-	v, vok := ths.V.evaluate(originalFirstCriterionValue)
+	v, vok := ths.V.Evaluate(originalFirstCriterionValue)
 	if vok && v >= criteriaValueDifference {
 		return &ElectreResult{D: (criteriaValueDifference - p) / (v - p)}
 	}
@@ -154,26 +155,10 @@ type ElectreResult struct {
 type ElectreCriteria = map[string]ElectreCriterion
 
 type ElectreCriterion struct {
-	K float64                  `json:"k"`
-	Q LinearFunctionParameters `json:"q"`
-	P LinearFunctionParameters `json:"p"`
-	V LinearFunctionParameters `json:"v"`
-}
-
-type LinearFunctionParameters struct {
-	A float64 `json:"a"`
-	B float64 `json:"b"`
-}
-
-func (f *LinearFunctionParameters) String() string {
-	return fmt.Sprintf("a:%v, b:%v", f.A, f.B)
-}
-
-func (f *LinearFunctionParameters) evaluate(value float64) (result float64, ok bool) {
-	if f.A == 0 && f.B == 0 {
-		return 0, false
-	}
-	return f.A*value + f.B, true
+	K float64                        `json:"k"`
+	Q utils.LinearFunctionParameters `json:"q"`
+	P utils.LinearFunctionParameters `json:"p"`
+	V utils.LinearFunctionParameters `json:"v"`
 }
 
 type AlternativesMatrix struct {

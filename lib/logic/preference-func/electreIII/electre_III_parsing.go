@@ -8,8 +8,8 @@ import (
 
 //go:generate easytags $GOFILE json:camel
 type electreIIIParams struct {
-	Criteria        *ElectreCriteria          `json:"criteria"`
-	DistillationFun *LinearFunctionParameters `json:"distillationFun,omitempty"`
+	Criteria        *ElectreCriteria                `json:"criteria"`
+	DistillationFun *utils.LinearFunctionParameters `json:"distillationFun,omitempty"`
 }
 
 const distillationFun = "electreDistillation"
@@ -49,7 +49,7 @@ func validateParameters(criterion *model.Criterion, crit *ElectreCriterion) {
 	requireBValueAtLeast(&crit.V, lastWeight, criterion.Id, "V")
 }
 
-func requireBValueAtLeast(f *LinearFunctionParameters, current float64, criterion, funcName string) float64 {
+func requireBValueAtLeast(f *utils.LinearFunctionParameters, current float64, criterion, funcName string) float64 {
 	if f.A == 0 && f.B != 0 && f.B <= current {
 		panic(fmt.Errorf(
 			"b parameter of electre pref func %s %v for criterion %s must be greater than %f",
@@ -62,12 +62,12 @@ func requireBValueAtLeast(f *LinearFunctionParameters, current float64, criterio
 	return current
 }
 
-func getDistillationFunc(dm *model.DecisionMaker) *LinearFunctionParameters {
+func getDistillationFunc(dm *model.DecisionMaker) *utils.LinearFunctionParameters {
 	params, ok := dm.MethodParameters[distillationFun]
 	if !ok {
 		return &DefaultDistillationFunc
 	} else {
-		parameters := LinearFunctionParameters{}
+		parameters := utils.LinearFunctionParameters{}
 		utils.DecodeToStruct(params, &parameters)
 		return &parameters
 	}

@@ -17,21 +17,21 @@ var testCriteria = &Criteria{*powerCriterion, *safetyCriterion, *costCriterion}
 var electreIIICriteria = &map[string]ElectreCriterion{
 	power: {
 		K: 3,
-		Q: LinearFunctionParameters{B: 4},
-		P: LinearFunctionParameters{B: 12},
-		V: LinearFunctionParameters{B: 28},
+		Q: utils.LinearFunctionParameters{B: 4},
+		P: utils.LinearFunctionParameters{B: 12},
+		V: utils.LinearFunctionParameters{B: 28},
 	},
 	safety: {
 		K: 3,
-		Q: LinearFunctionParameters{B: 1},
-		P: LinearFunctionParameters{B: 2},
-		V: LinearFunctionParameters{B: 8},
+		Q: utils.LinearFunctionParameters{B: 1},
+		P: utils.LinearFunctionParameters{B: 2},
+		V: utils.LinearFunctionParameters{B: 8},
 	},
 	cost: {
 		K: 4,
-		Q: LinearFunctionParameters{B: 100},
-		P: LinearFunctionParameters{B: 200},
-		V: LinearFunctionParameters{B: 600},
+		Q: utils.LinearFunctionParameters{B: 100},
+		P: utils.LinearFunctionParameters{B: 200},
+		V: utils.LinearFunctionParameters{B: 600},
 	},
 }
 var fra = &AlternativeWithCriteria{
@@ -44,14 +44,14 @@ var ita = &AlternativeWithCriteria{
 }
 
 func TestElectreIIIPreferenceFunc_Evaluate(t *testing.T) {
-	checkEvaluate(LinearFunctionParameters{B: 10}, 10, 10.0, true, t)
-	checkEvaluate(LinearFunctionParameters{A: 10}, 10, 100.0, true, t)
-	checkEvaluate(LinearFunctionParameters{A: 0, B: 0}, 10, 0.0, false, t)
-	checkEvaluate(LinearFunctionParameters{A: 14, B: 5}, 10, 145.0, true, t)
+	checkEvaluate(utils.LinearFunctionParameters{B: 10}, 10, 10.0, true, t)
+	checkEvaluate(utils.LinearFunctionParameters{A: 10}, 10, 100.0, true, t)
+	checkEvaluate(utils.LinearFunctionParameters{A: 0, B: 0}, 10, 0.0, false, t)
+	checkEvaluate(utils.LinearFunctionParameters{A: 14, B: 5}, 10, 145.0, true, t)
 }
 
-func checkEvaluate(f LinearFunctionParameters, value, expectedValue float64, expectedOk bool, t *testing.T) {
-	res, ok := f.evaluate(value)
+func checkEvaluate(f utils.LinearFunctionParameters, value, expectedValue float64, expectedOk bool, t *testing.T) {
+	res, ok := f.Evaluate(value)
 	if ok != expectedOk {
 		t.Errorf("expected ok to be '%v', got '%v'", expectedOk, ok)
 	}

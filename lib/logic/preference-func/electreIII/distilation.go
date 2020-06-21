@@ -5,15 +5,15 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
-var DefaultDistillationFunc = LinearFunctionParameters{A: -.15, B: .3}
+var DefaultDistillationFunc = utils.LinearFunctionParameters{A: -.15, B: .3}
 
 type CompareFunction = func(old int, new int) bool
 
-func RankAscending(matrix *AlternativesMatrix, distillationFun *LinearFunctionParameters) *[]int {
+func RankAscending(matrix *AlternativesMatrix, distillationFun *utils.LinearFunctionParameters) *[]int {
 	return rank(matrix, distillationFun, greater)
 }
 
-func RankDescending(matrix *AlternativesMatrix, distillationFun *LinearFunctionParameters) *[]int {
+func RankDescending(matrix *AlternativesMatrix, distillationFun *utils.LinearFunctionParameters) *[]int {
 	ranking := rank(matrix, distillationFun, lower)
 	maxPosition := Max(ranking)
 	minusValuesFrom(ranking, maxPosition+1)
@@ -39,7 +39,7 @@ func minusValuesFrom(values *[]int, value int) {
 	}
 }
 
-func rank(matrix *AlternativesMatrix, distillationFun *LinearFunctionParameters, evaluateFunction CompareFunction) *[]int {
+func rank(matrix *AlternativesMatrix, distillationFun *utils.LinearFunctionParameters, evaluateFunction CompareFunction) *[]int {
 	position := 1
 	withoutD := removeDiagonal(matrix)
 	maxCred := withoutD.Max()
@@ -62,7 +62,7 @@ func samePositions(size, value int) *[]int {
 func distillate(
 	maxCred float64, position int,
 	matrix *Matrix,
-	distillationFun *LinearFunctionParameters,
+	distillationFun *utils.LinearFunctionParameters,
 	evaluateFunction CompareFunction,
 	isInner bool,
 ) *[]int {
@@ -114,7 +114,7 @@ func updatedPositions(indices, positions *[]int) *[]int {
 func updatePositions(
 	position int, minCred float64,
 	valuesToConsider *Matrix, bestIndices, positions *[]int,
-	distillationFun *LinearFunctionParameters, evaluateFunction CompareFunction,
+	distillationFun *utils.LinearFunctionParameters, evaluateFunction CompareFunction,
 ) {
 	bestIndicesNum := len(*bestIndices)
 	if bestIndicesNum > 1 && minCred > 0 {
@@ -126,8 +126,8 @@ func updatePositions(
 	}
 }
 
-func getDistillateMatrix(distillationFun *LinearFunctionParameters, maxCred float64, matrix *Matrix) (float64, *Matrix) {
-	v, _ := distillationFun.evaluate(maxCred)
+func getDistillateMatrix(distillationFun *utils.LinearFunctionParameters, maxCred float64, matrix *Matrix) (float64, *Matrix) {
+	v, _ := distillationFun.Evaluate(maxCred)
 	minCredThreshold := maxCred - v
 	minCred := matrix.FindBest(func(old, new float64) bool {
 		// ok because the lowest value is 0, on diagonal for sure.
@@ -137,7 +137,7 @@ func getDistillateMatrix(distillationFun *LinearFunctionParameters, maxCred floa
 		if v <= minCred {
 			return false
 		}
-		funcValueForThisField, _ := distillationFun.evaluate(v)
+		funcValueForThisField, _ := distillationFun.Evaluate(v)
 		value := matrix.At(col, row) + funcValueForThisField
 		return v > value
 	})
