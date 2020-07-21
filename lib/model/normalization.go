@@ -15,23 +15,40 @@ func ValuesRangeWithGroundZero(alternatives *[]AlternativeWithCriteria, criterio
 	}
 }
 
+var _normalRange = utils.ValueRange{
+	Min: 0,
+	Max: 1,
+}
+
 func RescaleCriterion(c *Criterion, alternatives *[]AlternativeWithCriteria, target *utils.ValueRange) Weights {
 	currentRange := CriteriaValuesRange(alternatives, c)
-	values := make(Weights, len(*alternatives))
+	scaledCriterionValues := make(Weights, len(*alternatives))
+	scale := GetScaleRatio(target, currentRange)
+	for _, a := range *alternatives {
+		scaledCriterionValues[a.Id] = scaleCriterion(c, a, currentRange, scale, target)
+	}
+	return scaledCriterionValues
+}
+
+func scaleCriterion(c *Criterion, a AlternativeWithCriteria, currentRange *utils.ValueRange, scale float64, target *utils.ValueRange) Weight {
+	value := a.CriterionRawValue(c)
+	if c.Type == Cost {
+		return (currentRange.Max-value)*scale + target.Min
+	} else {
+		return (value-currentRange.Min)*scale + target.Min
+	}
+}
+
+func GetNormalScaleRatio(currentRange *utils.ValueRange) float64 {
+	return GetScaleRatio(&_normalRange, currentRange)
+}
+
+func GetScaleRatio(target *utils.ValueRange, currentRange *utils.ValueRange) float64 {
 	targetDif := target.Diff()
 	currentDif := currentRange.Diff()
 	scale := 0.0
 	if currentDif != 0 {
 		scale = targetDif / currentDif
 	}
-	for _, a := range *alternatives {
-		value := a.CriterionRawValue(c)
-		if c.Type == Cost {
-			value = (currentRange.Max-value)*scale + target.Min
-		} else {
-			value = (value-currentRange.Min)*scale + target.Min
-		}
-		values[a.Id] = value
-	}
-	return values
+	return scale
 }
