@@ -1,6 +1,8 @@
 package fatigue
 
-import "math"
+import (
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
+)
 
 //go:generate easytags $GOFILE json:camel
 
@@ -13,7 +15,7 @@ type ExpFatigueParams struct {
 type ExponentialFromZeroFatigue struct {
 }
 
-const FatExpFromZero = "expFromZero"
+const FatExpFromZero = utils.ExpFromZeroFunctionName
 
 func (e *ExponentialFromZeroFatigue) Name() string {
 	return FatExpFromZero
@@ -25,5 +27,9 @@ func (e *ExponentialFromZeroFatigue) BlankParams() interface{} {
 
 func (e *ExponentialFromZeroFatigue) Evaluate(params interface{}) float64 {
 	p := params.(*ExpFatigueParams)
-	return p.Multiplier*math.Exp(p.Alpha*float64(p.QueryNumber)) - p.Multiplier
+	function := utils.ExpFromZeroFunction{
+		Alpha:      p.Alpha,
+		Multiplier: p.Multiplier,
+	}
+	return function.Evaluate(float64(p.QueryNumber))
 }
