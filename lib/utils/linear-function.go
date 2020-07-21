@@ -7,6 +7,8 @@ type LinearFunctionParameters struct {
 	B float64 `json:"b"`
 }
 
+const LinearFunctionName = "linear"
+
 func (f *LinearFunctionParameters) String() string {
 	return fmt.Sprintf("a:%v, b:%v", f.A, f.B)
 }
