@@ -64,7 +64,7 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 		{Id: "a", Criteria: model.Weights{"1": 0, "2": 3}},
 		{Id: "b", Criteria: model.Weights{"1": 3, "2": 5}},
 	}
-	criteria := testUtils.GenerateCriteria(3)
+	criteria := testUtils.GenerateCriteria(2)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	m := model.BiasProps(utils.Map{
 		"addCriterionProbability": 0.5,
