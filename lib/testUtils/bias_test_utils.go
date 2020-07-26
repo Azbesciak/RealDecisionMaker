@@ -8,12 +8,12 @@ import (
 
 func TestBiasRanking(index int, t *testing.T, bias model.BiasListener, params *model.DecisionMakingParams, expectedOrder []string) {
 	ranked := bias.RankCriteriaAscending(params)
-	if ranked.Len() != len(expectedOrder) {
-		t.Errorf("lengths differ, expected %d, got %d", len(expectedOrder), ranked.Len())
+	if len(*ranked) != len(expectedOrder) {
+		t.Errorf("lengths differ, expected %d, got %d", len(expectedOrder), len(*ranked))
 		return
 	}
 	for i, expectedId := range expectedOrder {
-		actualId := ranked.Get(i).Identifier()
+		actualId := (*ranked)[i].Criterion.Identifier()
 		if actualId != expectedId {
 			t.Errorf("%d: expected '%s' at %d index, got '%s', alternatives: %v",
 				index, expectedId, i, actualId, params.ConsideredAlternatives)

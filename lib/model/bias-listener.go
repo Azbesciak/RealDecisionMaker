@@ -10,7 +10,7 @@ type AddedCriterionParams = MethodParameters
 type CriterionAdder interface {
 	OnCriterionAdded(
 		criterion *Criterion,
-		previousRankedCriteria *Criteria,
+		referenceCriterion *Criterion,
 		params MethodParameters,
 		generator utils.ValueGenerator,
 	) AddedCriterionParams
@@ -25,7 +25,7 @@ type CriterionRemover interface {
 }
 
 type CriteriaRanker interface {
-	RankCriteriaAscending(params *DecisionMakingParams) *Criteria
+	RankCriteriaAscending(params *DecisionMakingParams) *WeightedCriteria
 }
 
 type BiasListener interface {
@@ -87,7 +87,7 @@ func WeightIdentity(criterion string, value Weight) Weight {
 	return value
 }
 
-func NewCriterionValue(previousWeights *Weights, previousRankedCriteria *Criteria, generator *utils.ValueGenerator) Weight {
-	weight := (*previousWeights)[previousRankedCriteria.First().Identifier()]
+func NewCriterionValue(previousWeights *Weights, baseCriterion *Criterion, generator *utils.ValueGenerator) Weight {
+	weight := (*previousWeights)[baseCriterion.Identifier()]
 	return (*generator)() * weight
 }

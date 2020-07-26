@@ -130,7 +130,7 @@ func takeBetter(s1, s2 model.Weight, sameBuffer []model.AlternativeResult,
 	return worseThanCurrent, sameBuffer, current, currentEvaluation
 }
 
-func compare(criteriaWithWeights *[]model.WeightedCriterion, a1, a2 *model.AlternativeWithCriteria) (model.Weight, model.Weight) {
+func compare(criteriaWithWeights *model.WeightedCriteria, a1, a2 *model.AlternativeWithCriteria) (model.Weight, model.Weight) {
 	a1Score := 0.0
 	a2Score := 0.0
 	for _, criterion := range *criteriaWithWeights {

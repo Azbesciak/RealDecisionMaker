@@ -21,13 +21,13 @@ type satisfactionAddedCriterion struct {
 
 func (a *SatisfactionBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
+	referenceCriterion *model.Criterion,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
 	pParams := params.(SatisfactionParameters)
 	listener, methodParams := a.getMethodParams(pParams)
-	addedParams := listener.OnCriterionAdded(criterion, previousRankedCriteria, methodParams, generator)
+	addedParams := listener.OnCriterionAdded(criterion, referenceCriterion, methodParams, generator)
 	return satisfactionAddedCriterion{addedParams}
 }
 
@@ -45,7 +45,7 @@ func (a *SatisfactionBiasListener) OnCriteriaRemoved(
 	return pParams.with(afterRemoveParams)
 }
 
-func (a *SatisfactionBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (a *SatisfactionBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.WeightedCriteria {
 	weights := model.PrepareCumulatedWeightsMap(params, model.WeightIdentity)
 	return params.Criteria.SortByWeights(*weights)
 }

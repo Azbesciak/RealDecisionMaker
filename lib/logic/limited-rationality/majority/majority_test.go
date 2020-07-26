@@ -16,7 +16,7 @@ var _majority = Majority{
 }
 
 var criteria = testUtils.GenerateCriteria(3)
-var criteriaValues = []model.WeightedCriterion{{
+var criteriaValues = model.WeightedCriteria{{
 	Criterion: criteria[0],
 	Weight:    1,
 }, {

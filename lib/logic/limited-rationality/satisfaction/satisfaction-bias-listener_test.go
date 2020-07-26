@@ -177,10 +177,10 @@ func TestSatisfactionBiasListener_OnCriterionAdded(t *testing.T) {
 		satisfactionLevelsUpdateListeners satisfaction_levels.SatisfactionLevelsUpdateListeners
 	}
 	type args struct {
-		criterion              *model.Criterion
-		previousRankedCriteria *model.Criteria
-		params                 model.MethodParameters
-		generator              utils.ValueGenerator
+		criterion          *model.Criterion
+		referenceCriterion *model.Criterion
+		params             model.MethodParameters
+		generator          utils.ValueGenerator
 	}
 	tests := []struct {
 		name   string
@@ -193,9 +193,9 @@ func TestSatisfactionBiasListener_OnCriterionAdded(t *testing.T) {
 			satisfactionLevelsUpdateListeners: thresholdListener,
 		},
 		args: args{
-			criterion:              &addedCriterion,
-			previousRankedCriteria: &criteria2,
-			params:                 thresholds2ParamsWithPointer,
+			criterion:          &addedCriterion,
+			referenceCriterion: &criteria2[0],
+			params:             thresholds2ParamsWithPointer,
 			generator: func() float64 {
 				return 0.25
 			},
@@ -209,9 +209,9 @@ func TestSatisfactionBiasListener_OnCriterionAdded(t *testing.T) {
 			satisfactionLevelsUpdateListeners: subtractiveListener,
 		},
 		args: args{
-			criterion:              &addedCriterion,
-			previousRankedCriteria: &criteria2,
-			params:                 idealSubtractiveParamsWithPointer,
+			criterion:          &addedCriterion,
+			referenceCriterion: &criteria2[0],
+			params:             idealSubtractiveParamsWithPointer,
 			generator: func() float64 {
 				return 0.75
 			},
@@ -225,7 +225,7 @@ func TestSatisfactionBiasListener_OnCriterionAdded(t *testing.T) {
 			a := &SatisfactionBiasListener{
 				satisfactionLevelsUpdateListeners: tt.fields.satisfactionLevelsUpdateListeners,
 			}
-			if got := a.OnCriterionAdded(tt.args.criterion, tt.args.previousRankedCriteria, tt.args.params, tt.args.generator); !reflect.DeepEqual(got, tt.want) {
+			if got := a.OnCriterionAdded(tt.args.criterion, tt.args.referenceCriterion, tt.args.params, tt.args.generator); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("OnCriterionAdded() = %v, want %v", got, tt.want)
 			}
 		})
@@ -243,7 +243,7 @@ func TestSatisfactionBiasListener_RankCriteriaAscending(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   *model.Criteria
+		want   *model.WeightedCriteria
 	}{{
 		name:   "ranking",
 		fields: fields{},
@@ -257,7 +257,10 @@ func TestSatisfactionBiasListener_RankCriteriaAscending(t *testing.T) {
 			}},
 			Criteria: criteria2,
 		}},
-		want: &model.Criteria{criteria2[1], criteria2[0]},
+		want: &model.WeightedCriteria{
+			{Criterion: criteria2[1], Weight: 2},
+			{Criterion: criteria2[0], Weight: 5},
+		},
 	},
 	}
 	for _, tt := range tests {

@@ -16,12 +16,22 @@ func TestOWAResult(t *testing.T) {
 			"4": 60,
 		},
 	}
-	result := OWA(criteria, []model.Weight{1, 2, 3, 4})
+	result := OWA(criteria, model.WeightedCriteria{
+		{Criterion: model.Criterion{Id: "1"}, Weight: 1},
+		{Criterion: model.Criterion{Id: "2"}, Weight: 2},
+		{Criterion: model.Criterion{Id: "3"}, Weight: 3},
+		{Criterion: model.Criterion{Id: "4"}, Weight: 4},
+	})
 	var expected model.Weight = 4*60 + 30*3 + 10*2 + 5*1
 	if result.Value() != expected {
 		t.Errorf("Expected %f, got %f", expected, result.Value())
 	}
-	result = OWA(criteria, []model.Weight{6, 4, 3, 4})
+	result = OWA(criteria, model.WeightedCriteria{
+		{Criterion: model.Criterion{Id: "1"}, Weight: 6},
+		{Criterion: model.Criterion{Id: "2"}, Weight: 4},
+		{Criterion: model.Criterion{Id: "3"}, Weight: 3},
+		{Criterion: model.Criterion{Id: "4"}, Weight: 4},
+	})
 	expected = 6*60 + 30*4 + 10*4 + 5*3
 	if result.Value() != expected {
 		t.Errorf("Expected %f, got %f", expected, result.Value())
@@ -36,6 +46,8 @@ func TestOWAInvalidArguments(t *testing.T) {
 			"2": 10,
 		},
 	}
-	defer utils.ExpectError(t, "criteria and weights must have the same length, got 2 and 1")()
-	OWA(criteria, []model.Weight{1})
+	defer utils.ExpectError(t, "criteria and Weights must have the same length, got 2 and 1")()
+	OWA(criteria, model.WeightedCriteria{
+		{Criterion: model.Criterion{Id: "1"}, Weight: 1},
+	})
 }

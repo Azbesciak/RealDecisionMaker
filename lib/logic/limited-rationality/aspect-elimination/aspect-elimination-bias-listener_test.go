@@ -214,10 +214,10 @@ func TestAspectEliminationBiasListener_OnCriterionAdded(t *testing.T) {
 		satisfactionLevelsUpdateListeners satisfaction_levels.SatisfactionLevelsUpdateListeners
 	}
 	type args struct {
-		criterion              *model.Criterion
-		previousRankedCriteria *model.Criteria
-		params                 model.MethodParameters
-		generator              utils.ValueGenerator
+		criterion          *model.Criterion
+		referenceCriterion *model.Criterion
+		params             model.MethodParameters
+		generator          utils.ValueGenerator
 	}
 	tests := []struct {
 		name   string
@@ -230,9 +230,9 @@ func TestAspectEliminationBiasListener_OnCriterionAdded(t *testing.T) {
 			satisfactionLevelsUpdateListeners: thresholdsListeners,
 		},
 		args: args{
-			criterion:              &addedCriterion,
-			previousRankedCriteria: &allCriteria,
-			params:                 rawThresholds,
+			criterion:          &addedCriterion,
+			referenceCriterion: &allCriteria[0],
+			params:             rawThresholds,
 			generator: func() float64 {
 				return 0.5
 			},
@@ -249,9 +249,9 @@ func TestAspectEliminationBiasListener_OnCriterionAdded(t *testing.T) {
 			satisfactionLevelsUpdateListeners: thresholdsListeners,
 		},
 		args: args{
-			criterion:              &addedCriterion,
-			previousRankedCriteria: &allCriteria,
-			params:                 parsedThresholds,
+			criterion:          &addedCriterion,
+			referenceCriterion: &allCriteria[0],
+			params:             parsedThresholds,
 			generator: func() float64 {
 				return 0.5
 			},
@@ -268,8 +268,8 @@ func TestAspectEliminationBiasListener_OnCriterionAdded(t *testing.T) {
 			satisfactionLevelsUpdateListeners: increasingAdditiveListeners,
 		},
 		args: args{
-			criterion:              &addedCriterion,
-			previousRankedCriteria: &allCriteria,
+			criterion:          &addedCriterion,
+			referenceCriterion: &allCriteria[0],
 			params: AspectEliminationHeuristicParams{
 				Function: satisfaction_levels.IdealAdditive,
 				Params:   additiveParams,
@@ -289,7 +289,7 @@ func TestAspectEliminationBiasListener_OnCriterionAdded(t *testing.T) {
 			a := &AspectEliminationBiasListener{
 				satisfactionLevelsUpdateListeners: tt.fields.satisfactionLevelsUpdateListeners,
 			}
-			if got := a.OnCriterionAdded(tt.args.criterion, tt.args.previousRankedCriteria, tt.args.params, tt.args.generator); !reflect.DeepEqual(got, tt.want) {
+			if got := a.OnCriterionAdded(tt.args.criterion, tt.args.referenceCriterion, tt.args.params, tt.args.generator); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("OnCriterionAdded() = %v, want %v", got, tt.want)
 			}
 		})
@@ -307,7 +307,7 @@ func TestAspectEliminationBiasListener_RankCriteriaAscending(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   *model.Criteria
+		want   *model.WeightedCriteria
 	}{{
 		name:   "different weights",
 		fields: fields{},
@@ -319,7 +319,11 @@ func TestAspectEliminationBiasListener_RankCriteriaAscending(t *testing.T) {
 				},
 			},
 		},
-		want: &model.Criteria{allCriteria[1], allCriteria[2], allCriteria[0]},
+		want: &model.WeightedCriteria{
+			{Criterion: allCriteria[1], Weight: 5},
+			{Criterion: allCriteria[2], Weight: 7},
+			{Criterion: allCriteria[0], Weight: 10},
+		},
 	}, {
 		name:   "same weights",
 		fields: fields{},
@@ -331,7 +335,11 @@ func TestAspectEliminationBiasListener_RankCriteriaAscending(t *testing.T) {
 				},
 			},
 		},
-		want: &model.Criteria{allCriteria[1], allCriteria[2], allCriteria[0]},
+		want: &model.WeightedCriteria{
+			{Criterion: allCriteria[1], Weight: 7},
+			{Criterion: allCriteria[2], Weight: 7},
+			{Criterion: allCriteria[0], Weight: 10},
+		},
 	},
 	}
 	for _, tt := range tests {

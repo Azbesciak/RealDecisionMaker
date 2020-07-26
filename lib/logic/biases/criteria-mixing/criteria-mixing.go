@@ -3,6 +3,7 @@ package criteria_mixing
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
@@ -14,6 +15,7 @@ type CriteriaMixingParams struct {
 	MixingRatio float64 `json:"mixingRatio"`
 }
 
+// + referenceCriterionParams
 type MixedCriterion struct {
 	Component1   CriterionComponent     `json:"component1"`
 	Component2   CriterionComponent     `json:"component2"`
@@ -41,7 +43,8 @@ func (p *CriteriaMixingParams) validate() {
 }
 
 type CriteriaMixing struct {
-	generatorSource utils.SeededValueGenerator
+	generatorSource          utils.SeededValueGenerator
+	referenceCriteriaManager reference_criterion.ReferenceCriteriaManager
 }
 
 func (c *CriteriaMixing) Identifier() string {
@@ -60,11 +63,12 @@ func (c *CriteriaMixing) Apply(
 	generator := c.generatorSource(parsedProps.RandomSeed)
 	c2m := selectCriteriaToMix(original, generator)
 	allAlternatives := original.AllAlternatives()
-	weakestCriterion := weakestCriterion(original, listener)
-	targetValRange := model.ValuesRangeWithGroundZero(&allAlternatives, &weakestCriterion)
+	referenceCriterionProvider := c.referenceCriteriaManager.ForParams(props)
+	referenceCriterion := referenceCriterion(original, listener, referenceCriterionProvider)
+	targetValRange := model.ValuesRangeWithGroundZero(&allAlternatives, referenceCriterion)
 	mixResult := c2m.mix(&allAlternatives, targetValRange, parsedProps)
 	newCriterion := c2m.Criterion()
-	criterionParams := createNewCriterion(listener, original, newCriterion, generator)
+	criterionParams := (*listener).OnCriterionAdded(&newCriterion, referenceCriterion, current.MethodParameters, generator)
 	newMethodParams := (*listener).Merge(current.MethodParameters, criterionParams)
 	newAlternatives := updateAlternatives(allAlternatives, newCriterion, mixResult)
 	newParams := updateDMParams(current, newAlternatives, newCriterion, newMethodParams)
@@ -92,17 +96,6 @@ func updateAlternatives(allAlternatives []model.AlternativeWithCriteria, newCrit
 	return model.AddCriterionToAlternatives(&allAlternatives, &newCriterion, func(alt *model.AlternativeWithCriteria) model.Weight {
 		return mixResult.result[alt.Id]
 	})
-}
-
-func createNewCriterion(
-	listener *model.BiasListener,
-	params *model.DecisionMakingParams,
-	newCriterion model.Criterion,
-	generator utils.ValueGenerator,
-) model.AddedCriterionParams {
-	ranked := (*listener).RankCriteriaAscending(params)
-	criterionParams := (*listener).OnCriterionAdded(&newCriterion, ranked, params.MethodParameters, generator)
-	return criterionParams
 }
 
 func prepareMixedCriterion(c2m criteriaToMix, mixResult *mixResult, newCriterion model.Criterion, criterionParams model.AddedCriterionParams) MixedCriterion {
@@ -140,9 +133,13 @@ type criteriaToMix struct {
 	c1, c2 model.Criterion
 }
 
-func weakestCriterion(params *model.DecisionMakingParams, listener *model.BiasListener) model.Criterion {
+func referenceCriterion(
+	params *model.DecisionMakingParams,
+	listener *model.BiasListener,
+	refCriterionProvider reference_criterion.ReferenceCriterionProvider,
+) *model.Criterion {
 	ranked := (*listener).RankCriteriaAscending(params)
-	return (*ranked)[0]
+	return refCriterionProvider.Provide(ranked)
 }
 
 func (c *criteriaToMix) mix(

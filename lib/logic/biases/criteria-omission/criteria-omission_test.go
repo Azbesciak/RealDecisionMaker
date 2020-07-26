@@ -2,6 +2,7 @@ package criteria_omission
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	reference_criterion "github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
@@ -27,6 +28,9 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 	omission := CriteriaOmission{
 		newCriterionValueScalar: 1,
 		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
+		referenceCriterionManager: reference_criterion.ReferenceCriteriaManager{
+			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		},
 	}
 	notConsidered := []model.AlternativeWithCriteria{
 		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},

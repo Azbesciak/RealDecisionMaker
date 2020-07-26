@@ -9,13 +9,14 @@ import (
 )
 
 type choquetParams struct {
-	weights *model.Weights
+	weights  *model.Weights
+	criteria *model.Criteria
 }
 
 func (c *ChoquetIntegralPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 	weights := model.ExtractWeights(dm)
 	parsedWeights := parse(&dm.Criteria, &weights)
-	return choquetParams{weights: parsedWeights}
+	return choquetParams{weights: parsedWeights, criteria: &dm.Criteria}
 }
 
 func parse(criteria *model.Criteria, weights *model.Weights) *model.Weights {

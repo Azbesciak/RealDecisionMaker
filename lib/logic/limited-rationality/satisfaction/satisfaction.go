@@ -149,7 +149,7 @@ func updateResult(
 	return resultInsertIndex + 1
 }
 
-func isGoodEnough(alternative model.AlternativeWithCriteria, thresholds *[]model.WeightedCriterion) bool {
+func isGoodEnough(alternative model.AlternativeWithCriteria, thresholds *model.WeightedCriteria) bool {
 	for _, v := range *thresholds {
 		criterionValue := alternative.CriterionValue(&v.Criterion)
 		threshold := float64(v.Multiplier()) * v.Weight

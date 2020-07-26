@@ -10,7 +10,7 @@ type OWAPreferenceFunc struct {
 }
 
 type owaParams struct {
-	weights *[]model.Weight
+	Weights *model.WeightedCriteria `json:"weights"`
 }
 
 const methodName = "owa"
@@ -19,21 +19,19 @@ func (O *OWAPreferenceFunc) ParseParams(dm *model.DecisionMaker) interface{} {
 	originalWeights := model.ExtractWeights(dm)
 	weightsCount := len(originalWeights)
 	if weightsCount != len(dm.Criteria) {
-		panic(fmt.Errorf("weights count (%d) not equal to criteria count (%d) for OWA", weightsCount, len(dm.Criteria)))
+		panic(fmt.Errorf("Weights count (%d) not equal to criteria count (%d) for OWA", weightsCount, len(dm.Criteria)))
 	}
-	weights := toArray(originalWeights)
-	_sortWeightsMutate(&weights)
-	return owaParams{weights: &weights}
+	weights := toArray(&originalWeights, &dm.Criteria)
+	_sortWeightsMutate(weights)
+	return owaParams{Weights: weights}
 }
 
-func toArray(weights model.Weights) []model.Weight {
-	result := make([]model.Weight, len(weights))
-	i := 0
-	for _, v := range weights {
-		result[i] = v
-		i++
+func toArray(weights *model.Weights, criteria *model.Criteria) *model.WeightedCriteria {
+	result := make(model.WeightedCriteria, len(*weights))
+	for i, v := range *criteria {
+		result[i] = model.WeightedCriterion{Criterion: v, Weight: weights.Fetch(v.Id)}
 	}
-	return result
+	return &result
 }
 
 func (O *OWAPreferenceFunc) Identifier() string {
@@ -47,27 +45,27 @@ func (O *OWAPreferenceFunc) MethodParameters() interface{} {
 func (O *OWAPreferenceFunc) Evaluate(dmp *model.DecisionMakingParams) *model.AlternativesRanking {
 	weights := dmp.MethodParameters.(owaParams)
 	prefFunc := func(alternative *model.AlternativeWithCriteria) *model.AlternativeResult {
-		return OWA(*alternative, *weights.weights)
+		return OWA(*alternative, *weights.Weights)
 	}
 	return model.Rank(dmp, prefFunc)
 }
 
-func OWA(alternative model.AlternativeWithCriteria, weights []model.Weight) *model.AlternativeResult {
+func OWA(alternative model.AlternativeWithCriteria, weights model.WeightedCriteria) *model.AlternativeResult {
 	sortedWeights := sortWeights(&weights)
 	return owa(&alternative, sortedWeights)
 }
 
-func owa(alternative *model.AlternativeWithCriteria, sortedWeights *[]model.Weight) *model.AlternativeResult {
+func owa(alternative *model.AlternativeWithCriteria, sortedWeights *model.WeightedCriteria) *model.AlternativeResult {
 	validateSameCriteriaAndWeightsCount(alternative, sortedWeights)
 	sortedAlternativeCriteriaWeights := sortAlternativeCriteriaWeights(alternative)
 	total := calculateTotalAlternativeValue(sortedWeights, sortedAlternativeCriteriaWeights)
 	return model.ValueAlternativeResult(alternative, total)
 }
 
-func calculateTotalAlternativeValue(sortedWeights *[]model.Weight, sortedCriteriaWeights *[]model.Weight) model.Weight {
+func calculateTotalAlternativeValue(sortedWeights *model.WeightedCriteria, sortedCriteriaWeights *[]model.Weight) model.Weight {
 	var total model.Weight = 0
 	for i := range *sortedWeights {
-		total += (*sortedCriteriaWeights)[i] * (*sortedWeights)[i]
+		total += (*sortedCriteriaWeights)[i] * (*sortedWeights)[i].Weight
 	}
 	return total
 }
@@ -79,45 +77,60 @@ func sortAlternativeCriteriaWeights(alternative *model.AlternativeWithCriteria) 
 		tmpCriteria[i] = c
 		i += 1
 	}
-	_sortWeightsMutate(&tmpCriteria)
+	sort.Float64s(tmpCriteria)
 	return &tmpCriteria
 }
 
-func sortWeights(weights *[]model.Weight) *[]model.Weight {
-	tmpWeights := make([]model.Weight, len(*weights))
+func sortWeights(weights *model.WeightedCriteria) *model.WeightedCriteria {
+	tmpWeights := make(model.WeightedCriteria, len(*weights))
 	copy(tmpWeights, *weights)
 	_sortWeightsMutate(&tmpWeights)
 	return &tmpWeights
 }
 
-func (o *owaParams) takeNBest(n int) *owaParams {
-	skip := len(*o.weights) - n
-	if skip < 0 {
-		skip = 0
-	}
-	res := (*o.weights)[skip:]
-	return &owaParams{weights: &res}
-}
-
-func (o *owaParams) withWeights(weights model.WeightType) *owaParams {
-	newWeights := toArray(weights.Weights)
-	result := append(newWeights, *o.weights...)
+func (o *owaParams) merge(other *owaParams) *owaParams {
+	originalLen := len(*o.Weights)
+	result := make(model.WeightedCriteria, originalLen+len(*other.Weights))
+	validationCache := make(map[string]bool, originalLen+len(*other.Weights))
+	addCriteria(o.Weights, &result, &validationCache, 0)
+	addCriteria(other.Weights, &result, &validationCache, originalLen)
 	_sortWeightsMutate(&result)
-	return &owaParams{weights: &result}
+	return &owaParams{Weights: &result}
 }
 
-func (o *owaParams) minWeight() float64 {
-	return (*o.weights)[0]
+func (o *owaParams) find(criterion *model.Criterion) *model.WeightedCriterion {
+	for _, c := range *o.Weights {
+		if c.Criterion.Id == criterion.Id {
+			return &c
+		}
+	}
+	panic(fmt.Errorf("criterion '%s' not found in criteria %v", criterion.Id, *o.Weights))
 }
 
-func _sortWeightsMutate(weights *[]model.Weight) {
-	sort.Float64s(*weights)
+func addCriteria(toAdd, result *model.WeightedCriteria, validationCache *map[string]bool, offset int) {
+	for i, w := range *toAdd {
+		if _, ok := (*validationCache)[w.Id]; ok {
+			criterionAlreadyExist(&w.Criterion, result)
+		}
+		(*result)[i+offset] = w
+		(*validationCache)[w.Id] = true
+	}
 }
 
-func validateSameCriteriaAndWeightsCount(alternative *model.AlternativeWithCriteria, weights *[]model.Weight) {
+func criterionAlreadyExist(w *model.Criterion, result *model.WeightedCriteria) {
+	panic(fmt.Errorf("criterion '%s' already exist in result %v", w, *result))
+}
+
+func _sortWeightsMutate(weights *model.WeightedCriteria) {
+	sort.SliceStable(*weights, func(i, j int) bool {
+		return (*weights)[i].Weight < (*weights)[j].Weight
+	})
+}
+
+func validateSameCriteriaAndWeightsCount(alternative *model.AlternativeWithCriteria, weights *model.WeightedCriteria) {
 	alternativeCriteriaCount := len(alternative.Criteria)
 	weightsCount := len(*weights)
 	if alternativeCriteriaCount != weightsCount {
-		panic(fmt.Errorf("criteria and weights must have the same length, got %d and %d", alternativeCriteriaCount, weightsCount))
+		panic(fmt.Errorf("criteria and Weights must have the same length, got %d and %d", alternativeCriteriaCount, weightsCount))
 	}
 }

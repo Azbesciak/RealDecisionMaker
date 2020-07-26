@@ -7,7 +7,7 @@ import (
 )
 
 func TestValidFunc(t *testing.T) {
-	criteria := []model.WeightedCriterion{{
+	criteria := model.WeightedCriteria{{
 		model.Criterion{Id: "Cost", Type: model.Cost}, 1,
 	}, {
 		model.Criterion{Id: "Color", Type: model.Gain}, 2,
@@ -26,7 +26,7 @@ func TestValidFunc(t *testing.T) {
 }
 
 func TestMissingCriterion(t *testing.T) {
-	criteria := []model.WeightedCriterion{{model.Criterion{Id: "Color", Type: model.Gain}, 1}}
+	criteria := model.WeightedCriteria{{model.Criterion{Id: "Color", Type: model.Gain}, 1}}
 	var alternative = model.AlternativeWithCriteria{
 		Id: "Ferrari",
 		Criteria: model.Weights{

@@ -22,14 +22,14 @@ type aspectEliminationAddedCriterion struct {
 
 func (a *AspectEliminationBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
+	referenceCriterion *model.Criterion,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
 	pParams := params.(AspectEliminationHeuristicParams)
-	newValue := model.NewCriterionValue(&pParams.Weights, previousRankedCriteria, &generator)
+	newValue := model.NewCriterionValue(&pParams.Weights, referenceCriterion, &generator)
 	listener, methodParams := a.getMethodParams(pParams)
-	addedParams := listener.OnCriterionAdded(criterion, previousRankedCriteria, methodParams, generator)
+	addedParams := listener.OnCriterionAdded(criterion, referenceCriterion, methodParams, generator)
 	return aspectEliminationAddedCriterion{
 		Weights: model.Weights{criterion.Id: newValue},
 		Params:  addedParams,
@@ -50,7 +50,7 @@ func (a *AspectEliminationBiasListener) OnCriteriaRemoved(
 	return pParams.with(afterRemoveParams, pParams.Weights.PreserveOnly(leftCriteria))
 }
 
-func (a *AspectEliminationBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (a *AspectEliminationBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.WeightedCriteria {
 	wParams := params.MethodParameters.(AspectEliminationHeuristicParams)
 	return params.Criteria.SortByWeights(wParams.Weights)
 }

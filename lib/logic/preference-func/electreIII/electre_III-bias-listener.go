@@ -32,12 +32,12 @@ func (e *ElectreIIIBiasLIstener) Merge(params model.MethodParameters, addition m
 
 func (e *ElectreIIIBiasLIstener) OnCriterionAdded(
 	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
+	referenceCriterion *model.Criterion,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
 	eleParams := params.(electreIIIParams)
-	weakestCriterion := (*eleParams.Criteria)[previousRankedCriteria.First().Id]
+	weakestCriterion := (*eleParams.Criteria)[referenceCriterion.Id]
 	return electreIIIParams{Criteria: &ElectreCriteria{
 		criterion.Id: ElectreCriterion{
 			K: generator() * weakestCriterion.K,
@@ -64,7 +64,7 @@ func (e *ElectreIIIBiasLIstener) OnCriteriaRemoved(
 	return electreIIIParams{Criteria: &resCriteria, DistillationFun: eleParams.DistillationFun}
 }
 
-func (e *ElectreIIIBiasLIstener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (e *ElectreIIIBiasLIstener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.WeightedCriteria {
 	eleParams := params.MethodParameters.(electreIIIParams)
 	weights := make(model.Weights, len(*eleParams.Criteria))
 	for k, v := range *eleParams.Criteria {

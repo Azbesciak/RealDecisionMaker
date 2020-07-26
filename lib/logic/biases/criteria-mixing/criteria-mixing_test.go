@@ -2,7 +2,9 @@ package criteria_mixing
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	reference_criterion "github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
 )
 
@@ -15,6 +17,9 @@ func mixValues(v1, v2 float64) float64 {
 func TestCriteriaMixing_Apply(t *testing.T) {
 	mixing := CriteriaMixing{
 		generatorSource: testUtils.CyclicRandomGenerator(0, 10),
+		referenceCriteriaManager: reference_criterion.ReferenceCriteriaManager{
+			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		},
 	}
 	notConsidered := []model.AlternativeWithCriteria{
 		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
@@ -26,7 +31,7 @@ func TestCriteriaMixing_Apply(t *testing.T) {
 	}
 	criteria := testUtils.GenerateCriteria(3)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
-	m := model.BiasProps(map[string]interface{}{
+	m := model.BiasProps(utils.Map{
 		"mixingRatio": testMixing,
 		"randomSeed":  0,
 	})

@@ -38,12 +38,18 @@ func (c *Criteria) ShallowCopy() *Criteria {
 	return &criteriaCopy
 }
 
-func (c *Criteria) SortByWeights(weights Weights) *Criteria {
-	criteriaCopy := c.ShallowCopy()
-	sort.SliceStable(*criteriaCopy, func(i, j int) bool {
-		return criteriaCopy.Weight(weights, i) < criteriaCopy.Weight(weights, j)
+func (c *Criteria) SortByWeights(weights Weights) *WeightedCriteria {
+	result := make(WeightedCriteria, len(weights))
+	for i, criterion := range *c {
+		result[i] = WeightedCriterion{
+			Criterion: criterion,
+			Weight:    c.Weight(weights, i),
+		}
+	}
+	sort.SliceStable(result, func(i, j int) bool {
+		return result[i].Weight < result[j].Weight
 	})
-	return criteriaCopy
+	return &result
 }
 
 func (c *Criteria) Weight(weights Weights, criterionIndex int) Weight {
@@ -97,8 +103,18 @@ type WeightedCriterion struct {
 	Weight Weight `json:"weight"`
 }
 
-func (c *Criteria) ZipWithWeights(weights *Weights) *[]WeightedCriterion {
-	weightedCriteria := make([]WeightedCriterion, len(*c))
+type WeightedCriteria []WeightedCriterion
+
+func (w *WeightedCriteria) Criteria() *Criteria {
+	result := make(Criteria, len(*w))
+	for i, c := range *w {
+		result[i] = c.Criterion
+	}
+	return &result
+}
+
+func (c *Criteria) ZipWithWeights(weights *Weights) *WeightedCriteria {
+	weightedCriteria := make(WeightedCriteria, len(*c))
 	for i, crit := range *c {
 		value := c.FindWeight(weights, &crit)
 		weightedCriteria[i] = WeightedCriterion{

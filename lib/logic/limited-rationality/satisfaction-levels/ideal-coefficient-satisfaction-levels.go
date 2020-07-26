@@ -58,7 +58,7 @@ type IdealCoefficientSatisfactionLevelsSource struct {
 	coefficientManager CoefficientManager
 }
 
-func (s *IdealCoefficientSatisfactionLevelsSource) OnCriterionAdded(criterion *model.Criterion, previousRankedCriteria *model.Criteria, params SatisfactionLevels, generator utils.ValueGenerator) ParamsAddition {
+func (s *IdealCoefficientSatisfactionLevelsSource) OnCriterionAdded(criterion *model.Criterion, referenceCriterion *model.Criterion, params SatisfactionLevels, generator utils.ValueGenerator) ParamsAddition {
 	return nil
 }
 

@@ -64,7 +64,7 @@ func (a *AspectEliminationHeuristic) Evaluate(dmp *model.DecisionMakingParams) *
 	return &ranking
 }
 
-func sortCriteria(dmp *model.DecisionMakingParams, params AspectEliminationHeuristicParams, generator utils.ValueGenerator) []model.WeightedCriterion {
+func sortCriteria(dmp *model.DecisionMakingParams, params AspectEliminationHeuristicParams, generator utils.ValueGenerator) model.WeightedCriteria {
 	weights := *dmp.Criteria.ZipWithWeights(&params.Weights)
 	sort.Slice(weights, func(i, j int) bool {
 		w1, w2 := weights[i], weights[j]
@@ -77,7 +77,7 @@ func sortCriteria(dmp *model.DecisionMakingParams, params AspectEliminationHeuri
 }
 
 func checkWithinSatisfactionLevels(
-	criteria []model.WeightedCriterion,
+	criteria model.WeightedCriteria,
 	considered *[]model.AlternativeWithCriteria,
 	satisfactionLevels satisfaction_levels.SatisfactionLevels,
 ) ([]model.AlternativeWithCriteria, model.AlternativeResults, []model.Alternative, int) {

@@ -12,7 +12,7 @@ type ParamsAddition = interface{}
 type CriterionAdder interface {
 	OnCriterionAdded(
 		criterion *model.Criterion,
-		previousRankedCriteria *model.Criteria,
+		referenceCriterion *model.Criterion,
 		params SatisfactionLevels,
 		generator utils.ValueGenerator,
 	) ParamsAddition

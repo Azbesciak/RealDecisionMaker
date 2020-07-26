@@ -11,7 +11,7 @@ type WeightedSumPreferenceFunc struct {
 }
 
 type weightedSumParams struct {
-	weightedCriteria *[]WeightedCriterion
+	weightedCriteria *WeightedCriteria
 }
 
 func (p *weightedSumParams) Criterion(criterion string) WeightedCriterion {
@@ -45,7 +45,7 @@ func (w *WeightedSumPreferenceFunc) Evaluate(dmp *DecisionMakingParams) *Alterna
 	return Rank(dmp, prefFunc)
 }
 
-func WeightedSum(alternative AlternativeWithCriteria, criteria []WeightedCriterion) *AlternativeResult {
+func WeightedSum(alternative AlternativeWithCriteria, criteria WeightedCriteria) *AlternativeResult {
 	var total Weight = 0
 	for _, criterion := range criteria {
 		total += alternative.CriterionValue(&criterion.Criterion)

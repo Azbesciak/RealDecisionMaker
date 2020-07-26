@@ -14,12 +14,12 @@ func (m *MajorityBiasListener) Identifier() string {
 
 func (m *MajorityBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
+	referenceCriterion *model.Criterion,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
 	wParams := params.(MajorityHeuristicParams)
-	newWeight := model.NewCriterionValue(&wParams.Weights, previousRankedCriteria, &generator)
+	newWeight := model.NewCriterionValue(&wParams.Weights, referenceCriterion, &generator)
 	return model.SingleWeight(criterion, newWeight)
 }
 
@@ -33,7 +33,7 @@ func (m *MajorityBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, p
 	}
 }
 
-func (m *MajorityBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (m *MajorityBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.WeightedCriteria {
 	wParams := params.MethodParameters.(MajorityHeuristicParams)
 	return params.Criteria.SortByWeights(wParams.Weights)
 }

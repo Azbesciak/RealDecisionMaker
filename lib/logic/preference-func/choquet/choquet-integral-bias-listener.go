@@ -15,12 +15,13 @@ func (c *ChoquetIntegralBiasListener) Identifier() string {
 
 func (c *ChoquetIntegralBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
+	referenceCriterion *model.Criterion,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
-	oldWeights := params.(choquetParams).weights
-	newCriteria := previousRankedCriteria.Add(criterion)
+	parsedParams := params.(choquetParams)
+	oldWeights := parsedParams.weights
+	newCriteria := parsedParams.criteria.Add(criterion)
 	newWeightsKeys := PowerSet(*newCriteria.Names())
 	newWeights := make(model.Weights, len(*newWeightsKeys))
 	for _, k := range *newWeightsKeys {
@@ -37,7 +38,7 @@ func (c *ChoquetIntegralBiasListener) OnCriterionAdded(
 		}
 		newWeights[cKey] = getWeightForCriteriaUnion(&originalKeyCriteriaWithoutNewOne, oldWeights)
 	}
-	return choquetParams{weights: &newWeights}
+	return choquetParams{weights: &newWeights, criteria: &newCriteria}
 }
 
 func (c *ChoquetIntegralBiasListener) OnCriteriaRemoved(
@@ -51,10 +52,10 @@ func (c *ChoquetIntegralBiasListener) OnCriteriaRemoved(
 		key := criterionKey(&criteria)
 		filteredWeights[key] = cParams.weights.Fetch(key)
 	}
-	return choquetParams{weights: &filteredWeights}
+	return choquetParams{weights: &filteredWeights, criteria: leftCriteria}
 }
 
-func (c *ChoquetIntegralBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (c *ChoquetIntegralBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.WeightedCriteria {
 	criteriaWeights := decomposeWeights(params)
 	return params.Criteria.SortByWeights(*criteriaWeights)
 }
@@ -83,7 +84,9 @@ func decomposeWeights(params *model.DecisionMakingParams) *model.Weights {
 }
 
 func (c *ChoquetIntegralBiasListener) Merge(params model.MethodParameters, addition model.MethodParameters) model.MethodParameters {
-	oldWeights := *params.(choquetParams).weights
-	addedWeights := *addition.(choquetParams).weights
-	return choquetParams{weights: oldWeights.Merge(&addedWeights)}
+	oldParams := params.(choquetParams)
+	newParams := addition.(choquetParams)
+	resultWeights := oldParams.weights.Merge(newParams.weights)
+	resultCriteria := append(*oldParams.criteria, *newParams.criteria...)
+	return choquetParams{weights: resultWeights, criteria: &resultCriteria}
 }

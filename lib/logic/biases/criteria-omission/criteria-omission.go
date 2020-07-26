@@ -3,14 +3,16 @@ package criteria_omission
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	reference_criterion "github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
 //go:generate easytags $GOFILE json:camel
 
 type CriteriaOmission struct {
-	generatorSource         utils.SeededValueGenerator
-	newCriterionValueScalar float64
+	generatorSource           utils.SeededValueGenerator
+	newCriterionValueScalar   float64
+	referenceCriterionManager reference_criterion.ReferenceCriteriaManager
 }
 
 type CriteriaOmissionParams struct {
@@ -39,7 +41,7 @@ func (c *CriteriaOmission) Apply(
 	}
 	paramsWithSortedCriteria := paramsWithSortedCriteria(original, listener)
 	resParams, omitted := omitCriteria(&parsedProps, paramsWithSortedCriteria, listener)
-	resParams, addedCriterion := c.addCriterion(parsedProps, paramsWithSortedCriteria, resParams, listener)
+	resParams, addedCriterion := c.addCriterion(props, parsedProps, paramsWithSortedCriteria, resParams, listener)
 	return &model.BiasedResult{
 		DMP: resParams,
 		Props: CriteriaOmissionResult{
@@ -56,7 +58,7 @@ func paramsWithSortedCriteria(
 	return &model.DecisionMakingParams{
 		NotConsideredAlternatives: params.NotConsideredAlternatives,
 		ConsideredAlternatives:    params.ConsideredAlternatives,
-		Criteria:                  *((*listener).RankCriteriaAscending(params)),
+		Criteria:                  *(*listener).RankCriteriaAscending(params).Criteria(),
 		MethodParameters:          params.MethodParameters,
 	}
 }

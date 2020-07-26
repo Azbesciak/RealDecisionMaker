@@ -25,7 +25,7 @@ func (d *DummyBiasListener) Identifier() string {
 
 func (d *DummyBiasListener) OnCriterionAdded(
 	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
+	referenceCriterion *model.Criterion,
 	params model.MethodParameters,
 	generator utils.ValueGenerator,
 ) model.AddedCriterionParams {
@@ -36,10 +36,17 @@ func (d *DummyBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, para
 	return DummyMethodParameters{Criteria: *leftCriteria.Names()}
 }
 
-func (d *DummyBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.Criteria {
+func (d *DummyBiasListener) RankCriteriaAscending(params *model.DecisionMakingParams) *model.WeightedCriteria {
 	criteria := params.Criteria.ShallowCopy()
 	sort.Slice(*criteria, func(i, j int) bool {
 		return (*criteria)[i].Id < (*criteria)[j].Id
 	})
-	return criteria
+	result := make(model.WeightedCriteria, len(*criteria))
+	for i, c := range *criteria {
+		result[i] = model.WeightedCriterion{
+			Criterion: c,
+			Weight:    float64(i + 1),
+		}
+	}
+	return &result
 }

@@ -43,12 +43,12 @@ type ThresholdsUpdate struct {
 
 func (t *ThresholdSatisfactionLevelsSource) OnCriterionAdded(
 	criterion *model.Criterion,
-	previousRankedCriteria *model.Criteria,
+	referenceCriterion *model.Criterion,
 	params SatisfactionLevels,
 	generator utils.ValueGenerator,
 ) ParamsAddition {
 	pParams := fetchParams(params)
-	thresholdsValues := assignNewThresholds(pParams, previousRankedCriteria, generator)
+	thresholdsValues := assignNewThresholds(pParams, referenceCriterion, generator)
 	sortThresholds(thresholdsValues, t.ascending)
 	thresholds := mapThresholdsToEntries(criterion, thresholdsValues)
 	return ThresholdsUpdate{Thresholds: thresholds}
@@ -62,9 +62,8 @@ func mapThresholdsToEntries(criterion *model.Criterion, thresholdsValues []model
 	return thresholds
 }
 
-func assignNewThresholds(params *ThresholdSatisfactionLevels, previousRankedCriteria *model.Criteria, generator utils.ValueGenerator) []model.Weight {
+func assignNewThresholds(params *ThresholdSatisfactionLevels, referenceCriterion *model.Criterion, generator utils.ValueGenerator) []model.Weight {
 	thresholds := make([]model.Weight, len(params.Thresholds))
-	referenceCriterion := previousRankedCriteria.First()
 	for i, threshold := range params.Thresholds {
 		thresholds[i] = threshold.Fetch(referenceCriterion.Id) * generator()
 	}
