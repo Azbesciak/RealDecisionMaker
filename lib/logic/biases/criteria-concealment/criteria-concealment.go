@@ -16,8 +16,8 @@ type CriteriaConcealment struct {
 }
 
 type CriteriaConcealmentParams struct {
-	AddCriterionProbability float64 `json:"addCriterionProbability"`
-	RandomSeed              int64   `json:"randomSeed"`
+	CriterionConcealmentProbability float64 `json:"criterionConcealmentProbability"`
+	RandomSeed                      int64   `json:"randomSeed"`
 }
 
 type CriteriaConcealmentResult struct {
@@ -34,7 +34,7 @@ func (c *CriteriaConcealment) Apply(
 	listener *model.BiasListener,
 ) *model.BiasedResult {
 	parsedProps := *parseProps(props)
-	if parsedProps.AddCriterionProbability == 0 {
+	if parsedProps.CriterionConcealmentProbability == 0 {
 		return &model.BiasedResult{DMP: current, Props: CriteriaConcealmentResult{}}
 	}
 	resParams, addedCriterion := c.addCriterion(props, parsedProps, original, current, listener)
@@ -54,7 +54,7 @@ func parseProps(props *model.BiasProps) *CriteriaConcealmentParams {
 }
 
 func (params *CriteriaConcealmentParams) validate() {
-	if !utils.IsProbability(params.AddCriterionProbability) {
-		panic(fmt.Errorf("'addCriterionProbability' need to be in range [0,1], got %f", params.AddCriterionProbability))
+	if !utils.IsProbability(params.CriterionConcealmentProbability) {
+		panic(fmt.Errorf("'criterionConcealmentProbability' need to be in range [0,1], got %f", params.CriterionConcealmentProbability))
 	}
 }

@@ -27,8 +27,8 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 	criteria := testUtils.GenerateCriteria(3)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	m := model.BiasProps(map[string]interface{}{
-		"addCriterionProbability": 0.5,
-		"randomSeed":              0,
+		"criterionConcealmentProbability": 0.5,
+		"randomSeed":                      0,
 	})
 	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
@@ -67,8 +67,8 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 	criteria := testUtils.GenerateCriteria(2)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	m := model.BiasProps(utils.Map{
-		"addCriterionProbability": 0.5,
-		"randomSeed":              0,
+		"criterionConcealmentProbability": 0.5,
+		"randomSeed":                      0,
 	})
 	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
@@ -108,9 +108,9 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 	criteria := testUtils.GenerateCriteria(2)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	m := model.BiasProps(utils.Map{
-		"addCriterionProbability": 0.5,
-		"randomSeed":              0,
-		"newCriterionImportance":  1,
+		"criterionConcealmentProbability": 0.5,
+		"randomSeed":                      0,
+		"newCriterionImportance":          1,
 	})
 	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
