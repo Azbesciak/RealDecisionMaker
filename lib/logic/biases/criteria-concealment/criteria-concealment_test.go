@@ -92,6 +92,47 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 	})
 }
 
+func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
+	omission := CriteriaConcealment{
+		newCriterionValueScalar: 1,
+		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
+		referenceCriterionManager: reference_criterion.ReferenceCriteriaManager{
+			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		},
+	}
+	var notConsidered []model.AlternativeWithCriteria
+	considered := []model.AlternativeWithCriteria{
+		{Id: "a", Criteria: model.Weights{"1": 0, "2": 3}},
+		{Id: "b", Criteria: model.Weights{"1": 3, "2": 5}},
+	}
+	criteria := testUtils.GenerateCriteria(2)
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
+	m := model.BiasProps(utils.Map{
+		"addCriterionProbability": 0.5,
+		"randomSeed":              0,
+		"newCriterionImportance":  1,
+	})
+	original := &model.DecisionMakingParams{
+		NotConsideredAlternatives: notConsidered,
+		ConsideredAlternatives:    considered,
+		Criteria:                  criteria,
+		MethodParameters: testUtils.DummyMethodParameters{
+			Criteria: []string{"1", "2"},
+		},
+	}
+	result := omission.Apply(original, original, &m, &listener)
+	checkProps(t, result.Props, CriteriaConcealmentResult{
+		AddedCriteria: []AddedCriterion{{
+			Type:               model.Gain,
+			AlternativesValues: model.Weights{"a": 4, "b": 4.2},
+			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
+				newConcealedCriterionNameByCount(0)},
+			},
+			CriterionValueRange: utils.ValueRange{Min: 3, Max: 5},
+		}},
+	})
+}
+
 func checkProps(t *testing.T, actual model.BiasProps, expected CriteriaConcealmentResult) {
 	r, ok := actual.(CriteriaConcealmentResult)
 	if !ok {
