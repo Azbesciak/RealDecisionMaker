@@ -2,7 +2,6 @@ package criteria_omission
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
-	reference_criterion "github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
@@ -25,13 +24,7 @@ func TestCriteriaOmission_splitCriteria(t *testing.T) {
 }
 
 func TestCriteriaOmission_Apply(t *testing.T) {
-	omission := CriteriaOmission{
-		newCriterionValueScalar: 1,
-		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
-		referenceCriterionManager: reference_criterion.ReferenceCriteriaManager{
-			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
-		},
-	}
+	omission := CriteriaOmission{}
 	notConsidered := []model.AlternativeWithCriteria{
 		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
 		{Id: "y", Criteria: model.Weights{"1": 0, "2": 1, "3": 4}},
@@ -42,11 +35,7 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 	}
 	criteria := testUtils.GenerateCriteria(3)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
-	m := model.BiasProps(map[string]interface{}{
-		"addCriterionProbability": 0.5,
-		"omittedCriteriaRatio":    0.4,
-		"randomSeed":              0,
-	})
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4})
 	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
 		ConsideredAlternatives:    considered,
@@ -56,17 +45,7 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		},
 	}
 	result := omission.Apply(original, original, &m, &listener)
-	checkProps(t, result.Props, CriteriaOmissionResult{
-		OmittedCriteria: model.Criteria{criteria[0]},
-		AddedCriteria: []AddedCriterion{
-			{
-				Type:                model.Gain,
-				AlternativesValues:  model.Weights{"a": 0.5, "b": 0.6, "x": 0.7, "y": 0.8},
-				MethodParameters:    testUtils.DummyMethodParameters{Criteria: []string{addedCriterionName()}},
-				CriterionValueRange: utils.ValueRange{Min: 0, Max: 1},
-			},
-		},
-	})
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
 }
 
 func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omitted []string, kept []string) {
@@ -81,57 +60,20 @@ func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omi
 	testUtils.CheckCount(t, "keep", kept, division.kept)
 }
 
-func checkProps(t *testing.T, actual model.BiasProps, expected CriteriaOmissionResult) {
+func checkOmissionResult(t *testing.T, actual model.BiasProps, expected CriteriaOmissionResult) {
 	r, ok := actual.(CriteriaOmissionResult)
 	if !ok {
 		t.Errorf("expected instance of CriteriaOmissionResult")
 		return
 	}
-	if len(r.AddedCriteria) != len(expected.AddedCriteria) {
-		t.Errorf("expected %d added criteria, got %d", len(expected.AddedCriteria), len(r.AddedCriteria))
+	if len(r.OmittedCriteria) != len(expected.OmittedCriteria) {
+		t.Errorf("expected %d ommited criteria, got %d", len(expected.OmittedCriteria), len(r.OmittedCriteria))
 		return
 	}
-	for i, exp := range expected.AddedCriteria {
-		validateMethodAddedCriterion(t, r, i, exp)
-	}
-}
-
-func validateMethodAddedCriterion(t *testing.T, r CriteriaOmissionResult, i int, exp AddedCriterion) {
-	act := r.AddedCriteria[i]
-	checkMethodParameters(act, t, i, exp)
-	if act.Type != exp.Type {
-		t.Errorf("wrong added criterion type, expected %s, got %s", exp.Type, act.Type)
-	}
-	utils.CheckValueRange(t, act.CriterionValueRange, 0, 1)
-	checkAlternatives(exp, act, t)
-}
-
-func checkAlternatives(exp AddedCriterion, act AddedCriterion, t *testing.T) {
-	for ek, ev := range exp.AlternativesValues {
-		av, ok := act.AlternativesValues[ek]
-		if !ok {
-			t.Errorf("alternative '%s' not found in values %v, expected %v", ek, act.AlternativesValues, exp.AlternativesValues)
-		} else if !utils.FloatsAreEqual(av, ev, 1e-6) {
-			t.Errorf("expected %f for alternative '%s', got %f", ev, ek, av)
-		}
-	}
-}
-
-func checkMethodParameters(act AddedCriterion, t *testing.T, i int, exp AddedCriterion) {
-	actPar, ok := act.MethodParameters.(testUtils.DummyMethodParameters)
-	if !ok {
-		t.Errorf("expected instance of testUtils.DummyMethodParameters at criterion %d, got %v", i, act.MethodParameters)
-		return
-	}
-	expPar := exp.MethodParameters.(testUtils.DummyMethodParameters)
-	if len(actPar.Criteria) != len(expPar.Criteria) {
-		t.Errorf("expected %d criteria, got %d", len(expPar.Criteria), len(actPar.Criteria))
-		return
-	}
-	for i, expCr := range expPar.Criteria {
-		actCr := actPar.Criteria[i]
-		if actCr != expCr {
-			t.Errorf("criterion at %d are not equal, expected %s, got %s", i, expCr, actCr)
+	for i, exp := range expected.OmittedCriteria {
+		act := r.OmittedCriteria[i]
+		if act.Id != exp.Id {
+			t.Errorf("expected '%s' criterion ommited, got '%s' at index '%d'", exp.Id, act.Id, i)
 		}
 	}
 }

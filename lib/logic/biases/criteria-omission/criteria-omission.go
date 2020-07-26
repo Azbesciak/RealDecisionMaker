@@ -3,27 +3,21 @@ package criteria_omission
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
-	reference_criterion "github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
 //go:generate easytags $GOFILE json:camel
 
 type CriteriaOmission struct {
-	generatorSource           utils.SeededValueGenerator
-	newCriterionValueScalar   float64
-	referenceCriterionManager reference_criterion.ReferenceCriteriaManager
 }
 
 type CriteriaOmissionParams struct {
-	AddCriterionProbability float64 `json:"addCriterionProbability"`
-	OmittedCriteriaRatio    float64 `json:"omittedCriteriaRatio"`
-	RandomSeed              int64   `json:"randomSeed"`
+	OmittedCriteriaRatio float64 `json:"omittedCriteriaRatio"`
+	RandomSeed           int64   `json:"randomSeed"`
 }
 
 type CriteriaOmissionResult struct {
-	OmittedCriteria model.Criteria   `json:"omittedCriteria"`
-	AddedCriteria   []AddedCriterion `json:"addedCriterion"`
+	OmittedCriteria model.Criteria `json:"omittedCriteria"`
 }
 
 func (c *CriteriaOmission) Identifier() string {
@@ -36,18 +30,14 @@ func (c *CriteriaOmission) Apply(
 	listener *model.BiasListener,
 ) *model.BiasedResult {
 	parsedProps := *parseProps(props)
-	if parsedProps.OmittedCriteriaRatio == 0 && parsedProps.AddCriterionProbability == 0 {
+	if parsedProps.OmittedCriteriaRatio == 0 {
 		return &model.BiasedResult{DMP: current, Props: CriteriaOmissionResult{}}
 	}
 	paramsWithSortedCriteria := paramsWithSortedCriteria(original, listener)
 	resParams, omitted := omitCriteria(&parsedProps, paramsWithSortedCriteria, listener)
-	resParams, addedCriterion := c.addCriterion(props, parsedProps, paramsWithSortedCriteria, resParams, listener)
 	return &model.BiasedResult{
-		DMP: resParams,
-		Props: CriteriaOmissionResult{
-			OmittedCriteria: *omitted,
-			AddedCriteria:   addedCriterion,
-		},
+		DMP:   resParams,
+		Props: CriteriaOmissionResult{OmittedCriteria: *omitted},
 	}
 }
 
@@ -71,10 +61,7 @@ func parseProps(props *model.BiasProps) *CriteriaOmissionParams {
 }
 
 func (params *CriteriaOmissionParams) validate() {
-	if !utils.IsProbability(params.AddCriterionProbability) {
-		panic(fmt.Errorf("'addCriterionProbability' need to be in range [0,1], got %f", params.AddCriterionProbability))
-	}
 	if !utils.IsProbability(params.OmittedCriteriaRatio) {
-		panic(fmt.Errorf("'omittedCriteriaRatio' need to be in range [0,1], got %f", params.AddCriterionProbability))
+		panic(fmt.Errorf("'omittedCriteriaRatio' need to be in range [0,1], got %f", params.OmittedCriteriaRatio))
 	}
 }

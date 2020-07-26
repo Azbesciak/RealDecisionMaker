@@ -1,4 +1,4 @@
-package criteria_omission
+package criteria_concealment
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
@@ -12,9 +12,9 @@ type AddedCriterion struct {
 	CriterionValueRange utils.ValueRange       `json:"criterionValueRange"`
 }
 
-func (c *CriteriaOmission) addCriterion(
+func (c *CriteriaConcealment) addCriterion(
 	props *model.BiasProps,
-	parsedProps CriteriaOmissionParams,
+	parsedProps CriteriaConcealmentParams,
 	originalParams, resParams *model.DecisionMakingParams,
 	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
@@ -31,7 +31,7 @@ func addedCriterionName() string {
 	return "__addedCriterion__"
 }
 
-func (c *CriteriaOmission) generateNewCriterion(
+func (c *CriteriaConcealment) generateNewCriterion(
 	listener *model.BiasListener,
 	props *model.BiasProps,
 	originalParams, resParams *model.DecisionMakingParams,
@@ -55,7 +55,7 @@ func (c *CriteriaOmission) generateNewCriterion(
 		}}
 }
 
-func (c *CriteriaOmission) generateNewCriterionBase(
+func (c *CriteriaConcealment) generateNewCriterionBase(
 	listener *model.BiasListener,
 	props *model.BiasProps,
 	originalParams *model.DecisionMakingParams,
@@ -110,7 +110,7 @@ func assignNewCriterionToAlternatives(
 	return sortedAlternatives, alternativesValues
 }
 
-func (c *CriteriaOmission) getCriterionValueRange(originalParams *model.DecisionMakingParams, referenceCriterion *model.Criterion) *utils.ValueRange {
+func (c *CriteriaConcealment) getCriterionValueRange(originalParams *model.DecisionMakingParams, referenceCriterion *model.Criterion) *utils.ValueRange {
 	allAlternatives := originalParams.AllAlternatives()
 	valRange := model.CriteriaValuesRange(&allAlternatives, referenceCriterion).ScaleEqually(c.newCriterionValueScalar)
 	return valRange
