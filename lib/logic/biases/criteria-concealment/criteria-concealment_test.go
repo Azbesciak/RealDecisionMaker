@@ -44,10 +44,51 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 			{
 				Type:                model.Gain,
 				AlternativesValues:  model.Weights{"a": 0.5, "b": 0.6, "x": 0.7, "y": 0.8},
-				MethodParameters:    testUtils.DummyMethodParameters{Criteria: []string{addedCriterionName()}},
+				MethodParameters:    testUtils.DummyMethodParameters{Criteria: []string{newConcealedCriterionNameByCount(0)}},
 				CriterionValueRange: utils.ValueRange{Min: 0, Max: 1},
 			},
 		},
+	})
+}
+
+func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
+	omission := CriteriaConcealment{
+		newCriterionValueScalar: 1,
+		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
+		referenceCriterionManager: reference_criterion.ReferenceCriteriaManager{
+			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		},
+	}
+	var notConsidered []model.AlternativeWithCriteria
+	considered := []model.AlternativeWithCriteria{
+		{Id: "a", Criteria: model.Weights{"1": 0, "2": 3}},
+		{Id: "b", Criteria: model.Weights{"1": 3, "2": 5}},
+	}
+	criteria := testUtils.GenerateCriteria(3)
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
+	m := model.BiasProps(utils.Map{
+		"addCriterionProbability": 0.5,
+		"randomSeed":              0,
+	})
+	original := &model.DecisionMakingParams{
+		NotConsideredAlternatives: notConsidered,
+		ConsideredAlternatives:    considered,
+		Criteria:                  criteria,
+		MethodParameters: testUtils.DummyMethodParameters{
+			Criteria: []string{"1", "2"},
+		},
+	}
+	result := omission.Apply(original, original, &m, &listener)
+	result2 := omission.Apply(original, result.DMP, &m, &listener)
+	checkProps(t, result2.Props, CriteriaConcealmentResult{
+		AddedCriteria: []AddedCriterion{{
+			Type:               model.Gain,
+			AlternativesValues: model.Weights{"a": 1.5, "b": 1.8},
+			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
+				newConcealedCriterionNameByCount(1)},
+			},
+			CriterionValueRange: utils.ValueRange{Min: 0, Max: 3},
+		}},
 	})
 }
 
@@ -72,7 +113,7 @@ func validateMethodAddedCriterion(t *testing.T, r CriteriaConcealmentResult, i i
 	if act.Type != exp.Type {
 		t.Errorf("wrong added criterion type, expected %s, got %s", exp.Type, act.Type)
 	}
-	utils.CheckValueRange(t, act.CriterionValueRange, 0, 1)
+	utils.CheckValueRange(t, act.CriterionValueRange, exp.CriterionValueRange.Min, exp.CriterionValueRange.Max)
 	checkAlternatives(exp, act, t)
 }
 

@@ -3,6 +3,8 @@ package criteria_concealment
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
+	"strconv"
+	"strings"
 )
 
 type AddedCriterion struct {
@@ -27,8 +29,29 @@ func (c *CriteriaConcealment) addCriterion(
 	return resParams, []AddedCriterion{}
 }
 
-func addedCriterionName() string {
-	return "__addedCriterion__"
+const baseConcealedCriterionName = "__concealedCriterion__"
+
+func concealedCriterionName(criteria *model.Criteria) string {
+	concealedCriteriaCount := countConcealedCriteria(criteria)
+	return newConcealedCriterionNameByCount(concealedCriteriaCount)
+}
+
+func countConcealedCriteria(criteria *model.Criteria) int {
+	concealedCriteriaCount := 0
+	for _, c := range *criteria {
+		if strings.HasPrefix(c.Id, baseConcealedCriterionName) {
+			concealedCriteriaCount += 1
+		}
+	}
+	return concealedCriteriaCount
+}
+
+func newConcealedCriterionNameByCount(currentlyConcealedCriteriaCount int) string {
+	if currentlyConcealedCriteriaCount == 0 {
+		return baseConcealedCriterionName
+	} else {
+		return baseConcealedCriterionName + strconv.Itoa(currentlyConcealedCriteriaCount)
+	}
 }
 
 func (c *CriteriaConcealment) generateNewCriterion(
@@ -37,7 +60,7 @@ func (c *CriteriaConcealment) generateNewCriterion(
 	originalParams, resParams *model.DecisionMakingParams,
 	valueGenerator utils.ValueGenerator,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
-	criterionBase := c.generateNewCriterionBase(listener, props, originalParams)
+	criterionBase := c.generateNewCriterionBase(listener, props, originalParams, resParams)
 	addResult := generateCriterionValuesForAlternatives(criterionBase.newCriterion, criterionBase.valuesRange, resParams, valueGenerator)
 	addedCriterionParams := (*listener).OnCriterionAdded(criterionBase.newCriterion, criterionBase.referenceCriterion, originalParams.MethodParameters, valueGenerator)
 	finalParams := (*listener).Merge(resParams.MethodParameters, addedCriterionParams)
@@ -58,12 +81,12 @@ func (c *CriteriaConcealment) generateNewCriterion(
 func (c *CriteriaConcealment) generateNewCriterionBase(
 	listener *model.BiasListener,
 	props *model.BiasProps,
-	originalParams *model.DecisionMakingParams,
+	originalParams, currentParams *model.DecisionMakingParams,
 ) newCriterionBase {
 	refCriterionProvider := c.referenceCriterionManager.ForParams(props)
 	rankedCriteria := (*listener).RankCriteriaAscending(originalParams)
 	referenceCriterion := refCriterionProvider.Provide(rankedCriteria)
-	newCriterion := model.Criterion{Id: addedCriterionName(), Type: model.Gain}
+	newCriterion := model.Criterion{Id: concealedCriterionName(&currentParams.Criteria), Type: model.Gain}
 	valRange := c.getCriterionValueRange(originalParams, referenceCriterion)
 	return newCriterionBase{
 		referenceCriterion: referenceCriterion,
