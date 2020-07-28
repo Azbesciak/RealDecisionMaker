@@ -10,6 +10,14 @@ type AspectEliminationBiasListener struct {
 	satisfactionLevelsUpdateListeners satisfaction_levels.SatisfactionLevelsUpdateListeners
 }
 
+func NewAspectEliminationBiasListener(
+	satisfactionLevelsUpdateListeners satisfaction_levels.SatisfactionLevelsUpdateListeners,
+) *AspectEliminationBiasListener {
+	return &AspectEliminationBiasListener{
+		satisfactionLevelsUpdateListeners: satisfactionLevelsUpdateListeners,
+	}
+}
+
 func (a *AspectEliminationBiasListener) Identifier() string {
 	return methodName
 }

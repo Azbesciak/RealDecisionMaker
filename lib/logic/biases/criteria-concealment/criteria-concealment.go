@@ -15,6 +15,18 @@ type CriteriaConcealment struct {
 	referenceCriterionManager reference_criterion.ReferenceCriteriaManager
 }
 
+func NewCriteriaConcealment(
+	generatorSource utils.SeededValueGenerator,
+	newCriterionValueScalar float64,
+	referenceCriterionManager reference_criterion.ReferenceCriteriaManager,
+) *CriteriaConcealment {
+	return &CriteriaConcealment{
+		generatorSource:           generatorSource,
+		newCriterionValueScalar:   newCriterionValueScalar,
+		referenceCriterionManager: referenceCriterionManager,
+	}
+}
+
 type CriteriaConcealmentParams struct {
 	CriterionConcealmentProbability float64 `json:"criterionConcealmentProbability"`
 	RandomSeed                      int64   `json:"randomSeed"`

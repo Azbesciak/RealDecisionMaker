@@ -35,6 +35,14 @@ type Fatigue struct {
 	functions            []FatigueFunction
 }
 
+func NewFatigue(
+	valueGeneratorSource utils.SeededValueGenerator,
+	signGeneratorSource utils.SeededValueGenerator,
+	functions []FatigueFunction,
+) *Fatigue {
+	return &Fatigue{valueGeneratorSource: valueGeneratorSource, signGeneratorSource: signGeneratorSource, functions: functions}
+}
+
 const BiasName = "fatigue"
 
 func (f *Fatigue) Identifier() string {

@@ -32,6 +32,18 @@ type Anchoring struct {
 	anchoringAppliers         []AnchoringApplier
 }
 
+func NewAnchoring(
+	anchoringEvaluators []AnchoringEvaluator,
+	referencePointsEvaluators []ReferencePointsEvaluator,
+	anchoringAppliers []AnchoringApplier,
+) *Anchoring {
+	return &Anchoring{
+		anchoringEvaluators:       anchoringEvaluators,
+		referencePointsEvaluators: referencePointsEvaluators,
+		anchoringAppliers:         anchoringAppliers,
+	}
+}
+
 type AnchoringWithParams struct {
 	fun    AnchoringEvaluator
 	params FunctionParams

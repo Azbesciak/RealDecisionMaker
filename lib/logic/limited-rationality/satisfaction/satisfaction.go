@@ -15,6 +15,13 @@ type Satisfaction struct {
 	functions []satisfaction_levels.SatisfactionLevelsSource
 }
 
+func NewSatisfaction(
+	generator utils.SeededValueGenerator,
+	functions []satisfaction_levels.SatisfactionLevelsSource,
+) *Satisfaction {
+	return &Satisfaction{generator: generator, functions: functions}
+}
+
 func (s *Satisfaction) Identifier() string {
 	return methodName
 }

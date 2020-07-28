@@ -47,6 +47,16 @@ type CriteriaMixing struct {
 	referenceCriteriaManager reference_criterion.ReferenceCriteriaManager
 }
 
+func NewCriteriaMixing(
+	generatorSource utils.SeededValueGenerator,
+	referenceCriteriaManager reference_criterion.ReferenceCriteriaManager,
+) *CriteriaMixing {
+	return &CriteriaMixing{
+		generatorSource:          generatorSource,
+		referenceCriteriaManager: referenceCriteriaManager,
+	}
+}
+
 const BiasName = "criteriaMixing"
 
 func (c *CriteriaMixing) Identifier() string {

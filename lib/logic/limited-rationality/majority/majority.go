@@ -12,6 +12,10 @@ type Majority struct {
 	generator utils.SeededValueGenerator
 }
 
+func NewMajority(generator utils.SeededValueGenerator) *Majority {
+	return &Majority{generator: generator}
+}
+
 const eps = 1e-6
 const methodName = "majorityHeuristic"
 

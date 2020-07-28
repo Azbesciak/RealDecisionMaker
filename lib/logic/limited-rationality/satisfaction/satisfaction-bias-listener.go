@@ -10,6 +10,12 @@ type SatisfactionBiasListener struct {
 	satisfactionLevelsUpdateListeners satisfaction_levels.SatisfactionLevelsUpdateListeners
 }
 
+func NewSatisfactionBiasListener(
+	satisfactionLevelsUpdateListeners satisfaction_levels.SatisfactionLevelsUpdateListeners,
+) *SatisfactionBiasListener {
+	return &SatisfactionBiasListener{satisfactionLevelsUpdateListeners: satisfactionLevelsUpdateListeners}
+}
+
 func (a *SatisfactionBiasListener) Identifier() string {
 	return methodName
 }

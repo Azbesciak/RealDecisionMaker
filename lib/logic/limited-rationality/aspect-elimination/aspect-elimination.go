@@ -14,6 +14,16 @@ type AspectEliminationHeuristic struct {
 	generator utils.SeededValueGenerator
 }
 
+func NewAspectEliminationHeuristic(
+	functions []satisfaction_levels.SatisfactionLevelsSource,
+	generator utils.SeededValueGenerator,
+) *AspectEliminationHeuristic {
+	return &AspectEliminationHeuristic{
+		functions: functions,
+		generator: generator,
+	}
+}
+
 type AspectEliminationEvaluation struct {
 	NotSatisfiedThreshold model.Weights `json:"notSatisfiedThreshold"`
 	ThresholdsIndex       int           `json:"thresholdsIndex"`
