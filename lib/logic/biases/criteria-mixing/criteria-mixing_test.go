@@ -17,9 +17,9 @@ func mixValues(v1, v2 float64) float64 {
 func TestCriteriaMixing_Apply(t *testing.T) {
 	mixing := CriteriaMixing{
 		generatorSource: testUtils.CyclicRandomGenerator(0, 10),
-		referenceCriteriaManager: reference_criterion.ReferenceCriteriaManager{
-			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
-		},
+		referenceCriteriaManager: *reference_criterion.NewReferenceCriteriaManager(
+			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		),
 	}
 	notConsidered := []model.AlternativeWithCriteria{
 		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},

@@ -17,7 +17,11 @@ type ReferenceCriterionFactory interface {
 }
 
 type ReferenceCriteriaManager struct {
-	Factories []ReferenceCriterionFactory
+	factories []ReferenceCriterionFactory
+}
+
+func NewReferenceCriteriaManager(factories []ReferenceCriterionFactory) *ReferenceCriteriaManager {
+	return &ReferenceCriteriaManager{factories: factories}
 }
 
 type referenceParamsType struct {
@@ -25,7 +29,7 @@ type referenceParamsType struct {
 }
 
 func (m *ReferenceCriteriaManager) ForParams(params *interface{}) ReferenceCriterionProvider {
-	if len(m.Factories) == 0 {
+	if len(m.factories) == 0 {
 		panic(fmt.Errorf("no ReferenceCriterionFactory has beed declared"))
 	}
 	referenceType := m.fetchFactoryTypeFromParams(params)
@@ -39,13 +43,13 @@ func (m *ReferenceCriteriaManager) fetchFactoryTypeFromParams(params *interface{
 	referenceType := referenceParamsType{}
 	utils.DecodeToStruct(*params, &referenceType)
 	if len(referenceType.ReferenceCriterionType) == 0 {
-		referenceType.ReferenceCriterionType = m.Factories[0].Identifier()
+		referenceType.ReferenceCriterionType = m.factories[0].Identifier()
 	}
 	return referenceType
 }
 
 func (m *ReferenceCriteriaManager) factory(param *referenceParamsType) ReferenceCriterionFactory {
-	for _, f := range m.Factories {
+	for _, f := range m.factories {
 		if f.Identifier() == param.ReferenceCriterionType {
 			return f
 		}
@@ -55,8 +59,8 @@ func (m *ReferenceCriteriaManager) factory(param *referenceParamsType) Reference
 }
 
 func (m *ReferenceCriteriaManager) extractFactoriesNames() []string {
-	names := make([]string, len(m.Factories))
-	for i, f := range m.Factories {
+	names := make([]string, len(m.factories))
+	for i, f := range m.factories {
 		names[i] = f.Identifier()
 	}
 	return names

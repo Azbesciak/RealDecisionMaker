@@ -8,7 +8,7 @@ import (
 
 func TestReferenceCriteriaManager_ForParams_onMissing(t *testing.T) {
 	manager := ReferenceCriteriaManager{
-		Factories: []ReferenceCriterionFactory{
+		factories: []ReferenceCriterionFactory{
 			&RandomWeightedReferenceCriterionManager{},
 			&RandomUniformReferenceCriterionManager{},
 			&ImportanceRatioReferenceCriterionManager{},
@@ -20,7 +20,7 @@ func TestReferenceCriteriaManager_ForParams_onMissing(t *testing.T) {
 		t.Errorf("expected RandomWeightedReferenceCriterionProvider (the first one) when nothing provided")
 	}
 	manager = ReferenceCriteriaManager{
-		Factories: []ReferenceCriterionFactory{
+		factories: []ReferenceCriterionFactory{
 			&ImportanceRatioReferenceCriterionManager{},
 			&RandomUniformReferenceCriterionManager{},
 			&RandomWeightedReferenceCriterionManager{},
@@ -34,7 +34,7 @@ func TestReferenceCriteriaManager_ForParams_onMissing(t *testing.T) {
 
 func TestReferenceCriteriaManager_ForParams_noManagerDeclared(t *testing.T) {
 	manager := ReferenceCriteriaManager{
-		Factories: []ReferenceCriterionFactory{},
+		factories: []ReferenceCriterionFactory{},
 	}
 	defer utils.ExpectError(t, "no ReferenceCriterionFactory has beed declared")()
 	var params interface{} = utils.Map{"referenceCriterionType": "importanceRatio"}
@@ -42,7 +42,7 @@ func TestReferenceCriteriaManager_ForParams_noManagerDeclared(t *testing.T) {
 }
 func TestReferenceCriteriaManager_ForParams_onInvalid(t *testing.T) {
 	manager := ReferenceCriteriaManager{
-		Factories: []ReferenceCriterionFactory{
+		factories: []ReferenceCriterionFactory{
 			&ImportanceRatioReferenceCriterionManager{},
 			&RandomUniformReferenceCriterionManager{},
 			&RandomWeightedReferenceCriterionManager{},
@@ -59,7 +59,7 @@ func TestReferenceCriteriaManager_ForParams_validFetching(t *testing.T) {
 		&RandomUniformReferenceCriterionManager{},
 		&ImportanceRatioReferenceCriterionManager{},
 	}
-	manager := ReferenceCriteriaManager{Factories: factories}
+	manager := ReferenceCriteriaManager{factories: factories}
 	for _, f := range factories {
 		var params interface{} = utils.Map{"referenceCriterionType": f.Identifier()}
 		result := manager.ForParams(&params)

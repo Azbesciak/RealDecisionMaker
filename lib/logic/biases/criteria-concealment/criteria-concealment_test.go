@@ -12,9 +12,9 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 	omission := CriteriaConcealment{
 		newCriterionValueScalar: 1,
 		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
-		referenceCriterionManager: reference_criterion.ReferenceCriteriaManager{
-			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
-		},
+		referenceCriterionManager: *reference_criterion.NewReferenceCriteriaManager(
+			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		),
 	}
 	notConsidered := []model.AlternativeWithCriteria{
 		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
@@ -55,9 +55,9 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 	omission := CriteriaConcealment{
 		newCriterionValueScalar: 1,
 		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
-		referenceCriterionManager: reference_criterion.ReferenceCriteriaManager{
-			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
-		},
+		referenceCriterionManager: *reference_criterion.NewReferenceCriteriaManager(
+			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		),
 	}
 	var notConsidered []model.AlternativeWithCriteria
 	considered := []model.AlternativeWithCriteria{
@@ -96,9 +96,9 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 	omission := CriteriaConcealment{
 		newCriterionValueScalar: 1,
 		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
-		referenceCriterionManager: reference_criterion.ReferenceCriteriaManager{
-			Factories: []reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
-		},
+		referenceCriterionManager: *reference_criterion.NewReferenceCriteriaManager(
+			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		),
 	}
 	var notConsidered []model.AlternativeWithCriteria
 	considered := []model.AlternativeWithCriteria{
