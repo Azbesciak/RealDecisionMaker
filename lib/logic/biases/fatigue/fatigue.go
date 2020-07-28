@@ -35,8 +35,10 @@ type Fatigue struct {
 	functions            []FatigueFunction
 }
 
+const BiasName = "fatigue"
+
 func (f *Fatigue) Identifier() string {
-	return "fatigue"
+	return BiasName
 }
 
 func (f *Fatigue) Apply(

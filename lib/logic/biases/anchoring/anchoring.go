@@ -37,8 +37,10 @@ type AnchoringWithParams struct {
 	params FunctionParams
 }
 
+const BiasName = "anchoring"
+
 func (a *Anchoring) Identifier() string {
-	return "anchoring"
+	return BiasName
 }
 
 func (a *Anchoring) Apply(

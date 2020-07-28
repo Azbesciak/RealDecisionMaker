@@ -47,8 +47,10 @@ type CriteriaMixing struct {
 	referenceCriteriaManager reference_criterion.ReferenceCriteriaManager
 }
 
+const BiasName = "criteriaMixing"
+
 func (c *CriteriaMixing) Identifier() string {
-	return "criteriaMixing"
+	return BiasName
 }
 
 func (c *CriteriaMixing) Apply(

@@ -24,8 +24,10 @@ type CriteriaConcealmentResult struct {
 	AddedCriteria []AddedCriterion `json:"addedCriterion"`
 }
 
+const BiasName = "criteriaConcealment"
+
 func (c *CriteriaConcealment) Identifier() string {
-	return "criteriaConcealment"
+	return BiasName
 }
 
 func (c *CriteriaConcealment) Apply(

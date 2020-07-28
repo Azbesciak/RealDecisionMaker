@@ -20,8 +20,10 @@ type CriteriaOmissionResult struct {
 	OmittedCriteria model.Criteria `json:"omittedCriteria"`
 }
 
+const BiasName = "criteriaOmission"
+
 func (c *CriteriaOmission) Identifier() string {
-	return "criteriaOmission"
+	return BiasName
 }
 
 func (c *CriteriaOmission) Apply(
