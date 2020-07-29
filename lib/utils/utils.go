@@ -86,8 +86,8 @@ func DecodeToStruct(src, target interface{}) {
 }
 
 type ValueRange struct {
-	Min float64
-	Max float64
+	Min float64 `json:"min"`
+	Max float64 `json:"max"`
 }
 
 func (r *ValueRange) Diff() float64 {
