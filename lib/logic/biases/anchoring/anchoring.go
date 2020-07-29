@@ -26,6 +26,12 @@ type AnchoringAlternativeWithCriteria struct {
 	Coefficient float64                       `json:"coefficient"`
 }
 
+type AnchoringResult struct {
+	ReferencePoints               []model.AlternativeWithCriteria `json:"referencePoints"`
+	CriteriaScaling               CriteriaScaling                 `json:"criteriaScaling"`
+	PerReferencePointsDifferences []ReferencePointsDifference     `json:"perReferencePointsDifferences"`
+}
+
 type Anchoring struct {
 	anchoringEvaluators       []AnchoringEvaluator
 	referencePointsEvaluators []ReferencePointsEvaluator
@@ -79,12 +85,6 @@ func (a *Anchoring) Apply(
 			PerReferencePointsDifferences: perReferencePointsDiffs,
 		},
 	}
-}
-
-type AnchoringResult struct {
-	ReferencePoints               []model.AlternativeWithCriteria
-	CriteriaScaling               CriteriaScaling
-	PerReferencePointsDifferences []ReferencePointsDifference
 }
 
 func parseProps(props *model.BiasProps) *AnchoringParams {
