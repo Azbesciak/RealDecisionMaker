@@ -37,7 +37,7 @@ func (a *Anchoring) getAnchoringApplier(params *FunctionDefinition) ApplierWithP
 
 func (a *Anchoring) knownAnchoringAppliersNames() []string {
 	existing := make([]string, len(a.anchoringAppliers))
-	for i, id := range a.anchoringEvaluators {
+	for i, id := range a.anchoringAppliers {
 		existing[i] = id.Identifier()
 	}
 	return existing
