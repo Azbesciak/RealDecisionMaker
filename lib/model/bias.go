@@ -59,7 +59,9 @@ func ChooseBiases(available *BiasMap, choose *BiasesParams) *BiasesWithProps {
 			}
 			panic(fmt.Errorf("bias '%s' not found, available are '%s'", props.Name, keys))
 		}
-		result = append(result, BiasWithProps{Bias: &bias, Props: &props})
+		// required, props reference is mutable in range, during assignment it is copied.
+		propsCopy := props
+		result = append(result, BiasWithProps{Bias: &bias, Props: &propsCopy})
 	}
 	return &result
 }
