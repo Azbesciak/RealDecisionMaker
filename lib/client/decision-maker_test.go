@@ -18,8 +18,8 @@ func TestDecisionMaker_MakeDecision_WeightedSum(t *testing.T) {
 			{"2", Weights{"1": 20, "2": 10}},
 		},
 		ChoseToMake:      []Alternative{"1", "2"},
-		Criteria:         Criteria{Criterion{"1", "gain"}, Criterion{"2", "cost"}},
-		MethodParameters: map[string]interface{}{"weights": Weights{"1": 1, "2": 2}},
+		Criteria:         Criteria{{"1", "gain"}, {"2", "cost"}},
+		MethodParameters: utils.Map{"weights": Weights{"1": 1, "2": 2}},
 	}
 	weightedSum := &WeightedSumPreferenceFunc{}
 	owa := &OWAPreferenceFunc{}
@@ -45,23 +45,23 @@ func TestDecisionMaker_MakeDecision_ElectreIII(t *testing.T) {
 			{"2", Weights{"1": 20, "2": 10}},
 		},
 		ChoseToMake: []Alternative{"1", "2"},
-		Criteria:    Criteria{Criterion{"1", "gain"}, Criterion{"2", "cost"}},
-		MethodParameters: map[string]interface{}{
+		Criteria:    Criteria{{"1", "gain"}, {"2", "cost"}},
+		MethodParameters: utils.Map{
 			"electreCriteria": ElectreCriteria{
 				"1": {
 					K: 1,
-					Q: LinearFunctionParameters{A: 0, B: 2},
-					P: LinearFunctionParameters{A: 1, B: 4},
-					V: LinearFunctionParameters{A: 0, B: 10},
+					Q: utils.LinearFunctionParameters{A: 0, B: 2},
+					P: utils.LinearFunctionParameters{A: 1, B: 4},
+					V: utils.LinearFunctionParameters{A: 0, B: 10},
 				},
 				"2": {
 					K: 2,
-					Q: LinearFunctionParameters{A: 0, B: 10},
-					P: LinearFunctionParameters{A: 0, B: 12},
-					V: LinearFunctionParameters{A: 0, B: 14},
+					Q: utils.LinearFunctionParameters{A: 0, B: 10},
+					P: utils.LinearFunctionParameters{A: 0, B: 12},
+					V: utils.LinearFunctionParameters{A: 0, B: 14},
 				},
 			},
-			"electreDistillation": LinearFunctionParameters{
+			"electreDistillation": utils.LinearFunctionParameters{
 				A: -0.1,
 				B: 0.5,
 			}},
