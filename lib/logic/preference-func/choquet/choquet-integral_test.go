@@ -50,10 +50,24 @@ func TestChoquetIntegral_MissingWeight(t *testing.T) {
 
 func TestCriteriaPresenceValidation(t *testing.T) {
 	checkError(t, model.Weights{"1": 0.1, "2": 0.5, "1,2": 0.4}, []string{"1", "2"}, "")
+	checkError(t, model.Weights{"1": 0.1, "2": 0.5, "2,1": 0.4}, []string{"1", "2"}, "weight for criteria union '1,2' not found")
 	checkError(t, model.Weights{"1": 0.1, "1,2": 0.4}, []string{"1", "2"}, "weight for criteria union '2' not found")
 	checkError(t, model.Weights{"1": 0.1, "2": 0.4}, []string{"1", "2"}, "weight for criteria union '1,2' not found")
 	checkError(t, model.Weights{"1": 0.1, "1,2": 0.4}, []string{"1"}, "")
 	checkError(t, model.Weights{"2": 0.1}, []string{"1"}, "weight for criteria union '1' not found")
+}
+
+func TestCriteriaAligning(t *testing.T) {
+	actual := remapWeights(&model.Weights{"1": 1, "2": 0.5, "3": 0.75, "2,1": 0.6, "1,3": 0.7, "3,2": 0.1, "1,3,2": 0.9})
+	expected := &model.Weights{"1": 1, "2": 0.5, "3": 0.75, "1,2": 0.6, "1,3": 0.7, "2,3": 0.1, "1,2,3": 0.9}
+	if utils.Differs(actual, expected) {
+		t.Errorf("expected %v, got %v", expected, actual)
+	}
+}
+
+func TestDuplicatedCriteria(t *testing.T) {
+	defer utils.ExpectError(t, "values for criteria 1,2 are redeclared")()
+	remapWeights(&model.Weights{"1": 1, "2": 0.5, "1,2": 0.4, "2,1": 0.4})
 }
 
 func checkError(t *testing.T, weights model.Weights, criteria []string, error string) {

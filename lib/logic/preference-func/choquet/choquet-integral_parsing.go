@@ -21,8 +21,26 @@ func (c *ChoquetIntegralPreferenceFunc) ParseParams(dm *model.DecisionMaker) int
 
 func parse(criteria *model.Criteria, weights *model.Weights) *model.Weights {
 	validateAllCriteriaAreGain(criteria)
-	validateAllWeightsAvailable(weights, criteria)
-	return prepareWeights(weights, criteria)
+	newWeights := remapWeights(weights)
+	validateAllWeightsAvailable(newWeights, criteria)
+	return prepareWeights(newWeights, criteria)
+}
+
+func remapWeights(weights *model.Weights) *model.Weights {
+	result := make(model.Weights, len(*weights))
+	for k, v := range *weights {
+		criteria := containedCriteria(k)
+		validCriterionKey := criterionKey(&criteria)
+		if _, ok := result[validCriterionKey]; ok {
+			if len(criteria) == 1 {
+				panic(fmt.Errorf("value for criterion %v is redeclared", validCriterionKey))
+			} else {
+				panic(fmt.Errorf("values for criteria %v are redeclared", validCriterionKey))
+			}
+		}
+		result[validCriterionKey] = v
+	}
+	return &result
 }
 
 func validateAllCriteriaAreGain(criteria *model.Criteria) {
