@@ -13,7 +13,6 @@ type CriteriaOmission struct {
 
 type CriteriaOmissionParams struct {
 	OmittedCriteriaRatio float64 `json:"omittedCriteriaRatio"`
-	RandomSeed           int64   `json:"randomSeed"`
 }
 
 type CriteriaOmissionResult struct {
