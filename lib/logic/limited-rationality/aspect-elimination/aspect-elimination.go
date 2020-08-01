@@ -30,10 +30,11 @@ type AspectEliminationEvaluation struct {
 }
 
 type AspectEliminationHeuristicParams struct {
-	Function   string        `json:"function"`
-	Params     interface{}   `json:"params"`
-	RandomSeed int64         `json:"randomSeed"`
-	Weights    model.Weights `json:"weights"`
+	Function                   string        `json:"function"`
+	Params                     interface{}   `json:"params"`
+	RandomSeed                 int64         `json:"randomSeed"`
+	Weights                    model.Weights `json:"weights"`
+	RandomAlternativesOrdering bool          `json:"randomAlternativesOrdering"`
 }
 
 func (a *AspectEliminationHeuristicParams) with(params interface{}, weights *model.Weights) AspectEliminationHeuristicParams {
@@ -66,7 +67,7 @@ func (a *AspectEliminationHeuristic) Evaluate(dmp *model.DecisionMakingParams) *
 	satisfactionLevels := satisfaction_levels.Find(params.Function, params.Params, a.functions)
 	satisfactionLevels.Initialize(dmp)
 	generator := a.generator(params.RandomSeed)
-	alternatives := model.ShuffleAlternatives(&dmp.ConsideredAlternatives, generator)
+	alternatives := limited_rationality.OrderAlternatives(params.RandomAlternativesOrdering, &dmp.ConsideredAlternatives, generator)
 	weights := sortCriteria(dmp, params, generator)
 	leftToChoice, result, resultIds, thresholdIndex := checkWithinSatisfactionLevels(weights, alternatives, satisfactionLevels)
 	fillRemainingAlternatives(leftToChoice, thresholdIndex, result, resultIds)

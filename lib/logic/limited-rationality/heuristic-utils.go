@@ -8,6 +8,7 @@ import (
 type HeuristicParams interface {
 	GetCurrentChoice() string
 	GetRandomSeed() int64
+	IsRandomAlternativesOrdering() bool
 }
 
 func GetAlternativesSearchOrder(
@@ -19,11 +20,26 @@ func GetAlternativesSearchOrder(
 		allAlternatives := dm.AllAlternatives()
 		choice := model.FetchAlternative(&allAlternatives, params.GetCurrentChoice())
 		leftAlternatives := model.RemoveAlternative(dm.ConsideredAlternatives, choice)
-		return choice, *model.ShuffleAlternatives(&leftAlternatives, generator)
+		otherAlternatives := OrderAlternatives(params.IsRandomAlternativesOrdering(), &leftAlternatives, generator)
+		return choice, *otherAlternatives
 	} else {
-		alternatives := *model.ShuffleAlternatives(&dm.ConsideredAlternatives, generator)
+		alternatives := *OrderAlternatives(params.IsRandomAlternativesOrdering(), &dm.ConsideredAlternatives, generator)
 		return alternatives[0], alternatives[1:]
 	}
+}
+
+func OrderAlternatives(isRandomOrder bool, alternatives *[]model.AlternativeWithCriteria, generator utils.ValueGenerator) *[]model.AlternativeWithCriteria {
+	if isRandomOrder {
+		return model.ShuffleAlternatives(alternatives, generator)
+	} else {
+		return copyAlternatives(alternatives)
+	}
+}
+
+func copyAlternatives(alternatives *[]model.AlternativeWithCriteria) *[]model.AlternativeWithCriteria {
+	result := make([]model.AlternativeWithCriteria, len(*alternatives))
+	copy(result, *alternatives)
+	return &result
 }
 
 func PrepareSequentialRanking(result model.AlternativeResults, resultIds []model.Alternative) model.AlternativesRanking {

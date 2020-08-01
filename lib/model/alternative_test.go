@@ -64,3 +64,37 @@ func validateCriteriaPresence(t *testing.T, criteria []string, r AlternativeWith
 		}
 	}
 }
+
+func TestAlternativesShuffle(t *testing.T) {
+	alternatives := []AlternativeWithCriteria{{Id: "1"}, {Id: "2"}, {Id: "3"}}
+	current := -1.0
+	generator := func() float64 {
+		current++
+		return current / float64(len(alternatives))
+	}
+	actual := ShuffleAlternatives(&alternatives, generator)
+	expected := []string{"2", "3", "1"}
+	validateAlternativesOrder(t, actual, expected)
+
+	current = 3.0
+	generator = func() float64 {
+		current--
+		return current / float64(len(alternatives))
+	}
+	actual = ShuffleAlternatives(&alternatives, generator)
+	expected = []string{"3", "1", "2"}
+	validateAlternativesOrder(t, actual, expected)
+}
+
+func validateAlternativesOrder(t *testing.T, actual *[]AlternativeWithCriteria, expected []string) {
+	if len(*actual) != len(expected) {
+		t.Errorf("different len after sort, expected %d, got %d", len(expected), len(*actual))
+	} else {
+		for i, a := range *actual {
+			exp := expected[i]
+			if exp != a.Id {
+				t.Errorf("different alternative, index %d, expected %s, got %s", i, exp, a.Id)
+			}
+		}
+	}
+}

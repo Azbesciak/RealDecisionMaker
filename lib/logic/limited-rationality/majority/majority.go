@@ -20,9 +20,10 @@ const eps = 1e-6
 const methodName = "majorityHeuristic"
 
 type MajorityHeuristicParams struct {
-	Weights       model.Weights     `json:"weights"`
-	CurrentChoice model.Alternative `json:"currentChoice"`
-	RandomSeed    int64             `json:"randomSeed"`
+	Weights                    model.Weights     `json:"weights"`
+	CurrentChoice              model.Alternative `json:"currentChoice"`
+	RandomSeed                 int64             `json:"randomSeed"`
+	RandomAlternativesOrdering bool              `json:"randomAlternativesOrdering"`
 }
 
 func (m *MajorityHeuristicParams) GetCurrentChoice() string {
@@ -31,6 +32,10 @@ func (m *MajorityHeuristicParams) GetCurrentChoice() string {
 
 func (m *MajorityHeuristicParams) GetRandomSeed() int64 {
 	return m.RandomSeed
+}
+
+func (m *MajorityHeuristicParams) IsRandomAlternativesOrdering() bool {
+	return m.RandomAlternativesOrdering
 }
 
 func (m *Majority) Identifier() string {

@@ -27,10 +27,11 @@ func (s *Satisfaction) Identifier() string {
 }
 
 type SatisfactionParameters struct {
-	Function      string            `json:"function"`
-	Params        interface{}       `json:"params"`
-	RandomSeed    int64             `json:"randomSeed"`
-	CurrentChoice model.Alternative `json:"currentChoice"`
+	Function                   string            `json:"function"`
+	Params                     interface{}       `json:"params"`
+	RandomSeed                 int64             `json:"randomSeed"`
+	CurrentChoice              model.Alternative `json:"currentChoice"`
+	RandomAlternativesOrdering bool              `json:"randomAlternativesOrdering"`
 }
 
 func (s *SatisfactionParameters) with(params interface{}) SatisfactionParameters {
@@ -53,6 +54,10 @@ func (s *SatisfactionParameters) GetCurrentChoice() string {
 
 func (s *SatisfactionParameters) GetRandomSeed() int64 {
 	return s.RandomSeed
+}
+
+func (s *SatisfactionParameters) IsRandomAlternativesOrdering() bool {
+	return s.RandomAlternativesOrdering
 }
 
 func (s *Satisfaction) MethodParameters() interface{} {
