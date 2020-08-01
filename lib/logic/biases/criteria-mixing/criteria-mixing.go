@@ -189,7 +189,7 @@ type mixResult struct {
 }
 
 func parseProps(props *model.BiasProps) *CriteriaMixingParams {
-	parsedProps := CriteriaMixingParams{}
+	parsedProps := CriteriaMixingParams{MixingRatio: 0.5}
 	utils.DecodeToStruct(*props, &parsedProps)
 	parsedProps.validate()
 	return &parsedProps
