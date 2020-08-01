@@ -42,8 +42,9 @@ func (m *MajorityBiasListener) Merge(params model.MethodParameters, addition mod
 	oldParams := params.(MajorityHeuristicParams)
 	newParams := addition.(model.WeightType)
 	return MajorityHeuristicParams{
-		Weights:       *oldParams.Weights.Merge(&newParams.Weights),
-		CurrentChoice: oldParams.CurrentChoice,
-		RandomSeed:    oldParams.RandomSeed,
+		Weights:                    *oldParams.Weights.Merge(&newParams.Weights),
+		CurrentChoice:              oldParams.CurrentChoice,
+		RandomSeed:                 oldParams.RandomSeed,
+		RandomAlternativesOrdering: oldParams.RandomAlternativesOrdering,
 	}
 }

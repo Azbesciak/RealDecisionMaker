@@ -39,10 +39,11 @@ type AspectEliminationHeuristicParams struct {
 
 func (a *AspectEliminationHeuristicParams) with(params interface{}, weights *model.Weights) AspectEliminationHeuristicParams {
 	return AspectEliminationHeuristicParams{
-		Function:   a.Function,
-		Params:     params,
-		RandomSeed: a.RandomSeed,
-		Weights:    *weights,
+		Function:                   a.Function,
+		Params:                     params,
+		RandomSeed:                 a.RandomSeed,
+		Weights:                    *weights,
+		RandomAlternativesOrdering: a.RandomAlternativesOrdering,
 	}
 }
 

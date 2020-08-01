@@ -36,10 +36,11 @@ type SatisfactionParameters struct {
 
 func (s *SatisfactionParameters) with(params interface{}) SatisfactionParameters {
 	return SatisfactionParameters{
-		Function:      s.Function,
-		Params:        params,
-		RandomSeed:    s.RandomSeed,
-		CurrentChoice: s.CurrentChoice,
+		Function:                   s.Function,
+		Params:                     params,
+		RandomSeed:                 s.RandomSeed,
+		CurrentChoice:              s.CurrentChoice,
+		RandomAlternativesOrdering: s.RandomAlternativesOrdering,
 	}
 }
 
