@@ -6,8 +6,8 @@ import (
 )
 
 type HeuristicParams interface {
-	CurrentChoice() string
-	RandomSeed() int64
+	GetCurrentChoice() string
+	GetRandomSeed() int64
 }
 
 func GetAlternativesSearchOrder(
@@ -15,9 +15,9 @@ func GetAlternativesSearchOrder(
 	params HeuristicParams,
 	generator utils.ValueGenerator,
 ) (model.AlternativeWithCriteria, []model.AlternativeWithCriteria) {
-	if len(params.CurrentChoice()) > 0 {
+	if len(params.GetCurrentChoice()) > 0 {
 		allAlternatives := dm.AllAlternatives()
-		choice := model.FetchAlternative(&allAlternatives, params.CurrentChoice())
+		choice := model.FetchAlternative(&allAlternatives, params.GetCurrentChoice())
 		leftAlternatives := model.RemoveAlternative(dm.ConsideredAlternatives, choice)
 		return choice, *model.ShuffleAlternatives(&leftAlternatives, generator)
 	} else {

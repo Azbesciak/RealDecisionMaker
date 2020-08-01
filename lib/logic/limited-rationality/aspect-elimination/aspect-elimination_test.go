@@ -42,7 +42,7 @@ func TestAspectEliminationHeuristic_Evaluate(t *testing.T) {
 					"1": 2, "2": 1.5, "3": 3.5,
 				}},
 			},
-			Seed: 0,
+			RandomSeed: 0,
 			Weights: model.Weights{
 				"2": 3, "3": 2, "1": 1,
 			},
@@ -91,8 +91,8 @@ func TestAspectEliminationHeuristic_ParseParams(t *testing.T) {
 			"params": map[string]interface{}{
 				"thresholds": []map[string]interface{}{{"1": 1, "2": 3}, {"1": 3, "2": 4}},
 			},
-			"seed":    123,
-			"weights": map[string]interface{}{"1": 2, "2": 2.5},
+			"randomSeed": 123,
+			"weights":    map[string]interface{}{"1": 2, "2": 2.5},
 		},
 	}
 	actual := testAspElim.ParseParams(&dm)
@@ -101,8 +101,8 @@ func TestAspectEliminationHeuristic_ParseParams(t *testing.T) {
 		Params: map[string]interface{}{
 			"thresholds": []map[string]interface{}{{"1": 1, "2": 3}, {"1": 3, "2": 4}},
 		},
-		Seed:    123,
-		Weights: model.Weights{"1": 2, "2": 2.5},
+		RandomSeed: 123,
+		Weights:    model.Weights{"1": 2, "2": 2.5},
 	}
 	compareParams(t, expected, actual)
 }
@@ -119,7 +119,7 @@ func compareParams(t *testing.T, expected AspectEliminationHeuristicParams, actu
 	if utils.Differs(expected.Params, parsed.Params) {
 		t.Errorf("different params, expected %v, got %v", expected.Params, parsed.Params)
 	}
-	if expected.Seed != parsed.Seed {
-		t.Errorf("different seed, expected %v, got %v", expected.Seed, parsed.Seed)
+	if expected.RandomSeed != parsed.RandomSeed {
+		t.Errorf("different seed, expected %v, got %v", expected.RandomSeed, parsed.RandomSeed)
 	}
 }

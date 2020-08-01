@@ -27,9 +27,9 @@ func (m *MajorityBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, p
 	wParams := params.(MajorityHeuristicParams)
 	leftWeights := wParams.Weights.PreserveOnly(leftCriteria)
 	return MajorityHeuristicParams{
-		Weights: *leftWeights,
-		Current: wParams.Current,
-		Seed:    wParams.Seed,
+		Weights:       *leftWeights,
+		CurrentChoice: wParams.CurrentChoice,
+		RandomSeed:    wParams.RandomSeed,
 	}
 }
 
@@ -42,8 +42,8 @@ func (m *MajorityBiasListener) Merge(params model.MethodParameters, addition mod
 	oldParams := params.(MajorityHeuristicParams)
 	newParams := addition.(model.WeightType)
 	return MajorityHeuristicParams{
-		Weights: *oldParams.Weights.Merge(&newParams.Weights),
-		Current: oldParams.Current,
-		Seed:    oldParams.Seed,
+		Weights:       *oldParams.Weights.Merge(&newParams.Weights),
+		CurrentChoice: oldParams.CurrentChoice,
+		RandomSeed:    oldParams.RandomSeed,
 	}
 }

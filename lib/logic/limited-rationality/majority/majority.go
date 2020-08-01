@@ -20,17 +20,17 @@ const eps = 1e-6
 const methodName = "majorityHeuristic"
 
 type MajorityHeuristicParams struct {
-	Weights model.Weights     `json:"weights"`
-	Current model.Alternative `json:"currentChoice"`
-	Seed    int64             `json:"randomSeed"`
+	Weights       model.Weights     `json:"weights"`
+	CurrentChoice model.Alternative `json:"currentChoice"`
+	RandomSeed    int64             `json:"randomSeed"`
 }
 
-func (m *MajorityHeuristicParams) CurrentChoice() string {
-	return m.Current
+func (m *MajorityHeuristicParams) GetCurrentChoice() string {
+	return m.CurrentChoice
 }
 
-func (m *MajorityHeuristicParams) RandomSeed() int64 {
-	return m.Seed
+func (m *MajorityHeuristicParams) GetRandomSeed() int64 {
+	return m.RandomSeed
 }
 
 func (m *Majority) Identifier() string {
@@ -38,13 +38,13 @@ func (m *Majority) Identifier() string {
 }
 
 func (m *Majority) MethodParameters() interface{} {
-	return model.WeightsParamOnly()
+	return MajorityHeuristicParams{}
 }
 
 func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesRanking {
 	params := dm.MethodParameters.(MajorityHeuristicParams)
 	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.Weights)
-	generator := m.generator(params.Seed)
+	generator := m.generator(params.RandomSeed)
 	current, considered := limited_rationality.GetAlternativesSearchOrder(dm, &params, generator)
 	var sameBuffer []model.AlternativeResult
 	var worseThanCurrent [][]model.AlternativeResult

@@ -48,31 +48,31 @@ var thresholdsDif = satisfaction_levels.ThresholdsUpdate{
 }
 
 var threshold3ParamsWithPointer = SatisfactionParameters{
-	Function: satisfaction_levels.Thresholds,
-	Params:   &thresholds3Criteria,
-	Seed:     123,
-	Current:  "xyz",
+	Function:      satisfaction_levels.Thresholds,
+	Params:        &thresholds3Criteria,
+	RandomSeed:    123,
+	CurrentChoice: "xyz",
 }
 
 var thresholds2ParamsWithPointer = SatisfactionParameters{
-	Function: satisfaction_levels.Thresholds,
-	Params:   &thresholds2Criteria,
-	Seed:     123,
-	Current:  "xyz",
+	Function:      satisfaction_levels.Thresholds,
+	Params:        &thresholds2Criteria,
+	RandomSeed:    123,
+	CurrentChoice: "xyz",
 }
 
 var idealSubtractiveParamsWithoutPointer = SatisfactionParameters{
-	Function: satisfaction_levels.IdealSubtractive,
-	Params:   idealCoeffParams,
-	Seed:     432,
-	Current:  "",
+	Function:      satisfaction_levels.IdealSubtractive,
+	Params:        idealCoeffParams,
+	RandomSeed:    432,
+	CurrentChoice: "",
 }
 
 var idealSubtractiveParamsWithPointer = SatisfactionParameters{
-	Function: satisfaction_levels.IdealSubtractive,
-	Params:   &idealCoeffParams,
-	Seed:     432,
-	Current:  "",
+	Function:      satisfaction_levels.IdealSubtractive,
+	Params:        &idealCoeffParams,
+	RandomSeed:    432,
+	CurrentChoice: "",
 }
 
 func TestSatisfactionBiasListener_Merge(t *testing.T) {

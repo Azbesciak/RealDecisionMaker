@@ -59,8 +59,8 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 				"MinValue":    0.1,
 				"MaxValue":    1.0,
 			},
-			Seed:    0,
-			Current: "cur",
+			RandomSeed:    0,
+			CurrentChoice: "cur",
 		},
 	}
 	actual := _satisfaction.Evaluate(&dm)
@@ -125,8 +125,8 @@ func TestSatisfaction_ParseParams(t *testing.T) {
 			"maxValue":    1,
 			"coefficient": 0.2,
 		},
-		Seed:    159,
-		Current: "a",
+		RandomSeed:    159,
+		CurrentChoice: "a",
 	}
 	actual := _satisfaction.ParseParams(&model.DecisionMaker{
 		PreferenceFunction: methodName,
@@ -146,8 +146,8 @@ func TestSatisfaction_ParseParams(t *testing.T) {
 				"maxValue":    1,
 				"coefficient": 0.2,
 			},
-			"seed":    159,
-			"current": "a",
+			"randomSeed":    159,
+			"currentChoice": "a",
 		},
 	})
 

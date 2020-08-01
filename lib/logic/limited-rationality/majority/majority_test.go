@@ -60,8 +60,8 @@ func TestMajority_Evaluate(t *testing.T) {
 			Weights: map[string]float64{
 				"1": 1, "2": 2, "3": 1,
 			},
-			Current: "cur",
-			Seed:    0,
+			CurrentChoice: "cur",
+			RandomSeed:    0,
 		},
 	}
 	actual := _majority.Evaluate(&dm)
@@ -128,8 +128,8 @@ func TestMajority_ParseParams(t *testing.T) {
 		Weights: model.Weights{
 			"1": 111, "2": 2, "3": 0,
 		},
-		Current: "1234",
-		Seed:    951,
+		CurrentChoice: "1234",
+		RandomSeed:    951,
 	}
 	actual := _majority.ParseParams(&model.DecisionMaker{
 		PreferenceFunction: methodName,
@@ -143,9 +143,9 @@ func TestMajority_ParseParams(t *testing.T) {
 		ChoseToMake: model.Alternatives{"1111", "1234"},
 		Criteria:    testUtils.GenerateCriteria(3),
 		MethodParameters: utils.Map{
-			"weights": utils.Map{"1": 111, "2": 2, "3": 0},
-			"current": "1234",
-			"seed":    951,
+			"weights":       utils.Map{"1": 111, "2": 2, "3": 0},
+			"currentChoice": "1234",
+			"randomSeed":    951,
 		},
 	})
 	if _, ok := actual.(MajorityHeuristicParams); !ok {

@@ -27,18 +27,18 @@ func (s *Satisfaction) Identifier() string {
 }
 
 type SatisfactionParameters struct {
-	Function string            `json:"function"`
-	Params   interface{}       `json:"params"`
-	Seed     int64             `json:"randomSeed"`
-	Current  model.Alternative `json:"currentChoice"`
+	Function      string            `json:"function"`
+	Params        interface{}       `json:"params"`
+	RandomSeed    int64             `json:"randomSeed"`
+	CurrentChoice model.Alternative `json:"currentChoice"`
 }
 
 func (s *SatisfactionParameters) with(params interface{}) SatisfactionParameters {
 	return SatisfactionParameters{
-		Function: s.Function,
-		Params:   params,
-		Seed:     s.Seed,
-		Current:  s.Current,
+		Function:      s.Function,
+		Params:        params,
+		RandomSeed:    s.RandomSeed,
+		CurrentChoice: s.CurrentChoice,
 	}
 }
 
@@ -47,12 +47,12 @@ type SatisfactionEvaluation struct {
 	ThresholdsIndex     int           `json:"thresholdsIndex"`
 }
 
-func (s *SatisfactionParameters) CurrentChoice() string {
-	return s.Current
+func (s *SatisfactionParameters) GetCurrentChoice() string {
+	return s.CurrentChoice
 }
 
-func (s *SatisfactionParameters) RandomSeed() int64 {
-	return s.Seed
+func (s *SatisfactionParameters) GetRandomSeed() int64 {
+	return s.RandomSeed
 }
 
 func (s *Satisfaction) MethodParameters() interface{} {
@@ -69,7 +69,7 @@ func (s *Satisfaction) Evaluate(dmp *model.DecisionMakingParams) *model.Alternat
 	params := dmp.MethodParameters.(SatisfactionParameters)
 	satisfactionLevels := satisfaction_levels.Find(params.Function, params.Params, s.functions)
 	satisfactionLevels.Initialize(dmp)
-	generator := s.generator(params.RandomSeed())
+	generator := s.generator(params.GetRandomSeed())
 	current, considered := limited_rationality.GetAlternativesSearchOrder(dmp, &params, generator)
 	leftToChoice, result, resultIds, resultInsertIndex, thresholdIndex := checkWithinSatisfactionLevels(dmp, current, considered, satisfactionLevels)
 	fillRemainingAlternatives(leftToChoice, thresholdIndex, resultInsertIndex, result, resultIds, weightsSupplier(dmp))
