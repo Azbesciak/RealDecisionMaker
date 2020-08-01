@@ -29,6 +29,10 @@ func (d *DecreasingCoefficientManager) InitialValue(params *IdealCoefficientSati
 	return params.MaxValue
 }
 
+func (d *DecreasingCoefficientManager) HasNext(params *IdealCoefficientSatisfactionLevels) bool {
+	return params.currentValue > params.MinValue
+}
+
 const IdealDecreasingMul = "idealMultipliedCoefficient"
 
 var IdealDecreasingMulCoefficientSatisfaction = IdealCoefficientSatisfactionLevelsSource{

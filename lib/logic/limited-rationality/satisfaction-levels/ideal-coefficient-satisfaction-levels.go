@@ -21,6 +21,7 @@ type CoefficientManager interface {
 	Validate(params *IdealCoefficientSatisfactionLevels)
 	UpdateValue(current, coefficient float64) float64
 	InitialValue(params *IdealCoefficientSatisfactionLevels) float64
+	HasNext(params *IdealCoefficientSatisfactionLevels) bool
 }
 
 func (s *IdealCoefficientSatisfactionLevels) Initialize(dmp *model.DecisionMakingParams) {
@@ -35,7 +36,7 @@ func (s *IdealCoefficientSatisfactionLevels) Initialize(dmp *model.DecisionMakin
 }
 
 func (s *IdealCoefficientSatisfactionLevels) HasNext() bool {
-	return s.currentValue > s.MinValue
+	return s.manager.HasNext(s)
 }
 
 func (s *IdealCoefficientSatisfactionLevels) Next() model.Weights {
