@@ -75,7 +75,7 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 					ThresholdsIndex: 7,
 				},
 			},
-			BetterThanOrSameAs: []string{a1.Id, a3.Id, cur.Id},
+			BetterThanOrSameAs: []string{a1.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
@@ -87,7 +87,7 @@ func TestSatisfaction_Evaluate(t *testing.T) {
 					ThresholdsIndex: 8,
 				},
 			},
-			BetterThanOrSameAs: []string{a3.Id, cur.Id},
+			BetterThanOrSameAs: []string{a3.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
@@ -225,7 +225,7 @@ func TestAlternativesIterationWithThresholds(t *testing.T) {
 					ThresholdsIndex:     2,
 				},
 			},
-			BetterThanOrSameAs: []string{considered[0].Id, considered[1].Id},
+			BetterThanOrSameAs: []string{considered[0].Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{

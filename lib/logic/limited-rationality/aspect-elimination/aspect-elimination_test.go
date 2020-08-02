@@ -57,7 +57,7 @@ func TestAspectEliminationHeuristic_Evaluate(t *testing.T) {
 				ThresholdsIndex:       1,
 			},
 		},
-		BetterThanOrSameAs: []string{alternatives[2].Id, alternatives[1].Id},
+		BetterThanOrSameAs: []string{alternatives[2].Id}, // order matters
 	}, {
 		AlternativeResult: model.AlternativeResult{
 			Alternative: alternatives[2],

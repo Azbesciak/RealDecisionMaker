@@ -76,12 +76,12 @@ type MajorityEvaluation struct {
 }
 
 func prepareRanking(ranking [][]model.AlternativeResult) *model.AlternativesRanking {
-	worseThanCurrent := make([]string, 0)
+	worseOneLevelThanCurrent := make([]string, 0)
 	var result = make(model.AlternativesRanking, 0)
 	for _, equivalentEntries := range ranking {
 		var sameAlternativesId []string
 		for i, r := range equivalentEntries {
-			var thisAlternativeWorse = worseThanCurrent
+			var thisAlternativeWorse = worseOneLevelThanCurrent
 			sameAlternativesId = append(sameAlternativesId, r.Alternative.Id)
 			for j, a := range equivalentEntries {
 				if i != j {
@@ -93,7 +93,7 @@ func prepareRanking(ranking [][]model.AlternativeResult) *model.AlternativesRank
 				BetterThanOrSameAs: thisAlternativeWorse,
 			})
 		}
-		worseThanCurrent = append(worseThanCurrent, sameAlternativesId...)
+		worseOneLevelThanCurrent = sameAlternativesId
 	}
 	result.ReverseOrder()
 	return &result

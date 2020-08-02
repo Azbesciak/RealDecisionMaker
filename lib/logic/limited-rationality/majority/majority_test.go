@@ -75,7 +75,7 @@ func TestMajority_Evaluate(t *testing.T) {
 					ComparedAlternativeValue: 0,
 				},
 			},
-			BetterThanOrSameAs: []string{cur.Id, a3.Id, a2.Id},
+			BetterThanOrSameAs: []string{a3.Id, a2.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{
@@ -86,7 +86,7 @@ func TestMajority_Evaluate(t *testing.T) {
 					ComparedAlternativeValue: 2,
 				},
 			},
-			BetterThanOrSameAs: []string{cur.Id, a3.Id, a1.Id},
+			BetterThanOrSameAs: []string{a3.Id, a1.Id},
 		},
 		{
 			AlternativeResult: model.AlternativeResult{

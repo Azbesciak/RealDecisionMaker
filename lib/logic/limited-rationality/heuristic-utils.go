@@ -40,9 +40,13 @@ func PrepareSequentialRanking(result model.AlternativeResults, resultIds []model
 	resultsCount := len(result)
 	ranking := make(model.AlternativesRanking, resultsCount)
 	for i, r := range result {
+		lastIndex := i + 2
+		if lastIndex > resultsCount {
+			lastIndex = resultsCount
+		}
 		ranking[i] = model.AlternativesRankEntry{
 			AlternativeResult:  r,
-			BetterThanOrSameAs: resultIds[i+1:],
+			BetterThanOrSameAs: resultIds[i+1 : lastIndex],
 		}
 	}
 	return ranking
