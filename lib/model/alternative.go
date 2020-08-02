@@ -164,6 +164,12 @@ func ShuffleAlternatives(alternatives *[]AlternativeWithCriteria, generator util
 	return &copied
 }
 
+func CopyAlternatives(alternatives *[]AlternativeWithCriteria) *[]AlternativeWithCriteria {
+	result := make([]AlternativeWithCriteria, len(*alternatives))
+	copy(result, *alternatives)
+	return &result
+}
+
 func AddCriterionToAlternatives(
 	alternatives *[]AlternativeWithCriteria,
 	newCriterion *Criterion,

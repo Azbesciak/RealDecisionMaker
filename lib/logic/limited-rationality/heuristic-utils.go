@@ -32,14 +32,8 @@ func OrderAlternatives(isRandomOrder bool, alternatives *[]model.AlternativeWith
 	if isRandomOrder {
 		return model.ShuffleAlternatives(alternatives, generator)
 	} else {
-		return copyAlternatives(alternatives)
+		return model.CopyAlternatives(alternatives)
 	}
-}
-
-func copyAlternatives(alternatives *[]model.AlternativeWithCriteria) *[]model.AlternativeWithCriteria {
-	result := make([]model.AlternativeWithCriteria, len(*alternatives))
-	copy(result, *alternatives)
-	return &result
 }
 
 func PrepareSequentialRanking(result model.AlternativeResults, resultIds []model.Alternative) model.AlternativesRanking {

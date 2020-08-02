@@ -157,3 +157,96 @@ func TestSatisfaction_ParseParams(t *testing.T) {
 		t.Errorf("different than expected: %v vs %v", expected, actual)
 	}
 }
+
+func TestAlternativesIterationWithThresholds(t *testing.T) {
+	satisfaction := Satisfaction{
+		generator: func(seed int64) utils.ValueGenerator {
+			return func() float64 {
+				return 1
+			}
+		},
+		functions: []satisfaction_levels.SatisfactionLevelsSource{
+			&satisfaction_levels.DecreasingThresholds,
+		},
+	}
+	considered := []model.AlternativeWithCriteria{
+		{Id: "Avengers", Criteria: model.Weights{"popularity": 7, "length": 14, "averageMark": 7.7}},
+		{Id: "Dunkirk", Criteria: model.Weights{"popularity": 3, "length": 11, "averageMark": 7.4}},
+		{Id: "Knives Out", Criteria: model.Weights{"popularity": 6, "length": 11, "averageMark": 7.8}},
+	}
+
+	notConsidered := []model.AlternativeWithCriteria{{
+		Id: "Best",
+		Criteria: model.Weights{
+			"popularity":  10,
+			"length":      1,
+			"averageMark": 10,
+		},
+	}, {
+		Id: "Worst",
+		Criteria: model.Weights{
+			"popularity":  1,
+			"length":      19,
+			"averageMark": 2,
+		},
+	}}
+
+	criteria := model.Criteria{
+		{Id: "popularity", Type: "gain"},
+		{Id: "length", Type: "cost"},
+		{Id: "averageMark", Type: "gain"},
+	}
+
+	thresholds := []model.Weights{
+		{"popularity": 10, "length": 6, "averageMark": 8},
+		{"popularity": 8, "length": 10, "averageMark": 7.7},
+		{"popularity": 6, "length": 11, "averageMark": 7.5},
+		{"popularity": 6, "length": 20, "averageMark": 7},
+		{"popularity": 3, "length": 20, "averageMark": 7},
+	}
+	actual := satisfaction.Evaluate(&model.DecisionMakingParams{
+		ConsideredAlternatives:    considered,
+		NotConsideredAlternatives: notConsidered,
+		Criteria:                  criteria,
+		MethodParameters: SatisfactionParameters{
+			Function: satisfaction_levels.DecreasingThresholds.Identifier(),
+			Params: utils.Map{
+				"thresholds": thresholds,
+			},
+			RandomSeed: 1,
+		},
+	})
+	expected := model.AlternativesRanking{
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: considered[2],
+				Evaluation: SatisfactionEvaluation{
+					SatisfiedThresholds: thresholds[2],
+					ThresholdsIndex:     2,
+				},
+			},
+			BetterThanOrSameAs: []string{considered[0].Id, considered[1].Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: considered[0],
+				Evaluation: SatisfactionEvaluation{
+					SatisfiedThresholds: thresholds[3],
+					ThresholdsIndex:     3,
+				},
+			},
+			BetterThanOrSameAs: []string{considered[1].Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: considered[1],
+				Evaluation: SatisfactionEvaluation{
+					SatisfiedThresholds: thresholds[4],
+					ThresholdsIndex:     4,
+				},
+			},
+			BetterThanOrSameAs: []string{},
+		},
+	}
+	testUtils.CompareRankings(&expected, actual, t)
+}

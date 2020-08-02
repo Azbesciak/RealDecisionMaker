@@ -106,16 +106,19 @@ thresholds:
 		thresholdIndex++
 		t := satisfactionLevels.Next()
 		for _, c := range criteria {
+			tempAlternatives := *model.CopyAlternatives(&leftToChoice)
 			for _, a := range leftToChoice {
 				if isBellowThreshold(&a, &t, &c.Criterion) {
-					leftToChoice = model.RemoveAlternative(leftToChoice, a)
+					tempAlternatives = model.RemoveAlternative(tempAlternatives, a)
 					threshold := makeWeightPair(&t, &c.Criterion)
 					resultInsertIndex = updateResult(result, resultInsertIndex, a, thresholdIndex, resultIds, &threshold)
 				}
-				if len(leftToChoice) <= 1 {
+				if len(tempAlternatives) <= 1 {
+					leftToChoice = tempAlternatives
 					break thresholds
 				}
 			}
+			leftToChoice = tempAlternatives
 		}
 	}
 	return leftToChoice, result, resultIds, thresholdIndex

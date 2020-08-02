@@ -130,12 +130,14 @@ func checkWithinSatisfactionLevels(
 		thresholdIndex++
 		t := satisfactionLevels.Next()
 		thresholds := dmp.Criteria.ZipWithWeights(&t)
+		tempLeftToChoice := *model.CopyAlternatives(&leftToChoice)
 		for _, a := range leftToChoice {
 			if isGoodEnough(a, thresholds) {
-				leftToChoice = model.RemoveAlternative(leftToChoice, a)
+				tempLeftToChoice = model.RemoveAlternative(tempLeftToChoice, a)
 				resultInsertIndex = updateResult(result, resultInsertIndex, a, thresholdIndex, resultIds, &t)
 			}
 		}
+		leftToChoice = tempLeftToChoice
 		if len(leftToChoice) == 0 {
 			break
 		}

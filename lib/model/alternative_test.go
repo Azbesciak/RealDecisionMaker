@@ -98,3 +98,19 @@ func validateAlternativesOrder(t *testing.T, actual *[]AlternativeWithCriteria, 
 		}
 	}
 }
+
+func TestRemoveAlternative(t *testing.T) {
+	checkRemoval(t, []string{"1", "2", "3"}, "3", []string{"1", "2"})
+	checkRemoval(t, []string{"1", "2", "3"}, "4", []string{"1", "2", "3"})
+	checkRemoval(t, []string{"1", "2", "3"}, "1", []string{"2", "3"})
+	checkRemoval(t, []string{"1", "2", "3"}, "2", []string{"1", "3"})
+}
+
+func checkRemoval(t *testing.T, ids []string, toRemove string, expected []string) {
+	all := make([]AlternativeWithCriteria, len(ids))
+	for i, id := range ids {
+		all[i] = AlternativeWithCriteria{Id: id}
+	}
+	actual := RemoveAlternative(all, AlternativeWithCriteria{Id: toRemove})
+	validateAlternativesOrder(t, &actual, expected)
+}
