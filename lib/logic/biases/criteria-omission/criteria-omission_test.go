@@ -23,29 +23,71 @@ func TestCriteriaOmission_splitCriteria(t *testing.T) {
 	validateOmission(t, criteria, 0.34, []string{"1", "2"}, []string{"3", "4", "5", "6"})
 }
 
-func TestCriteriaOmission_Apply(t *testing.T) {
-	omission := CriteriaOmission{}
-	notConsidered := []model.AlternativeWithCriteria{
-		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
-		{Id: "y", Criteria: model.Weights{"1": 0, "2": 1, "3": 4}},
-	}
-	considered := []model.AlternativeWithCriteria{
-		{Id: "a", Criteria: model.Weights{"1": 0, "2": 3, "3": 1}},
-		{Id: "b", Criteria: model.Weights{"1": 0, "2": 5, "3": 0}},
-	}
-	criteria := testUtils.GenerateCriteria(3)
-	listener := model.BiasListener(&testUtils.DummyBiasListener{})
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4})
-	original := &model.DecisionMakingParams{
-		NotConsideredAlternatives: notConsidered,
-		ConsideredAlternatives:    considered,
-		Criteria:                  criteria,
-		MethodParameters: testUtils.DummyMethodParameters{
-			Criteria: []string{"1", "2", "3"},
+var omission = NewCriteriaOmission([]OmissionResolver{
+	&WeakestCriteriaOmissionResolver{},
+	&StrongestCriteriaOmissionResolver{},
+	&RandomCriteriaOmissionResolver{
+		Generator: func(seed int64) utils.ValueGenerator {
+			maxVal := float64(len(criteria))
+			counter := -1
+			return func() float64 {
+				counter++
+				if seed == 0 {
+					return float64(counter) / maxVal
+				} else {
+					return (maxVal - float64(counter) - 1) / maxVal
+				}
+			}
 		},
-	}
+	},
+})
+var notConsidered = []model.AlternativeWithCriteria{
+	{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
+	{Id: "y", Criteria: model.Weights{"1": 0, "2": 1, "3": 4}},
+}
+var considered = []model.AlternativeWithCriteria{
+	{Id: "a", Criteria: model.Weights{"1": 0, "2": 3, "3": 1}},
+	{Id: "b", Criteria: model.Weights{"1": 0, "2": 5, "3": 0}},
+}
+var criteria = testUtils.GenerateCriteria(3)
+var listener = model.BiasListener(&testUtils.DummyBiasListener{})
+var original = &model.DecisionMakingParams{
+	NotConsideredAlternatives: notConsidered,
+	ConsideredAlternatives:    considered,
+	Criteria:                  criteria,
+	MethodParameters: testUtils.DummyMethodParameters{
+		Criteria: []string{"1", "2", "3"},
+	},
+}
+
+func TestCriteriaOmission_ApplyWeakestAsDefault(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
+}
+
+func TestCriteriaOmission_ApplyWeakest(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "weakest"})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
+}
+
+func TestCriteriaOmission_ApplyStrongest(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "strongest"})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2]}})
+}
+
+func TestCriteriaOmission_ApplyRandom(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "random"})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[1]}})
+}
+
+func TestCriteriaOmission_ApplyRandomDesc(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "random", "randomSeed": 1})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2]}})
 }
 
 func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omitted []string, kept []string) {
