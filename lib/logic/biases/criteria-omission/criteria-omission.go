@@ -26,7 +26,7 @@ func (c *CriteriaOmission) Identifier() string {
 }
 
 func (c *CriteriaOmission) Apply(
-	original, current *model.DecisionMakingParams,
+	_, current *model.DecisionMakingParams,
 	props *model.BiasProps,
 	listener *model.BiasListener,
 ) *model.BiasedResult {
@@ -34,7 +34,7 @@ func (c *CriteriaOmission) Apply(
 	if parsedProps.OmittedCriteriaRatio == 0 {
 		return &model.BiasedResult{DMP: current, Props: CriteriaOmissionResult{}}
 	}
-	paramsWithSortedCriteria := paramsWithSortedCriteria(original, listener)
+	paramsWithSortedCriteria := paramsWithSortedCriteria(current, listener)
 	resParams, omitted := omitCriteria(&parsedProps, paramsWithSortedCriteria, listener)
 	return &model.BiasedResult{
 		DMP:   resParams,
