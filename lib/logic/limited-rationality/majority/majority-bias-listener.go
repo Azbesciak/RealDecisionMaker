@@ -27,9 +27,10 @@ func (m *MajorityBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, p
 	wParams := params.(MajorityHeuristicParams)
 	leftWeights := wParams.Weights.PreserveOnly(leftCriteria)
 	return MajorityHeuristicParams{
-		Weights:       *leftWeights,
-		CurrentChoice: wParams.CurrentChoice,
-		RandomSeed:    wParams.RandomSeed,
+		Weights:                    *leftWeights,
+		CurrentChoice:              wParams.CurrentChoice,
+		RandomSeed:                 wParams.RandomSeed,
+		RandomAlternativesOrdering: wParams.RandomAlternativesOrdering,
 	}
 }
 
