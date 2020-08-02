@@ -31,6 +31,7 @@ func (m *MajorityBiasListener) OnCriteriaRemoved(leftCriteria *model.Criteria, p
 		CurrentChoice:              wParams.CurrentChoice,
 		RandomSeed:                 wParams.RandomSeed,
 		RandomAlternativesOrdering: wParams.RandomAlternativesOrdering,
+		DrawResolution:             wParams.DrawResolution,
 	}
 }
 
@@ -47,5 +48,6 @@ func (m *MajorityBiasListener) Merge(params model.MethodParameters, addition mod
 		CurrentChoice:              oldParams.CurrentChoice,
 		RandomSeed:                 oldParams.RandomSeed,
 		RandomAlternativesOrdering: oldParams.RandomAlternativesOrdering,
+		DrawResolution:             oldParams.DrawResolution,
 	}
 }

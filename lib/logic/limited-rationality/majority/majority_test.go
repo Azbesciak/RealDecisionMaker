@@ -7,13 +7,19 @@ import (
 	"testing"
 )
 
-var _majority = Majority{
-	generator: func(seed int64) utils.ValueGenerator {
+var _majority = NewMajority(
+	func(seed int64) utils.ValueGenerator {
 		return func() float64 {
 			return 1
 		}
 	},
-}
+	[]DrawResolver{
+		&DrawAllowedResolver{},
+		&CurrentIsWinnerDrawResolver{},
+		&NewerIsWinnerResolver{},
+		&RandomWinnerResolver{},
+	},
+)
 
 var criteria = testUtils.GenerateCriteria(3)
 var criteriaValues = model.WeightedCriteria{{
@@ -153,4 +159,218 @@ func TestMajority_ParseParams(t *testing.T) {
 	} else if utils.Differs(expected, actual) {
 		t.Errorf("expected %v, got %v", expected, actual)
 	}
+}
+
+var draw1 = model.AlternativeWithCriteria{
+	Id: "1", Criteria: model.Weights{"a": 1},
+}
+var draw2 = model.AlternativeWithCriteria{
+	Id: "2", Criteria: model.Weights{"a": 1},
+}
+var drawCriteria = model.Criteria{{Id: "a"}}
+
+func TestMajority_DrawAllowedResolution(t *testing.T) {
+	dm := model.DecisionMakingParams{
+		ConsideredAlternatives: []model.AlternativeWithCriteria{draw1, draw2},
+		Criteria:               drawCriteria,
+		MethodParameters: MajorityHeuristicParams{
+			Weights:        model.Weights{"a": 1},
+			DrawResolution: "allowed",
+		},
+	}
+	actual := _majority.Evaluate(&dm)
+	expected := model.AlternativesRanking{
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw1,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             "",
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{draw2.Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw2,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             draw1.Id,
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{draw1.Id},
+		},
+	}
+	testUtils.CompareRankings(&expected, actual, t)
+}
+
+func TestMajority_DrawCurrentWinnerResolution(t *testing.T) {
+	dm := model.DecisionMakingParams{
+		ConsideredAlternatives: []model.AlternativeWithCriteria{draw1, draw2},
+		Criteria:               drawCriteria,
+		MethodParameters: MajorityHeuristicParams{
+			Weights:        model.Weights{"a": 1},
+			DrawResolution: "current",
+		},
+	}
+	actual := _majority.Evaluate(&dm)
+	expected := model.AlternativesRanking{
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw1,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             "",
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{draw2.Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw2,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             draw1.Id,
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{},
+		},
+	}
+	testUtils.CompareRankings(&expected, actual, t)
+}
+
+func TestMajority_DrawNewerWinnerResolution(t *testing.T) {
+	dm := model.DecisionMakingParams{
+		ConsideredAlternatives: []model.AlternativeWithCriteria{draw1, draw2},
+		Criteria:               drawCriteria,
+		MethodParameters: MajorityHeuristicParams{
+			Weights:        model.Weights{"a": 1},
+			DrawResolution: "newer",
+		},
+	}
+	actual := _majority.Evaluate(&dm)
+	expected := model.AlternativesRanking{
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw2,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             "",
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{draw1.Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw1,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             draw2.Id,
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{},
+		},
+	}
+	testUtils.CompareRankings(&expected, actual, t)
+}
+
+func TestMajority_DrawRandomWinnerResolution_asCurrent(t *testing.T) {
+	majority := NewMajority(
+		func(seed int64) utils.ValueGenerator {
+			return func() float64 {
+				return 0.6
+			}
+		},
+		[]DrawResolver{
+			&RandomWinnerResolver{},
+		},
+	)
+
+	dm := model.DecisionMakingParams{
+		ConsideredAlternatives: []model.AlternativeWithCriteria{draw1, draw2},
+		Criteria:               drawCriteria,
+		MethodParameters: MajorityHeuristicParams{
+			Weights:        model.Weights{"a": 1},
+			DrawResolution: "random",
+		},
+	}
+	actual := majority.Evaluate(&dm)
+	expected := model.AlternativesRanking{
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw2,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             "",
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{draw1.Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw1,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             draw2.Id,
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{},
+		},
+	}
+	testUtils.CompareRankings(&expected, actual, t)
+}
+
+func TestMajority_DrawRandomWinnerResolution_asNewer(t *testing.T) {
+	majority := NewMajority(
+		func(seed int64) utils.ValueGenerator {
+			return func() float64 {
+				return 0.4
+			}
+		},
+		[]DrawResolver{
+			&RandomWinnerResolver{},
+		},
+	)
+	dm := model.DecisionMakingParams{
+		ConsideredAlternatives: []model.AlternativeWithCriteria{draw1, draw2},
+		Criteria:               drawCriteria,
+		MethodParameters: MajorityHeuristicParams{
+			Weights:        model.Weights{"a": 1},
+			DrawResolution: "random",
+		},
+	}
+	actual := majority.Evaluate(&dm)
+	expected := model.AlternativesRanking{
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw1,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             "",
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{draw2.Id},
+		},
+		{
+			AlternativeResult: model.AlternativeResult{
+				Alternative: draw2,
+				Evaluation: MajorityEvaluation{
+					Value:                    0,
+					ComparedWith:             draw1.Id,
+					ComparedAlternativeValue: 0,
+				},
+			},
+			BetterThanOrSameAs: []string{},
+		},
+	}
+	testUtils.CompareRankings(&expected, actual, t)
 }

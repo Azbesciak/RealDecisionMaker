@@ -1,6 +1,7 @@
 package majority
 
 import (
+	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
@@ -9,11 +10,22 @@ import (
 //go:generate easytags $GOFILE json:camel
 
 type Majority struct {
-	generator utils.SeededValueGenerator
+	generator             utils.SeededValueGenerator
+	drawResolvers         []DrawResolver
+	currentWinnerResolver CurrentIsWinnerDrawResolver
+	newerIsWinnerResolver NewerIsWinnerResolver
 }
 
-func NewMajority(generator utils.SeededValueGenerator) *Majority {
-	return &Majority{generator: generator}
+func NewMajority(generator utils.SeededValueGenerator, drawResolvers []DrawResolver) *Majority {
+	if len(drawResolvers) == 0 {
+		panic("no draw resolvers for majority heuristic!")
+	}
+	return &Majority{
+		generator:             generator,
+		drawResolvers:         drawResolvers,
+		newerIsWinnerResolver: NewerIsWinnerResolver{},
+		currentWinnerResolver: CurrentIsWinnerDrawResolver{},
+	}
 }
 
 const eps = 1e-6
@@ -24,6 +36,7 @@ type MajorityHeuristicParams struct {
 	CurrentChoice              model.Alternative `json:"currentChoice"`
 	RandomSeed                 int64             `json:"randomSeed"`
 	RandomAlternativesOrdering bool              `json:"randomAlternativesOrdering"`
+	DrawResolution             string            `json:"drawResolution"`
 }
 
 func (m *MajorityHeuristicParams) GetCurrentChoice() string {
@@ -46,6 +59,22 @@ func (m *Majority) MethodParameters() interface{} {
 	return MajorityHeuristicParams{}
 }
 
+func (m *Majority) drawResolver(params *MajorityHeuristicParams) DrawResolver {
+	if len(params.DrawResolution) == 0 {
+		return m.drawResolvers[0]
+	}
+	for _, r := range m.drawResolvers {
+		if r.Identifier() == params.DrawResolution {
+			return r
+		}
+	}
+	names := make([]string, len(m.drawResolvers))
+	for i, r := range m.drawResolvers {
+		names[i] = r.Identifier()
+	}
+	panic(fmt.Errorf("draw resolution '%s' not found in %v", params.DrawResolution, names))
+}
+
 func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesRanking {
 	params := dm.MethodParameters.(MajorityHeuristicParams)
 	criteriaWithWeights := dm.Criteria.ZipWithWeights(&params.Weights)
@@ -54,10 +83,11 @@ func (m *Majority) Evaluate(dm *model.DecisionMakingParams) *model.AlternativesR
 	var sameBuffer []model.AlternativeResult
 	var worseThanCurrent [][]model.AlternativeResult
 	var currentEvaluation model.Weight = 0
+	drawResolver := m.drawResolver(&params)
 	for _, another := range considered {
 		s1, s2 := compare(criteriaWithWeights, &current, &another)
 		worseThanCurrent, sameBuffer, current, currentEvaluation =
-			takeBetter(s1, s2, sameBuffer, another, current, worseThanCurrent)
+			m.takeBetter(s1, s2, sameBuffer, another, current, worseThanCurrent, drawResolver, generator)
 	}
 	sameBuffer = append(sameBuffer, model.AlternativeResult{
 		Alternative: current,
@@ -99,42 +129,30 @@ func prepareRanking(ranking [][]model.AlternativeResult) *model.AlternativesRank
 	return &result
 }
 
-func takeBetter(s1, s2 model.Weight, sameBuffer []model.AlternativeResult,
+func (m *Majority) takeBetter(s1, s2 model.Weight, sameBuffer []model.AlternativeResult,
 	another, current model.AlternativeWithCriteria,
 	worseThanCurrent [][]model.AlternativeResult,
+	resolver DrawResolver,
+	generator utils.ValueGenerator,
 ) ([][]model.AlternativeResult, []model.AlternativeResult, model.AlternativeWithCriteria, model.Weight) {
 	currentEvaluation := s1
 	if utils.FloatsAreEqual(s1, s2, eps) {
-		sameBuffer = append(sameBuffer, model.AlternativeResult{
-			Alternative: another,
-			Evaluation: MajorityEvaluation{
-				Value:                    s2,
-				ComparedWith:             current.Id,
-				ComparedAlternativeValue: s1,
-			},
-		})
+		resolution := resolver.Resolve(s1, s2, sameBuffer, worseThanCurrent, current, another, generator)
+		current = resolution.current
+		worseThanCurrent = resolution.worseThanCurrent
+		sameBuffer = resolution.sameBuffer
 	} else if s2 < s1 {
-		worseThanCurrent = append(worseThanCurrent, []model.AlternativeResult{{
-			Alternative: another,
-			Evaluation: MajorityEvaluation{
-				Value:                    s2,
-				ComparedWith:             current.Id,
-				ComparedAlternativeValue: s1,
-			},
-		}})
+		worseThanCurrent = m.currentWinnerResolver.Resolve(
+			s1, s2, sameBuffer, worseThanCurrent, current, another, generator,
+		).worseThanCurrent
 	} else {
 		currentEvaluation = s2
-		sameBuffer = append(sameBuffer, model.AlternativeResult{
-			Alternative: current,
-			Evaluation: MajorityEvaluation{
-				Value:                    s1,
-				ComparedWith:             another.Id,
-				ComparedAlternativeValue: s2,
-			},
-		})
-		current = another
-		worseThanCurrent = append(worseThanCurrent, sameBuffer)
-		sameBuffer = make([]model.AlternativeResult, 0)
+		resolution := m.newerIsWinnerResolver.Resolve(
+			s1, s2, sameBuffer, worseThanCurrent, current, another, generator,
+		)
+		current = resolution.current
+		worseThanCurrent = resolution.worseThanCurrent
+		sameBuffer = resolution.sameBuffer
 	}
 	return worseThanCurrent, sameBuffer, current, currentEvaluation
 }
