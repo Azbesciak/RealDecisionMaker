@@ -33,7 +33,7 @@ type CriteriaConcealmentParams struct {
 }
 
 type CriteriaConcealmentResult struct {
-	AddedCriteria []AddedCriterion `json:"addedCriterion"`
+	AddedCriteria []AddedCriterion `json:"addedCriteria"`
 }
 
 const BiasName = "criteriaConcealment"
