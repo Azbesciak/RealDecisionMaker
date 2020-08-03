@@ -11,13 +11,13 @@ type IncreasingCoefficientManager struct {
 
 func (i *IncreasingCoefficientManager) Validate(params *IdealCoefficientSatisfactionLevels) {
 	if params.Coefficient <= 0 || params.Coefficient >= 1 {
-		panic(fmt.Errorf("satisfaction coefficient degradation level must be in range (0,1), got %f", params.Coefficient))
+		panic(fmt.Errorf("satisfaction coefficient increasing level must be in range (0, 1), got %f", params.Coefficient))
 	}
-	if params.MinValue < 0 {
-		panic(fmt.Errorf("minimum satisfaction coefficient level must be non-negative value, got %f", params.MinValue))
+	if params.MinValue < 0 || params.MinValue > 1 {
+		panic(fmt.Errorf("min satisfaction coefficient level must be in range [0, 1], got %f", params.MinValue))
 	}
-	if params.MaxValue >= 1 {
-		panic(fmt.Errorf("max satisfaction coefficient level must be lower than 1, got %f", params.MaxValue))
+	if params.MaxValue < 0 || params.MaxValue > 1 {
+		panic(fmt.Errorf("max satisfaction coefficient level must be in range [0, 1], got %f", params.MaxValue))
 	}
 }
 

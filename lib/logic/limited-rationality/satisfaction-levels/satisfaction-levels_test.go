@@ -148,3 +148,73 @@ func validateThresholds(t *testing.T, params *IdealCoefficientSatisfactionLevels
 			"\n     got %v", expected, actual)
 	}
 }
+
+func TestDecreasingCoefficientManager_Validate(t *testing.T) {
+	manager := DecreasingCoefficientManager{}
+	func() {
+		defer utils.ExpectError(t, "satisfaction coefficient degradation level must be in range (0, 1), got 0.000000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "satisfaction coefficient degradation level must be in range (0, 1), got 1.000000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 1})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "min satisfaction coefficient level must be in range (0, 1], got 0.000000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 0})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "min satisfaction coefficient level must be in range (0, 1], got 1.100000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 1.1})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "max satisfaction coefficient level must be in range (0, 1], got 0.000000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 0.5, MaxValue: 0})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "max satisfaction coefficient level must be in range (0, 1], got 1.100000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 0.5, MaxValue: 1.1})
+		t.Errorf("expected error")
+	}()
+	manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 0.5, MaxValue: 0.6})
+}
+
+func TestIncreasingCoefficientManager_Validate(t *testing.T) {
+	manager := IncreasingCoefficientManager{}
+	func() {
+		defer utils.ExpectError(t, "satisfaction coefficient increasing level must be in range (0, 1), got 0.000000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "satisfaction coefficient increasing level must be in range (0, 1), got 1.000000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 1})
+		t.Errorf("expected error")
+	}()
+	manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 0})
+	func() {
+		defer utils.ExpectError(t, "min satisfaction coefficient level must be in range [0, 1], got -0.100000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: -0.1})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "min satisfaction coefficient level must be in range [0, 1], got 1.100000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 1.1})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "max satisfaction coefficient level must be in range [0, 1], got -0.100000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 0.5, MaxValue: -.1})
+		t.Errorf("expected error")
+	}()
+	func() {
+		defer utils.ExpectError(t, "max satisfaction coefficient level must be in range [0, 1], got 1.100000")()
+		manager.Validate(&IdealCoefficientSatisfactionLevels{Coefficient: 0.5, MinValue: 0.1, MaxValue: 1.1})
+		t.Errorf("expected error")
+	}()
+}
