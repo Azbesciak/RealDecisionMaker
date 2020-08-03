@@ -8,6 +8,7 @@ import (
 )
 
 type AddedCriterion struct {
+	Id                  string                 `json:"id"`
 	Type                model.CriterionType    `json:"type"`
 	AlternativesValues  model.Weights          `json:"alternativesValues"`
 	MethodParameters    model.MethodParameters `json:"methodParameters"`
@@ -71,6 +72,7 @@ func (c *CriteriaConcealment) generateNewCriterion(
 			Criteria:                  newCriteria,
 			MethodParameters:          finalParams,
 		}, []AddedCriterion{{
+			Id:                  criterionBase.newCriterion.Id,
 			Type:                criterionBase.newCriterion.Type,
 			AlternativesValues:  addResult.alternativesValues,
 			MethodParameters:    addedCriterionParams,

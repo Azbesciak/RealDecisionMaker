@@ -39,12 +39,14 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		},
 	}
 	result := omission.Apply(original, original, &m, &listener)
+	criterionName := newConcealedCriterionNameByCount(0)
 	checkProps(t, result.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{
 			{
+				Id:                  criterionName,
 				Type:                model.Gain,
 				AlternativesValues:  model.Weights{"a": 0.5, "b": 0.6, "x": 0.7, "y": 0.8},
-				MethodParameters:    testUtils.DummyMethodParameters{Criteria: []string{newConcealedCriterionNameByCount(0)}},
+				MethodParameters:    testUtils.DummyMethodParameters{Criteria: []string{criterionName}},
 				CriterionValueRange: utils.ValueRange{Min: 0, Max: 1},
 			},
 		},
@@ -80,12 +82,14 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 	}
 	result := omission.Apply(original, original, &m, &listener)
 	result2 := omission.Apply(original, result.DMP, &m, &listener)
+	criterionName := newConcealedCriterionNameByCount(1)
 	checkProps(t, result2.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{{
+			Id:                 criterionName,
 			Type:               model.Gain,
 			AlternativesValues: model.Weights{"a": 1.5, "b": 1.8},
 			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
-				newConcealedCriterionNameByCount(1)},
+				criterionName},
 			},
 			CriterionValueRange: utils.ValueRange{Min: 0, Max: 3},
 		}},
@@ -121,12 +125,14 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 		},
 	}
 	result := omission.Apply(original, original, &m, &listener)
+	criterionName := newConcealedCriterionNameByCount(0)
 	checkProps(t, result.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{{
+			Id:                 criterionName,
 			Type:               model.Gain,
 			AlternativesValues: model.Weights{"a": 4, "b": 4.2},
 			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
-				newConcealedCriterionNameByCount(0)},
+				criterionName},
 			},
 			CriterionValueRange: utils.ValueRange{Min: 3, Max: 5},
 		}},
