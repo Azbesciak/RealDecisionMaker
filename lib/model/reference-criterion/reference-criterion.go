@@ -30,7 +30,7 @@ type referenceParamsType struct {
 
 func (m *ReferenceCriteriaManager) ForParams(params *interface{}) ReferenceCriterionProvider {
 	if len(m.factories) == 0 {
-		panic(fmt.Errorf("no ReferenceCriterionFactory has beed declared"))
+		panic(fmt.Errorf("no ReferenceCriterionFactory has been declared"))
 	}
 	referenceType := m.fetchFactoryTypeFromParams(params)
 	factory := m.factory(&referenceType)

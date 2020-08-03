@@ -36,7 +36,7 @@ func TestReferenceCriteriaManager_ForParams_noManagerDeclared(t *testing.T) {
 	manager := ReferenceCriteriaManager{
 		factories: []ReferenceCriterionFactory{},
 	}
-	defer utils.ExpectError(t, "no ReferenceCriterionFactory has beed declared")()
+	defer utils.ExpectError(t, "no ReferenceCriterionFactory has been declared")()
 	var params interface{} = utils.Map{"referenceCriterionType": "importanceRatio"}
 	manager.ForParams(&params)
 }
