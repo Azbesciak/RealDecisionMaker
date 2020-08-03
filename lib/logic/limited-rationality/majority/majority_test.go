@@ -175,7 +175,7 @@ func TestMajority_DrawAllowedResolution(t *testing.T) {
 		Criteria:               drawCriteria,
 		MethodParameters: MajorityHeuristicParams{
 			Weights:        model.Weights{"a": 1},
-			DrawResolution: "allowed",
+			DrawResolution: "allow",
 		},
 	}
 	actual := _majority.Evaluate(&dm)

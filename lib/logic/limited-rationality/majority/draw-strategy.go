@@ -22,7 +22,7 @@ type DrawResolution struct {
 	current          model.AlternativeWithCriteria
 }
 
-const DrawAllowedResolverName = "allowed"
+const DrawAllowedResolverName = "allow"
 
 type DrawAllowedResolver struct {
 }
