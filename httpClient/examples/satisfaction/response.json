@@ -1,0 +1,66 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "Dunkirk",
+        "criteria": {
+          "averageMark": 7.4,
+          "length": 11,
+          "popularity": 3
+        }
+      },
+      "evaluation": {
+        "satisfiedThresholds": {
+          "averageMark": 7,
+          "length": 20,
+          "popularity": 3
+        },
+        "thresholdsIndex": 4
+      },
+      "betterThanOrSameAs": [
+        "Knives Out"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "Knives Out",
+        "criteria": {
+          "averageMark": 7.8,
+          "length": 11,
+          "popularity": 6
+        }
+      },
+      "evaluation": {
+        "satisfiedThresholds": {
+          "averageMark": 7,
+          "length": 20,
+          "popularity": 3
+        },
+        "thresholdsIndex": 4
+      },
+      "betterThanOrSameAs": [
+        "Avengers"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "Avengers",
+        "criteria": {
+          "averageMark": 7.7,
+          "length": 14,
+          "popularity": 6
+        }
+      },
+      "evaluation": {
+        "satisfiedThresholds": {
+          "averageMark": 7,
+          "length": 20,
+          "popularity": 3
+        },
+        "thresholdsIndex": 4
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": []
+}

@@ -1,0 +1,98 @@
+{
+  "preferenceFunction": "aspectEliminationHeuristic",
+  "knownAlternatives": [
+    {
+      "id": "mercedes",
+      "criteria": {
+        "speed": 9,
+        "price": 10,
+        "maintenance": 9,
+        "innovation": 10
+      }
+    },
+    {
+      "id": "vw",
+      "criteria": {
+        "speed": 7,
+        "price": 7,
+        "maintenance": 8,
+        "innovation": 6
+      }
+    },
+    {
+      "id": "fiat",
+      "criteria": {
+        "speed": 5,
+        "price": 4,
+        "maintenance": 6,
+        "innovation": 3
+      }
+    },
+    {
+      "id": "audi",
+      "criteria": {
+        "speed": 10,
+        "price": 10,
+        "maintenance": 10,
+        "innovation": 9
+      }
+    },
+    {
+      "id": "nisan",
+      "criteria": {
+        "speed": 7,
+        "price": 6,
+        "maintenance": 5,
+        "innovation": 5
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "speed",
+      "type": "gain"
+    },
+    {
+      "id": "price",
+      "type": "cost"
+    },
+    {
+      "id": "maintenance",
+      "type": "cost"
+    },
+    {
+      "id": "innovation",
+      "type": "gain"
+    }
+  ],
+  "choseToMake": [
+    "fiat",
+    "vw"
+  ],
+  "methodParameters": {
+    "weights": {
+      "speed": 8,
+      "price": 6,
+      "maintenance": 7,
+      "innovation": 10
+    },
+    "randomSeed": 258,
+    "function": "idealMultipliedCoefficient",
+    "params": {
+      "minValue": 0.1,
+      "maxValue": 0.95,
+      "coefficient": 0.3
+    },
+    "randomAlternativesOrdering": false
+  },
+  "biases": [{
+    "name": "criteriaMixing",
+    "disabled": false,
+    "props": {
+      "criterionConcealmentProbability": 0.7,
+      "randomSeed": 666,
+      "referenceCriterionType": "randomUniform",
+      "mixingRatio": 0.75
+    }
+  }]
+}

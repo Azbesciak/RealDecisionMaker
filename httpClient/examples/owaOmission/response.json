@@ -1,0 +1,61 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "banana",
+        "criteria": {
+          "energy": 5,
+          "taste": 2
+        }
+      },
+      "evaluation": {
+        "value": 2.4
+      },
+      "betterThanOrSameAs": [
+        "cherry"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "cherry",
+        "criteria": {
+          "energy": 1,
+          "taste": 4
+        }
+      },
+      "evaluation": {
+        "value": 1.8
+      },
+      "betterThanOrSameAs": [
+        "apple"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "apple",
+        "criteria": {
+          "energy": 2,
+          "taste": 3
+        }
+      },
+      "evaluation": {
+        "value": 1.6
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": [
+    {
+      "name": "criteriaOmission",
+      "disabled": false,
+      "props": {
+        "omittedCriteria": [
+          {
+            "id": "smell",
+            "type": "gain"
+          }
+        ]
+      }
+    }
+  ]
+}

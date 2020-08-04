@@ -1,0 +1,88 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "vw",
+        "criteria": {
+          "__price+maintenance__": 4.75,
+          "innovation": 6,
+          "maintenance": 8,
+          "price": 7,
+          "speed": 7
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {},
+        "thresholdsIndex": 1
+      },
+      "betterThanOrSameAs": [
+        "fiat"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "fiat",
+        "criteria": {
+          "__price+maintenance__": 9.5,
+          "innovation": 3,
+          "maintenance": 6,
+          "price": 4,
+          "speed": 5
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {
+          "innovation": 3.7
+        },
+        "thresholdsIndex": 0
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": [
+    {
+      "name": "criteriaMixing",
+      "disabled": false,
+      "props": {
+        "component1": {
+          "id": "price",
+          "type": "cost",
+          "scaledValues": {
+            "audi": 0,
+            "fiat": 10,
+            "mercedes": 0,
+            "nisan": 6.666666666666667,
+            "vw": 5
+          }
+        },
+        "component2": {
+          "id": "maintenance",
+          "type": "cost",
+          "scaledValues": {
+            "audi": 0,
+            "fiat": 8,
+            "mercedes": 2,
+            "nisan": 10,
+            "vw": 4
+          }
+        },
+        "newCriterion": {
+          "id": "__price+maintenance__",
+          "type": "gain",
+          "scaledValues": {
+            "audi": 0,
+            "fiat": 9.5,
+            "mercedes": 0.5,
+            "nisan": 7.5,
+            "vw": 4.75
+          }
+        },
+        "params": {
+          "weights": {
+            "__price+maintenance__": 2.085638638054536
+          }
+        }
+      }
+    }
+  ]
+}

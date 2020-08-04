@@ -1,0 +1,37 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "FRA",
+        "criteria": {
+          "cost": 800,
+          "power": 98,
+          "safety": 6
+        }
+      },
+      "evaluation": {
+        "ascendingIndex": 1,
+        "descendingIndex": 1
+      },
+      "betterThanOrSameAs": [
+        "GER"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "GER",
+        "criteria": {
+          "cost": 400,
+          "power": 66,
+          "safety": 7
+        }
+      },
+      "evaluation": {
+        "ascendingIndex": 2,
+        "descendingIndex": 2
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": []
+}

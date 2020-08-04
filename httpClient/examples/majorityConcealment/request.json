@@ -1,0 +1,95 @@
+{
+  "preferenceFunction": "majorityHeuristic",
+  "knownAlternatives": [
+    {
+      "id": "apple",
+      "criteria": {
+        "speed": 6,
+        "price": 10,
+        "quality": 8,
+        "look": 6
+      }
+    },
+    {
+      "id": "lenovo",
+      "criteria": {
+        "speed": 5,
+        "price": 4,
+        "quality": 6,
+        "look": 7
+      }
+    },
+    {
+      "id": "dell",
+      "criteria": {
+        "speed": 7,
+        "price": 7,
+        "quality": 7,
+        "look": 8
+      }
+    },
+    {
+      "id": "asus",
+      "criteria": {
+        "speed": 4,
+        "price": 4,
+        "quality": 5,
+        "look": 4
+      }
+    },
+    {
+      "id": "microsoft",
+      "criteria": {
+        "speed": 5,
+        "price": 8,
+        "quality": 6,
+        "look": 3
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "speed",
+      "type": "gain"
+    },
+    {
+      "id": "price",
+      "type": "cost"
+    },
+    {
+      "id": "quality",
+      "type": "gain"
+    },
+    {
+      "id": "look",
+      "type": "gain"
+    }
+  ],
+  "choseToMake": [
+    "apple",
+    "dell",
+    "lenovo"
+  ],
+  "methodParameters": {
+    "weights": {
+      "speed": 5,
+      "price": 6,
+      "quality": 4,
+      "look": 2
+    },
+    "currentChoice": "asus",
+    "randomSeed": 147,
+    "randomAlternativesOrdering": true,
+    "drawResolution": "allow"
+  },
+  "biases": [{
+    "name": "criteriaConcealment",
+    "disabled": false,
+    "props": {
+      "criterionConcealmentProbability": 0.7,
+      "randomSeed": 666,
+      "referenceCriterionType": "importanceRatio",
+      "newCriterionImportance": 1
+    }
+  }]
+}

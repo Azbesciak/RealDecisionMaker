@@ -1,0 +1,147 @@
+{
+  "preferenceFunction": "satisfactionHeuristic",
+  "knownAlternatives": [
+    {
+      "id": "Lord of the Rings",
+      "criteria": {
+        "popularity": 10,
+        "length": 18,
+        "averageMark": 8
+      }
+    },
+    {
+      "id": "Star Wars",
+      "criteria": {
+        "popularity": 8,
+        "length": 14,
+        "averageMark": 7.8
+      }
+    },
+    {
+      "id": "Avengers",
+      "criteria": {
+        "popularity": 6,
+        "length": 14,
+        "averageMark": 7.7
+      }
+    },
+    {
+      "id": "Dunkirk",
+      "criteria": {
+        "popularity": 3,
+        "length": 11,
+        "averageMark": 7.4
+      }
+    },
+    {
+      "id": "Forest Gump",
+      "criteria": {
+        "popularity": 10,
+        "length": 14,
+        "averageMark": 8.5
+      }
+    },
+    {
+      "id": "The Founder",
+      "criteria": {
+        "popularity": 4,
+        "length": 12,
+        "averageMark": 6.5
+      }
+    },
+    {
+      "id": "Knives Out",
+      "criteria": {
+        "popularity": 6,
+        "length": 11,
+        "averageMark": 7.8
+      }
+    },
+    {
+      "id": "The Godfather",
+      "criteria": {
+        "popularity": 10,
+        "length": 18,
+        "averageMark": 9
+      }
+    },
+    {
+      "id": "The Green Mile",
+      "criteria": {
+        "popularity": 10,
+        "length": 19,
+        "averageMark": 8
+      }
+    },
+    {
+      "id": "Color of Justice",
+      "criteria": {
+        "popularity": 1,
+        "length": 10,
+        "averageMark": 6.8
+      }
+    },
+    {
+      "id": "Mega Piranha",
+      "criteria": {
+        "popularity": 1,
+        "length": 9,
+        "averageMark": 2
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "popularity",
+      "type": "gain"
+    },
+    {
+      "id": "length",
+      "type": "cost"
+    },
+    {
+      "id": "averageMark",
+      "type": "gain"
+    }
+  ],
+  "choseToMake": [
+    "Knives Out",
+    "Avengers",
+    "Dunkirk"
+  ],
+  "methodParameters": {
+    "weights": {
+      "popularity": 3,
+      "length": 4,
+      "averageMark": 6
+    },
+    "function": "thresholds",
+    "params": {
+      "thresholds": [{
+        "popularity": 10,
+        "length": 10,
+        "averageMark": 8
+      }, {
+        "popularity": 8,
+        "length": 12,
+        "averageMark": 7.5
+      }, {
+        "popularity": 7,
+        "length": 13,
+        "averageMark": 7.5
+      }, {
+        "popularity": 7,
+        "length": 20,
+        "averageMark": 7
+      }, {
+        "popularity": 3,
+        "length": 20,
+        "averageMark": 7
+      }]
+    },
+    "randomSeed": 1,
+    "currentChoice": null,
+    "randomAlternativesOrdering": true
+  },
+  "biases": []
+}

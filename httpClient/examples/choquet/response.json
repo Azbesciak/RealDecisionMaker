@@ -1,0 +1,83 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "GER",
+        "criteria": {
+          "efficiency": 6,
+          "power": 6.6,
+          "safety": 7
+        }
+      },
+      "evaluation": {
+        "value": 6.56
+      },
+      "betterThanOrSameAs": [
+        "AUT"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "AUT",
+        "criteria": {
+          "efficiency": 2,
+          "power": 7.4,
+          "safety": 8
+        }
+      },
+      "evaluation": {
+        "value": 5.54
+      },
+      "betterThanOrSameAs": [
+        "BEL"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "BEL",
+        "criteria": {
+          "efficiency": 8,
+          "power": 5.8,
+          "safety": 0
+        }
+      },
+      "evaluation": {
+        "value": 4.94
+      },
+      "betterThanOrSameAs": [
+        "FRA"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "FRA",
+        "criteria": {
+          "efficiency": 2,
+          "power": 9.8,
+          "safety": 6
+        }
+      },
+      "evaluation": {
+        "value": 4.78
+      },
+      "betterThanOrSameAs": [
+        "ITA"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "ITA",
+        "criteria": {
+          "efficiency": 4,
+          "power": 9,
+          "safety": 4
+        }
+      },
+      "evaluation": {
+        "value": 4.5
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": []
+}

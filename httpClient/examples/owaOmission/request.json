@@ -1,0 +1,62 @@
+{
+  "preferenceFunction": "owa",
+  "knownAlternatives": [
+    {
+      "id": "apple",
+      "criteria": {
+        "taste": 3,
+        "smell": 4,
+        "energy": 2
+      }
+    },
+    {
+      "id": "banana",
+      "criteria": {
+        "taste": 2,
+        "smell": 2,
+        "energy": 5
+      }
+    },
+    {
+      "id": "cherry",
+      "criteria": {
+        "taste": 4,
+        "smell": 1,
+        "energy": 1
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "taste",
+      "type": "gain"
+    },
+    {
+      "id": "smell",
+      "type": "gain"
+    },
+    {
+      "id": "energy",
+      "type": "gain"
+    }
+  ],
+  "choseToMake": [
+    "apple",
+    "banana",
+    "cherry"
+  ],
+  "methodParameters": {
+    "weights": {
+      "taste": 0.4,
+      "energy": 0.2,
+      "smell": 0.35
+    }
+  },
+  "biases": [{
+    "name": "criteriaOmission",
+    "props": {
+      "omittedCriteriaRatio": 0.4,
+      "omissionOrder": "weakest"
+    }
+  }]
+}

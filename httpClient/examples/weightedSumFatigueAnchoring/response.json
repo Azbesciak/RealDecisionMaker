@@ -1,0 +1,275 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "GER",
+        "criteria": {
+          "efficiency": 6.241133324592009,
+          "power": 4.317912201361733,
+          "safety": 8.36494721006775
+        }
+      },
+      "evaluation": {
+        "value": 18.92399274
+      },
+      "betterThanOrSameAs": [
+        "FRA"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "FRA",
+        "criteria": {
+          "efficiency": 0.819903845670445,
+          "power": 9.817771027749673,
+          "safety": 5.4127291880792985
+        }
+      },
+      "evaluation": {
+        "value": 16.05040406
+      },
+      "betterThanOrSameAs": [
+        "AUT"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "AUT",
+        "criteria": {
+          "efficiency": 0.5371410423938032,
+          "power": 6.3351573921305615,
+          "safety": 8.725138560708466
+        }
+      },
+      "evaluation": {
+        "value": 15.597437
+      },
+      "betterThanOrSameAs": [
+        "ITA"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "ITA",
+        "criteria": {
+          "efficiency": 4.10515808514965,
+          "power": 7.647294993201681,
+          "safety": 3.2411051991582074
+        }
+      },
+      "evaluation": {
+        "value": 14.99355828
+      },
+      "betterThanOrSameAs": [
+        "BEL"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "BEL",
+        "criteria": {
+          "efficiency": 9.199829387086972,
+          "power": 1.6497526943166325,
+          "safety": -3.9523187346541517
+        }
+      },
+      "evaluation": {
+        "value": 6.89726335
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": [
+    {
+      "name": "fatigue",
+      "disabled": false,
+      "props": {
+        "effectiveFatigueRatio": 0.10517091807564771,
+        "consideredAlternatives": [
+          {
+            "id": "ITA",
+            "criteria": {
+              "efficiency": 4.10515808514965,
+              "power": 8.449761091521445,
+              "safety": 4.011032133679677
+            }
+          },
+          {
+            "id": "BEL",
+            "criteria": {
+              "efficiency": 7.4644703522737545,
+              "power": 5.424334107010352,
+              "safety": 0
+            }
+          },
+          {
+            "id": "GER",
+            "criteria": {
+              "efficiency": 5.492006310610447,
+              "power": 6.644492759715994,
+              "safety": 7.330404323467855
+            }
+          },
+          {
+            "id": "AUT",
+            "criteria": {
+              "efficiency": 1.894180227157317,
+              "power": 7.697632725695966,
+              "safety": 7.570531890561666
+            }
+          },
+          {
+            "id": "FRA",
+            "criteria": {
+              "efficiency": 2.0573595778811704,
+              "power": 9.817771027749673,
+              "safety": 5.4127291880792985
+            }
+          }
+        ],
+        "notConsideredAlternatives": []
+      }
+    },
+    {
+      "name": "anchoring",
+      "disabled": false,
+      "props": {
+        "referencePoints": [
+          {
+            "id": "ideal",
+            "criteria": {
+              "efficiency": 4.10515808514965,
+              "power": 9.817771027749673,
+              "safety": 5.4127291880792985
+            }
+          }
+        ],
+        "criteriaScaling": {
+          "efficiency": {
+            "scale": 0.17952386276811688,
+            "valuesRange": {
+              "min": 1.894180227157317,
+              "max": 7.4644703522737545
+            }
+          },
+          "power": {
+            "scale": 0.22761223571447597,
+            "valuesRange": {
+              "min": 5.424334107010352,
+              "max": 9.817771027749673
+            }
+          },
+          "safety": {
+            "scale": 0.13209111518924055,
+            "valuesRange": {
+              "min": 0,
+              "max": 7.570531890561666
+            }
+          }
+        },
+        "perReferencePointsDifferences": [
+          {
+            "alternative": {
+              "id": "ITA",
+              "criteria": {
+                "efficiency": 4.10515808514965,
+                "power": 8.449761091521445,
+                "safety": 4.011032133679677
+              }
+            },
+            "referencePointsDifference": [
+              {
+                "referencePoint": "ideal",
+                "coefficients": {
+                  "efficiency": 0,
+                  "power": -0.18265110272363383,
+                  "safety": -0.10170050739517433
+                }
+              }
+            ]
+          },
+          {
+            "alternative": {
+              "id": "BEL",
+              "criteria": {
+                "efficiency": 7.4644703522737545,
+                "power": 5.424334107010352,
+                "safety": 0
+              }
+            },
+            "referencePointsDifference": [
+              {
+                "referencePoint": "ideal",
+                "coefficients": {
+                  "efficiency": 0.31153835721921963,
+                  "power": -0.8591409142295225,
+                  "safety": -0.522066189243795
+                }
+              }
+            ]
+          },
+          {
+            "alternative": {
+              "id": "GER",
+              "criteria": {
+                "efficiency": 5.492006310610447,
+                "power": 6.644492759715994,
+                "safety": 7.330404323467855
+              }
+            },
+            "referencePointsDifference": [
+              {
+                "referencePoint": "ideal",
+                "coefficients": {
+                  "efficiency": 0.1344861752539152,
+                  "power": -0.529558202456847,
+                  "safety": 0.13665392360207615
+                }
+              }
+            ]
+          },
+          {
+            "alternative": {
+              "id": "AUT",
+              "criteria": {
+                "efficiency": 1.894180227157317,
+                "power": 7.697632725695966,
+                "safety": 7.570531890561666
+              }
+            },
+            "referencePointsDifference": [
+              {
+                "referencePoint": "ideal",
+                "coefficients": {
+                  "efficiency": -0.24362091637644223,
+                  "power": -0.31011605677864806,
+                  "safety": 0.1525132826646265
+                }
+              }
+            ]
+          },
+          {
+            "alternative": {
+              "id": "FRA",
+              "criteria": {
+                "efficiency": 2.0573595778811704,
+                "power": 9.817771027749673,
+                "safety": 5.4127291880792985
+              }
+            },
+            "referencePointsDifference": [
+              {
+                "referencePoint": "ideal",
+                "coefficients": {
+                  "efficiency": -0.22215283305101785,
+                  "power": 0,
+                  "safety": 0
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
