@@ -47,7 +47,7 @@ func (c *CriteriaOmission) omissionResolver(params *CriteriaOmissionParams) Omis
 	for i, r := range c.omissionResolvers {
 		names[i] = r.Identifier()
 	}
-	panic(fmt.Errorf("omission order resolver '%s' not found in %v", c.omissionResolvers, names))
+	panic(fmt.Errorf("omission order resolver '%s' not found in %v", params.OmissionOrder, names))
 }
 
 func (c *CriteriaOmission) Apply(
