@@ -46,17 +46,17 @@ func TestCriteriaMixing_Apply(t *testing.T) {
 	result := mixing.Apply(original, original, &m, &listener)
 	expected := MixedCriterion{
 		Component1: CriterionComponent{
-			Criterion:    "1",
+			Id:           "1",
 			Type:         model.Gain,
 			ScaledValues: model.Weights{"x": 1, "y": 0, "a": 0, "b": 0},
 		},
 		Component2: CriterionComponent{
-			Criterion:    "2",
+			Id:           "2",
 			Type:         model.Gain,
 			ScaledValues: model.Weights{"x": 0.25, "y": 0, "a": 0.5, "b": 1},
 		},
 		NewCriterion: CriterionComponent{
-			Criterion:    "__1+2__",
+			Id:           "__1+2__",
 			Type:         model.Gain,
 			ScaledValues: model.Weights{"x": mixValues(1, 0.25), "y": 0, "a": mixValues(0, 0.5), "b": mixValues(0, 1)},
 		},
@@ -77,8 +77,8 @@ func checkProps(t *testing.T, expected MixedCriterion, actual model.BiasProps) {
 }
 
 func checkCriterion(t *testing.T, name string, expected, actual CriterionComponent) {
-	if expected.Criterion != actual.Criterion {
-		t.Errorf("%s: expected name '%s', got '%s'", name, expected.Criterion, actual.Criterion)
+	if expected.Id != actual.Id {
+		t.Errorf("%s: expected name '%s', got '%s'", name, expected.Id, actual.Id)
 	}
 	if expected.Type != actual.Type {
 		t.Errorf("%s: expected type '%s', got '%s'", name, expected.Type, actual.Type)

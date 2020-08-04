@@ -24,7 +24,7 @@ type MixedCriterion struct {
 }
 
 type CriterionComponent struct {
-	Criterion    string              `json:"criterion"`
+	Id           string              `json:"id"`
 	Type         model.CriterionType `json:"type"`
 	ScaledValues model.Weights       `json:"scaledValues"`
 }
@@ -113,17 +113,17 @@ func updateAlternatives(allAlternatives []model.AlternativeWithCriteria, newCrit
 func prepareMixedCriterion(c2m criteriaToMix, mixResult *mixResult, newCriterion model.Criterion, criterionParams model.AddedCriterionParams) MixedCriterion {
 	return MixedCriterion{
 		Component1: CriterionComponent{
-			Criterion:    c2m.c1.Id,
+			Id:           c2m.c1.Id,
 			Type:         c2m.c1.Type,
 			ScaledValues: mixResult.c1,
 		},
 		Component2: CriterionComponent{
-			Criterion:    c2m.c2.Id,
+			Id:           c2m.c2.Id,
 			Type:         c2m.c2.Type,
 			ScaledValues: mixResult.c2,
 		},
 		NewCriterion: CriterionComponent{
-			Criterion:    newCriterion.Id,
+			Id:           newCriterion.Id,
 			Type:         newCriterion.Type,
 			ScaledValues: mixResult.result,
 		},
