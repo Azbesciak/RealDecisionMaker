@@ -100,7 +100,7 @@
                 "__concealedCriterion__": 2.1805283076703916
               }
             },
-            "criterionValueRange": {
+            "valuesRange": {
               "min": 4,
               "max": 10
             }

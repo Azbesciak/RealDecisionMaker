@@ -54,7 +54,11 @@
     },
     {
       "id": "price",
-      "type": "cost"
+      "type": "cost",
+      "valuesRange": {
+        "min": 1,
+        "max": 15
+      }
     },
     {
       "id": "maintenance",

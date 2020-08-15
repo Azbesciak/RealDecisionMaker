@@ -4,7 +4,7 @@
       "alternative": {
         "id": "vw",
         "criteria": {
-          "__price+maintenance__": 4.75,
+          "__price+maintenance__": 5.285714285714286,
           "innovation": 6,
           "maintenance": 8,
           "price": 7,
@@ -23,7 +23,7 @@
       "alternative": {
         "id": "fiat",
         "criteria": {
-          "__price+maintenance__": 9.5,
+          "__price+maintenance__": 7.892857142857143,
           "innovation": 3,
           "maintenance": 6,
           "price": 4,
@@ -48,11 +48,11 @@
           "id": "price",
           "type": "cost",
           "scaledValues": {
-            "audi": 0,
-            "fiat": 10,
-            "mercedes": 0,
-            "nisan": 6.666666666666667,
-            "vw": 5
+            "audi": 3.5714285714285716,
+            "fiat": 7.857142857142858,
+            "mercedes": 3.5714285714285716,
+            "nisan": 6.428571428571429,
+            "vw": 5.714285714285714
           }
         },
         "component2": {
@@ -70,11 +70,11 @@
           "id": "__price+maintenance__",
           "type": "gain",
           "scaledValues": {
-            "audi": 0,
-            "fiat": 9.5,
-            "mercedes": 0.5,
-            "nisan": 7.5,
-            "vw": 4.75
+            "audi": 2.678571428571429,
+            "fiat": 7.892857142857143,
+            "mercedes": 3.178571428571429,
+            "nisan": 7.321428571428571,
+            "vw": 5.285714285714286
           }
         },
         "params": {

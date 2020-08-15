@@ -76,8 +76,9 @@ When the random value can occur, each occurrence can be configured with the `ran
 - `KnownAlternatives`  -  [`[]AlternativeWithCriteria`](lib/model/alternative.go), definition of all known
  to decision maker alternatives (so also these which are not considered in current choice, but somehow can influence on the final result)
 - `ChoseToMake`        -  [`[]Alternative`](lib/model/alternative.go), names of alternatives which are considered during this iteration             
-- `Criteria`           -  [`Criteria`](lib/model/criterion.go), definitions for the criteria; 
-name and the type (`gain` [default] or `cost` [otherwise, if not gain]). Weights are defined specific for each preference function/heuristic         
+- `Criteria`           -  [`Criteria`](lib/model/criterion.go), definitions for the criteria;
+name and the type (`gain` [default] or `cost` [otherwise, if not gain]). Weights are defined specific for each preference function/heuristic.
+ There is also optional `valuesRange` used in biases calculation (otherwise it is calculated based on criteria values)      
 - `MethodParameters`   -  [`RawMethodParameters`](lib/model/decision-maker.go), parameters for the [preference function](#preference-methods) of [limited rationality heuristic](#limited-rationality).          
 
 Each method or bias are called in `camelCase` fashion, so when you want to call OWA (as a preference function),
@@ -310,7 +311,7 @@ The method returns:
     - `Type` - gain or cost,
     - `AlternativesValues` - values for each alternative,
     - `MethodParameters` - parameters for given preference function or heuristic (name will occur there)
-    - `CriterionValuesRange` - possible criterion values range
+    - `ValuesRange` - possible criterion values range
 
 ### Criteria mixing
 - [implementation](lib/logic/biases/criteria-mixing)
