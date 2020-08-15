@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/mitchellh/mapstructure"
@@ -88,6 +89,10 @@ func DecodeToStruct(src, target interface{}) {
 type ValueRange struct {
 	Min float64 `json:"min"`
 	Max float64 `json:"max"`
+}
+
+func (r *ValueRange) String() string {
+	return fmt.Sprintf("min: %.4f, max: %.4f", r.Min, r.Max)
 }
 
 func (r *ValueRange) Diff() float64 {

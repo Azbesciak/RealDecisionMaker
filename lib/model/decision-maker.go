@@ -85,7 +85,7 @@ func (dm *DecisionMaker) MakeDecision(
 	if IsStringBlank(&dm.PreferenceFunction) {
 		panic(fmt.Errorf("preference function must not be empty"))
 	}
-	dm.validateCriteria()
+	dm.Criteria.Validate()
 	dm.validateAlternatives()
 	preferenceFunction := preferenceFunctions.Fetch(dm.PreferenceFunction)
 	params := dm.prepareParams(preferenceFunction)
@@ -93,16 +93,6 @@ func (dm *DecisionMaker) MakeDecision(
 	processedParams, biasesProps := dm.processBiases(chosenBiases, params, &biasListeners)
 	res := (*preferenceFunction).Evaluate(processedParams)
 	return &DecisionMakerChoice{*res, *biasesProps}
-}
-
-func (dm *DecisionMaker) validateCriteria() {
-	criteriaSet := make(map[string]bool)
-	for i, c := range dm.Criteria {
-		if _, ok := criteriaSet[c.Id]; ok {
-			panic(fmt.Errorf("criterion '%s' [index %d] is not unique", c.Id, i))
-		}
-		criteriaSet[c.Id] = true
-	}
 }
 
 func (dm *DecisionMaker) validateAlternatives() {

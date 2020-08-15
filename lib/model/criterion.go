@@ -15,8 +15,9 @@ const (
 )
 
 type Criterion struct {
-	Id   string        `json:"id"`
-	Type CriterionType `json:"type"`
+	Id          string            `json:"id"`
+	Type        CriterionType     `json:"type"`
+	ValuesRange *utils.ValueRange `json:"valuesRange"`
 }
 
 func (c Criterion) Identifier() string {
@@ -36,6 +37,21 @@ func (c *Criteria) ShallowCopy() *Criteria {
 	criteriaCopy := make(Criteria, len(*c))
 	copy(criteriaCopy, *c)
 	return &criteriaCopy
+}
+
+func (c *Criteria) Validate() {
+	criteriaSet := make(map[string]bool)
+	for i, criterion := range *c {
+		if _, ok := criteriaSet[criterion.Id]; ok {
+			panic(fmt.Errorf("criterion '%s' [index %d] is not unique", criterion.Id, i))
+		}
+		if criterion.ValuesRange != nil && criterion.ValuesRange.Max <= criterion.ValuesRange.Min {
+			panic(fmt.Errorf("criterion '%s' [index %d] has invalid value range %v: min must be lower than max",
+				criterion.Id, i, *criterion.ValuesRange,
+			))
+		}
+		criteriaSet[criterion.Id] = true
+	}
 }
 
 func (c *Criteria) SortByWeights(weights Weights) *WeightedCriteria {

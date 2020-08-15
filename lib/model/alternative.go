@@ -196,6 +196,9 @@ func (a *AlternativeWithCriteria) WithCriterion(name string, value Weight) *Alte
 }
 
 func CriteriaValuesRange(alternatives *[]AlternativeWithCriteria, criterion *Criterion) *utils.ValueRange {
+	if criterion.ValuesRange != nil {
+		return criterion.ValuesRange
+	}
 	valRange := utils.NewValueRange()
 	for i, a := range *alternatives {
 		value := a.CriterionRawValue(criterion)

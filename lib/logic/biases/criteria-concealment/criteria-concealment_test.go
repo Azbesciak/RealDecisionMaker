@@ -43,11 +43,11 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 	checkProps(t, result.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{
 			{
-				Id:                  criterionName,
-				Type:                model.Gain,
-				AlternativesValues:  model.Weights{"a": 0.5, "b": 0.6, "x": 0.7, "y": 0.8},
-				MethodParameters:    testUtils.DummyMethodParameters{Criteria: []string{criterionName}},
-				CriterionValueRange: utils.ValueRange{Min: 0, Max: 1},
+				Id:                 criterionName,
+				Type:               model.Gain,
+				AlternativesValues: model.Weights{"a": 0.5, "b": 0.6, "x": 0.7, "y": 0.8},
+				MethodParameters:   testUtils.DummyMethodParameters{Criteria: []string{criterionName}},
+				ValueRange:         utils.ValueRange{Min: 0, Max: 1},
 			},
 		},
 	})
@@ -91,7 +91,7 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
 				criterionName},
 			},
-			CriterionValueRange: utils.ValueRange{Min: 0, Max: 3},
+			ValueRange: utils.ValueRange{Min: 0, Max: 3},
 		}},
 	})
 }
@@ -134,7 +134,7 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
 				criterionName},
 			},
-			CriterionValueRange: utils.ValueRange{Min: 3, Max: 5},
+			ValueRange: utils.ValueRange{Min: 3, Max: 5},
 		}},
 	})
 }
@@ -160,7 +160,7 @@ func validateMethodAddedCriterion(t *testing.T, r CriteriaConcealmentResult, i i
 	if act.Type != exp.Type {
 		t.Errorf("wrong added criterion type, expected %s, got %s", exp.Type, act.Type)
 	}
-	utils.CheckValueRange(t, act.CriterionValueRange, exp.CriterionValueRange.Min, exp.CriterionValueRange.Max)
+	utils.CheckValueRange(t, act.ValueRange, exp.ValueRange.Min, exp.ValueRange.Max)
 	checkAlternatives(exp, act, t)
 }
 

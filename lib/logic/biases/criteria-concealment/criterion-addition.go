@@ -8,11 +8,11 @@ import (
 )
 
 type AddedCriterion struct {
-	Id                  string                 `json:"id"`
-	Type                model.CriterionType    `json:"type"`
-	AlternativesValues  model.Weights          `json:"alternativesValues"`
-	MethodParameters    model.MethodParameters `json:"methodParameters"`
-	CriterionValueRange utils.ValueRange       `json:"criterionValueRange"`
+	Id                 string                 `json:"id"`
+	Type               model.CriterionType    `json:"type"`
+	ValueRange         utils.ValueRange       `json:"valueRange"`
+	AlternativesValues model.Weights          `json:"alternativesValues"`
+	MethodParameters   model.MethodParameters `json:"methodParameters"`
 }
 
 func (c *CriteriaConcealment) addCriterion(
@@ -62,7 +62,7 @@ func (c *CriteriaConcealment) generateNewCriterion(
 	valueGenerator utils.ValueGenerator,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
 	criterionBase := c.generateNewCriterionBase(listener, props, originalParams, resParams)
-	addResult := generateCriterionValuesForAlternatives(criterionBase.newCriterion, criterionBase.valuesRange, resParams, valueGenerator)
+	addResult := generateCriterionValuesForAlternatives(criterionBase.newCriterion, resParams, valueGenerator)
 	addedCriterionParams := (*listener).OnCriterionAdded(criterionBase.newCriterion, criterionBase.referenceCriterion, originalParams.MethodParameters, valueGenerator)
 	finalParams := (*listener).Merge(resParams.MethodParameters, addedCriterionParams)
 	newCriteria := resParams.Criteria.Add(criterionBase.newCriterion)
@@ -72,11 +72,11 @@ func (c *CriteriaConcealment) generateNewCriterion(
 			Criteria:                  newCriteria,
 			MethodParameters:          finalParams,
 		}, []AddedCriterion{{
-			Id:                  criterionBase.newCriterion.Id,
-			Type:                criterionBase.newCriterion.Type,
-			AlternativesValues:  addResult.alternativesValues,
-			MethodParameters:    addedCriterionParams,
-			CriterionValueRange: *criterionBase.valuesRange,
+			Id:                 criterionBase.newCriterion.Id,
+			Type:               criterionBase.newCriterion.Type,
+			AlternativesValues: addResult.alternativesValues,
+			MethodParameters:   addedCriterionParams,
+			ValueRange:         *criterionBase.newCriterion.ValuesRange,
 		}}
 }
 
@@ -88,28 +88,29 @@ func (c *CriteriaConcealment) generateNewCriterionBase(
 	refCriterionProvider := c.referenceCriterionManager.ForParams(props)
 	rankedCriteria := (*listener).RankCriteriaAscending(originalParams)
 	referenceCriterion := refCriterionProvider.Provide(rankedCriteria)
-	newCriterion := model.Criterion{Id: concealedCriterionName(&currentParams.Criteria), Type: model.Gain}
 	valRange := c.getCriterionValueRange(originalParams, referenceCriterion)
+	newCriterion := model.Criterion{
+		Id:          concealedCriterionName(&currentParams.Criteria),
+		Type:        model.Gain,
+		ValuesRange: valRange,
+	}
 	return newCriterionBase{
 		referenceCriterion: referenceCriterion,
 		newCriterion:       &newCriterion,
-		valuesRange:        valRange,
 	}
 }
 
 type newCriterionBase struct {
 	referenceCriterion *model.Criterion
 	newCriterion       *model.Criterion
-	valuesRange        *utils.ValueRange
 }
 
 func generateCriterionValuesForAlternatives(
 	newCriterion *model.Criterion,
-	criterionValueRange *utils.ValueRange,
 	resParams *model.DecisionMakingParams,
 	valueGenerator utils.ValueGenerator,
 ) *addCriterionResult {
-	generator := utils.NewValueInRangeGenerator(valueGenerator, criterionValueRange)
+	generator := utils.NewValueInRangeGenerator(valueGenerator, newCriterion.ValuesRange)
 	sortedAlternatives, alternativesValues := assignNewCriterionToAlternatives(resParams, generator, newCriterion)
 	return &addCriterionResult{
 		notConsideredAlternatives: model.UpdateAlternatives(&resParams.NotConsideredAlternatives, sortedAlternatives),

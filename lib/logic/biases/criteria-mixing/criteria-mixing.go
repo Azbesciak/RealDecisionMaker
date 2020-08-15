@@ -79,7 +79,7 @@ func (c *CriteriaMixing) Apply(
 	referenceCriterion := referenceCriterion(original, listener, referenceCriterionProvider)
 	targetValRange := model.ValuesRangeWithGroundZero(&allAlternatives, referenceCriterion)
 	mixResult := c2m.mix(&allAlternatives, targetValRange, parsedProps)
-	newCriterion := c2m.Criterion()
+	newCriterion := c2m.criterion(targetValRange)
 	criterionParams := (*listener).OnCriterionAdded(&newCriterion, referenceCriterion, current.MethodParameters, generator)
 	newMethodParams := (*listener).Merge(current.MethodParameters, criterionParams)
 	newAlternatives := updateAlternatives(allAlternatives, newCriterion, mixResult)
@@ -177,10 +177,11 @@ func (c *criteriaToMix) mix(
 	}
 }
 
-func (c *criteriaToMix) Criterion() model.Criterion {
+func (c *criteriaToMix) criterion(valRange *utils.ValueRange) model.Criterion {
 	return model.Criterion{
-		Id:   "__" + c.c1.Id + "+" + c.c2.Id + "__",
-		Type: model.Gain,
+		Id:          "__" + c.c1.Id + "+" + c.c2.Id + "__",
+		Type:        model.Gain,
+		ValuesRange: valRange,
 	}
 }
 
