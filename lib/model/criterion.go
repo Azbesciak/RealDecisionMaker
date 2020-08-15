@@ -17,7 +17,7 @@ const (
 type Criterion struct {
 	Id          string            `json:"id"`
 	Type        CriterionType     `json:"type"`
-	ValuesRange *utils.ValueRange `json:"valuesRange"`
+	ValuesRange *utils.ValueRange `json:"valuesRange,omitempty"`
 }
 
 func (c Criterion) Identifier() string {
