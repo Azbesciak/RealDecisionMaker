@@ -40,6 +40,29 @@ var omission = NewCriteriaOmission([]OmissionResolver{
 			}
 		},
 	},
+	&WeakestByProbabilityCriteriaOmissionResolver{
+		Generator: func(seed int64) utils.ValueGenerator {
+			maxVal := float64(len(criteria))
+			counter := -1
+			return func() float64 {
+				counter++
+				if counter > len(criteria) {
+					counter = 0
+				}
+				if seed == 0 {
+					return float64(counter) / maxVal
+				} else if seed == 1 {
+					return 1
+				} else {
+					actual := counter - 1
+					if actual < 0 {
+						actual = len(criteria)
+					}
+					return float64(actual) / maxVal
+				}
+			}
+		},
+	},
 })
 var notConsidered = []model.AlternativeWithCriteria{
 	{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
@@ -82,6 +105,24 @@ func TestCriteriaOmission_ApplyRandom(t *testing.T) {
 	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "random"})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[1]}})
+}
+
+func TestCriteriaOmission_ApplyWeakestRandom(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "weakestByProbability", "randomSeed": 0})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
+}
+
+func TestCriteriaOmission_ApplyWeakestRandomDesc(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "weakestByProbability", "randomSeed": 1})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2]}})
+}
+
+func TestCriteriaOmission_ApplyWeakestRandomTwo(t *testing.T) {
+	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.7, "omissionOrder": "weakestByProbability", "randomSeed": 2})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2], criteria[0]}})
 }
 
 func TestCriteriaOmission_ApplyRandomDesc(t *testing.T) {

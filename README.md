@@ -287,6 +287,7 @@ Sometimes we say that something is important for us, but in reality we don't thi
  Omitting criteria number is a floor from the ratio, so for 3 criteria and ratio == 0.3, no criterion will be removed, but for ratio 0.34 just one.
 - `OmissionOrder` - order of criteria omission, possible values are:
     - `weakest` - default, criteria are sorted ascending by the influence on the final result
+    - `weakestByProbability` - each criterion can be removed with a probability inversely proportional to its influence (the more important, the lower probability)
     - `strongest` - contrary to `weakest`
     - `random` - omission order is random (configured via `RandomSeed` on the same level)
 
