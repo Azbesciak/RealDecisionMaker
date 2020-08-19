@@ -126,6 +126,9 @@ var biases = model.BiasMap{
 			&criteria_omission.RandomCriteriaOmissionResolver{
 				Generator: utils.RandomBasedSeedValueGenerator,
 			},
+			&criteria_omission.WeakestByProbabilityCriteriaOmissionResolver{
+				Generator: utils.RandomBasedSeedValueGenerator,
+			},
 		}),
 	fatigue.BiasName: fatigue.NewFatigue(
 		utils.RandomBasedSeedValueGenerator,
