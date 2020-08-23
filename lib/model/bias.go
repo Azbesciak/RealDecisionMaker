@@ -7,16 +7,17 @@ import (
 
 //go:generate easytags $GOFILE json:camel
 
-type BiasesParams = []BiasParams
+type BiasesParams = []interface{}
 type BiasProps = interface{}
 type BiasMap = map[string]Bias
 type Biases = []Bias
 type BiasesWithProps = []BiasWithProps
 
 type BiasParams struct {
-	Name     string    `json:"name"`
-	Disabled bool      `json:"disabled"`
-	Props    BiasProps `json:"props"`
+	Name             string    `json:"name"`
+	Disabled         bool      `json:"disabled"`
+	ApplyProbability float64   `json:"applyProbability"`
+	Props            BiasProps `json:"props"`
 }
 
 type BiasWithProps struct {
@@ -48,28 +49,28 @@ func AsBiasesMap(h *Biases) *BiasMap {
 func ChooseBiases(available *BiasMap, choose *BiasesParams) *BiasesWithProps {
 	var result BiasesWithProps
 	for _, props := range *choose {
-		if props.Disabled {
+		biasParams := BiasParams{ApplyProbability: 1}
+		utils.DecodeToStruct(props, &biasParams)
+		if biasParams.Disabled {
 			continue
 		}
-		bias, ok := (*available)[props.Name]
+		bias, ok := (*available)[biasParams.Name]
 		if !ok {
 			var keys []string
 			for k := range *available {
 				keys = append(keys, k)
 			}
-			panic(fmt.Errorf("bias '%s' not found, available are '%s'", props.Name, keys))
+			panic(fmt.Errorf("bias '%s' not found, available are '%s'", biasParams.Name, keys))
 		}
-		// required, props reference is mutable in range, during assignment it is copied.
-		propsCopy := props
-		result = append(result, BiasWithProps{Bias: &bias, Props: &propsCopy})
+		result = append(result, BiasWithProps{Bias: &bias, Props: &biasParams})
 	}
 	return &result
 }
 
 func UpdateBiasesProps(oldProps *BiasParams, update BiasProps) *BiasParams {
 	return &BiasParams{
-		Name:     oldProps.Name,
-		Disabled: oldProps.Disabled,
-		Props:    update,
+		Name:             oldProps.Name,
+		ApplyProbability: oldProps.ApplyProbability,
+		Props:            update,
 	}
 }

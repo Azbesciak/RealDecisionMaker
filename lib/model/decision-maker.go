@@ -9,12 +9,13 @@ import (
 //go:generate easytags $GOFILE json:camel
 
 type DecisionMaker struct {
-	PreferenceFunction string                    `json:"preferenceFunction"`
-	Biases             BiasesParams              `json:"biases"`
-	KnownAlternatives  []AlternativeWithCriteria `json:"knownAlternatives"`
-	ChoseToMake        []Alternative             `json:"choseToMake"`
-	Criteria           Criteria                  `json:"criteria"`
-	MethodParameters   RawMethodParameters       `json:"methodParameters"`
+	PreferenceFunction  string                    `json:"preferenceFunction"`
+	Biases              BiasesParams              `json:"biases"`
+	BiasApplyRandomSeed int64                     `json:"biasApplyRandomSeed"`
+	KnownAlternatives   []AlternativeWithCriteria `json:"knownAlternatives"`
+	ChoseToMake         []Alternative             `json:"choseToMake"`
+	Criteria            Criteria                  `json:"criteria"`
+	MethodParameters    RawMethodParameters       `json:"methodParameters"`
 }
 
 type DecisionMakingParams struct {
@@ -81,6 +82,7 @@ func (dm *DecisionMaker) MakeDecision(
 	preferenceFunctions PreferenceFunctions,
 	biasListeners BiasListeners,
 	availableBiases *BiasMap,
+	biasApplyProbGenerator utils.SeededValueGenerator,
 ) *DecisionMakerChoice {
 	if IsStringBlank(&dm.PreferenceFunction) {
 		panic(fmt.Errorf("preference function must not be empty"))
@@ -90,7 +92,7 @@ func (dm *DecisionMaker) MakeDecision(
 	preferenceFunction := preferenceFunctions.Fetch(dm.PreferenceFunction)
 	params := dm.prepareParams(preferenceFunction)
 	chosenBiases := ChooseBiases(availableBiases, &dm.Biases)
-	processedParams, biasesProps := dm.processBiases(chosenBiases, params, &biasListeners)
+	processedParams, biasesProps := dm.processBiases(chosenBiases, params, &biasListeners, biasApplyProbGenerator)
 	res := (*preferenceFunction).Evaluate(processedParams)
 	return &DecisionMakerChoice{*res, *biasesProps}
 }
@@ -129,6 +131,7 @@ func (dm *DecisionMaker) processBiases(
 	biases *BiasesWithProps,
 	params *DecisionMakingParams,
 	listeners *BiasListeners,
+	biasApplyProbGenerator utils.SeededValueGenerator,
 ) (*DecisionMakingParams, *BiasesParams) {
 	biasesToProcessCount := len(*biases)
 	result := make(BiasesParams, biasesToProcessCount)
@@ -137,10 +140,16 @@ func (dm *DecisionMaker) processBiases(
 		return current, &result
 	}
 	listener := listeners.Fetch(dm.PreferenceFunction)
+	generator := biasApplyProbGenerator(dm.BiasApplyRandomSeed)
 	for i, h := range *biases {
-		res := (*h.Bias).Apply(params, current, &h.Props.Props, listener)
-		current = res.DMP
-		result[i] = *UpdateBiasesProps(h.Props, res.Props)
+		// check for >=1 omitted to keep results independence when other changes
+		if h.Props.ApplyProbability > generator() {
+			res := (*h.Bias).Apply(params, current, &h.Props.Props, listener)
+			current = res.DMP
+			result[i] = *UpdateBiasesProps(h.Props, res.Props)
+		} else {
+			result[i] = *UpdateBiasesProps(h.Props, nil)
+		}
 	}
 	return current, &result
 }

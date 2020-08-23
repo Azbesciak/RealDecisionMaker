@@ -13,6 +13,7 @@ type MockBias struct {
 func (m *MockBias) Identifier() string {
 	return m.Name
 }
+
 func (m *MockBias) Apply(original, current *DecisionMakingParams, props *BiasProps, listener *BiasListener) *BiasedResult {
 	panic("should not be called")
 }
@@ -28,11 +29,26 @@ func TestBiasesSelection(t *testing.T) {
 		&MockBias{"b"},
 	})
 	params := &BiasesParams{
-		{Name: "b"},
-		{Name: "a"},
+		biasProps("b"),
+		biasProps("a"),
 	}
 	result := ChooseBiases(availableBiases, params)
 	checkResult(t, result, params)
+}
+
+func biasProps(name string) interface{} {
+	return BiasParams{
+		Name:             name,
+		ApplyProbability: 1,
+	}
+}
+
+func disabledBiasProps(name string) interface{} {
+	return BiasParams{
+		Name:             name,
+		ApplyProbability: 1,
+		Disabled:         true,
+	}
 }
 
 func TestBiasesFiltering(t *testing.T) {
@@ -42,13 +58,13 @@ func TestBiasesFiltering(t *testing.T) {
 		&MockBias{"b"},
 	})
 	params := &BiasesParams{
-		{Name: "b", Disabled: true},
-		{Name: "c"},
-		{Name: "a"},
+		disabledBiasProps("b"),
+		biasProps("c"),
+		biasProps("a"),
 	}
 	expected := &BiasesParams{
-		{Name: "c"},
-		{Name: "a"},
+		biasProps("c"),
+		biasProps("a"),
 	}
 	result := ChooseBiases(availableBiases, params)
 	checkResult(t, result, expected)
@@ -59,7 +75,7 @@ func TestBiasNotFound(t *testing.T) {
 		&MockBias{"b"},
 	})
 	params := &BiasesParams{
-		{Name: "a"},
+		biasProps("a"),
 	}
 	defer utils.ExpectError(t, "bias 'a' not found, available are '[b]'")()
 	ChooseBiases(availableBiases, params)
@@ -70,7 +86,7 @@ func TestSkippingDisabledNotExistingBiases(t *testing.T) {
 		&MockBias{"b"},
 	})
 	params := &BiasesParams{
-		{Name: "a", Disabled: true},
+		disabledBiasProps("a"),
 	}
 	result := ChooseBiases(availableBiases, params)
 	checkResult(t, result, &BiasesParams{})
@@ -83,12 +99,28 @@ func TestValidPropsAssigned(t *testing.T) {
 		&MockBias{"b"},
 	})
 	params := &BiasesParams{
-		{Name: "c", Props: MockProps{Id: "c"}},
-		{Name: "a", Props: MockProps{Id: "a"}},
+		interface{}(BiasParams{
+			Name:             "c",
+			ApplyProbability: 1,
+			Props:            MockProps{Id: "c"},
+		}),
+		interface{}(BiasParams{
+			Name:             "a",
+			ApplyProbability: 1,
+			Props:            MockProps{Id: "a"},
+		}),
 	}
 	expected := &BiasesParams{
-		{Name: "c", Props: MockProps{Id: "c"}},
-		{Name: "a", Props: MockProps{Id: "a"}},
+		interface{}(BiasParams{
+			Name:             "c",
+			ApplyProbability: 1,
+			Props:            MockProps{Id: "c"},
+		}),
+		interface{}(BiasParams{
+			Name:             "a",
+			ApplyProbability: 1,
+			Props:            MockProps{Id: "a"},
+		}),
 	}
 	result := ChooseBiases(availableBiases, params)
 	checkResult(t, result, expected)
@@ -100,20 +132,21 @@ func checkResult(t *testing.T, result *BiasesWithProps, expected *BiasesParams) 
 		t.Errorf("expected %d results, get %v", actualLen, *result)
 	}
 	for i, v := range *expected {
+		expectedBias := v.(BiasParams)
 		actual := (*result)[i]
 		identifier := (*actual.Bias).Identifier()
-		if identifier != v.Name {
-			t.Errorf("Invalid bias at %d: %s, expected %s", i, v.Name, identifier)
+		if identifier != expectedBias.Name {
+			t.Errorf("Invalid bias at %d: %s, expected %s", i, expectedBias.Name, identifier)
 		}
-		if v.Props == nil && actual.Props.Props == nil {
+		if expectedBias.Props == nil && actual.Props.Props == nil {
 			continue
-		} else if v.Props == nil {
+		} else if expectedBias.Props == nil {
 			t.Errorf("result props for %d (%s) is not nil", i, identifier)
 		} else if actual.Props.Props == nil {
 			t.Errorf("result props for %d (%s) is nil", i, identifier)
 		} else {
 			ac := actual.Props.Props.(MockProps)
-			ex := v.Props.(MockProps)
+			ex := expectedBias.Props.(MockProps)
 			if ac.Id != ex.Id {
 				t.Errorf("expected mock props id == %s, got %s for prop %d (%s)", ex.Id, ac.Id, i, identifier)
 			}

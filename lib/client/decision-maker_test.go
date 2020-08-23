@@ -10,6 +10,12 @@ import (
 	"testing"
 )
 
+var alwaysApplyGenerator = func(seed int64) utils.ValueGenerator {
+	return func() float64 {
+		return 1
+	}
+}
+
 func TestDecisionMaker_MakeDecision_WeightedSum(t *testing.T) {
 	dm := DecisionMaker{
 		PreferenceFunction: "weightedSum",
@@ -24,7 +30,7 @@ func TestDecisionMaker_MakeDecision_WeightedSum(t *testing.T) {
 	weightedSum := &WeightedSumPreferenceFunc{}
 	owa := &OWAPreferenceFunc{}
 	funcs := PreferenceFunctions{Functions: []PreferenceFunction{weightedSum, owa}}
-	ranking := dm.MakeDecision(funcs, BiasListeners{}, &BiasMap{})
+	ranking := dm.MakeDecision(funcs, BiasListeners{}, &BiasMap{}, alwaysApplyGenerator)
 	expectedRanking := weightedSum.Evaluate(&DecisionMakingParams{
 		NotConsideredAlternatives: nil,
 		ConsideredAlternatives:    dm.KnownAlternatives,
@@ -69,7 +75,8 @@ func TestDecisionMaker_MakeDecision_ElectreIII(t *testing.T) {
 	weightedSum := &WeightedSumPreferenceFunc{}
 	ele := &ElectreIIIPreferenceFunc{}
 	funcs := PreferenceFunctions{Functions: []PreferenceFunction{weightedSum, ele}}
-	ranking := dm.MakeDecision(funcs, BiasListeners{}, &BiasMap{})
+
+	ranking := dm.MakeDecision(funcs, BiasListeners{}, &BiasMap{}, alwaysApplyGenerator)
 	expectedRanking := ele.Evaluate(&DecisionMakingParams{
 		NotConsideredAlternatives: nil,
 		ConsideredAlternatives:    dm.KnownAlternatives,
