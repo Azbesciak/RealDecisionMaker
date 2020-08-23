@@ -48,6 +48,7 @@
     {
       "name": "criteriaOmission",
       "disabled": false,
+      "applyProbability": 1,
       "props": {
         "omittedCriteria": [
           {

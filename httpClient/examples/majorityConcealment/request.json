@@ -82,12 +82,12 @@
     "randomAlternativesOrdering": true,
     "drawResolution": "allow"
   },
+  "biasApplyRandomSeed": 666,
   "biases": [{
     "name": "criteriaConcealment",
     "disabled": false,
+    "applyProbability": 0.7,
     "props": {
-      "criterionConcealmentProbability": 0.7,
-      "randomSeed": 666,
       "referenceCriterionType": "importanceRatio",
       "newCriterionImportance": 1
     }

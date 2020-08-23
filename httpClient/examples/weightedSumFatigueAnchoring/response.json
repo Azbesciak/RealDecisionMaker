@@ -83,6 +83,7 @@
     {
       "name": "fatigue",
       "disabled": false,
+      "applyProbability": 1,
       "props": {
         "effectiveFatigueRatio": 0.10517091807564771,
         "consideredAlternatives": [
@@ -133,6 +134,7 @@
     {
       "name": "anchoring",
       "disabled": false,
+      "applyProbability": 1,
       "props": {
         "referencePoints": [
           {
@@ -181,7 +183,7 @@
               {
                 "referencePoint": "ideal",
                 "coefficients": {
-                  "efficiency": 0,
+                  "efficiency": -0,
                   "power": -0.18265110272363383,
                   "safety": -0.10170050739517433
                 }
@@ -262,8 +264,8 @@
                 "referencePoint": "ideal",
                 "coefficients": {
                   "efficiency": -0.22215283305101785,
-                  "power": 0,
-                  "safety": 0
+                  "power": -0,
+                  "safety": -0
                 }
               }
             ]

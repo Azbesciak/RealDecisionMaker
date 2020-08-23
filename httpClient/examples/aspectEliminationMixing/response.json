@@ -43,6 +43,7 @@
     {
       "name": "criteriaMixing",
       "disabled": false,
+      "applyProbability": 1,
       "props": {
         "component1": {
           "id": "price",

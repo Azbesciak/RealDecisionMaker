@@ -15,6 +15,7 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/preference-func/owa"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/preference-func/weighted-sum"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-ordering"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"github.com/gin-contrib/cors"
@@ -96,6 +97,22 @@ var referenceCriterionManager = *reference_criterion.NewReferenceCriteriaManager
 	},
 )
 
+var criteriaOrdering = []criteria_ordering.CriteriaOrderingResolver{
+	&criteria_ordering.WeakestCriteriaOrderingResolver{},
+	&criteria_ordering.StrongestCriteriaOrderingResolver{},
+	&criteria_ordering.RandomCriteriaOrderingResolver{
+		Generator: utils.RandomBasedSeedValueGenerator,
+	},
+	&criteria_ordering.WeakestByProbabilityCriteriaOrderingResolver{
+		Generator: utils.RandomBasedSeedValueGenerator,
+	},
+	&criteria_ordering.StrongestByProbabilityCriteriaOrderingResolver{
+		WeakestByProbability: &criteria_ordering.WeakestByProbabilityCriteriaOrderingResolver{
+			Generator: utils.RandomBasedSeedValueGenerator,
+		},
+	},
+}
+
 var biases = model.BiasMap{
 	anchoring.BiasName: anchoring.NewAnchoring(
 		[]anchoring.AnchoringEvaluator{
@@ -119,17 +136,7 @@ var biases = model.BiasMap{
 		utils.RandomBasedSeedValueGenerator,
 		referenceCriterionManager,
 	),
-	criteria_omission.BiasName: criteria_omission.NewCriteriaOmission(
-		[]criteria_omission.OmissionResolver{
-			&criteria_omission.WeakestCriteriaOmissionResolver{},
-			&criteria_omission.StrongestCriteriaOmissionResolver{},
-			&criteria_omission.RandomCriteriaOmissionResolver{
-				Generator: utils.RandomBasedSeedValueGenerator,
-			},
-			&criteria_omission.WeakestByProbabilityCriteriaOmissionResolver{
-				Generator: utils.RandomBasedSeedValueGenerator,
-			},
-		}),
+	criteria_omission.BiasName: criteria_omission.NewCriteriaOmission(criteriaOrdering),
 	fatigue.BiasName: fatigue.NewFatigue(
 		utils.RandomBasedSeedValueGenerator,
 		utils.RandomBasedSeedValueGenerator,
@@ -169,7 +176,7 @@ func decideHandler(c *gin.Context) {
 			writeError(e, &dm, c)
 		}
 	}()
-	decision := dm.MakeDecision(funcs, biasListeners, &biases)
+	decision := dm.MakeDecision(funcs, biasListeners, &biases, utils.RandomBasedSeedValueGenerator)
 	log.Printf("%#v", requestSuccess{dm, *decision})
 	writeJSON(decision, c)
 }
