@@ -47,6 +47,7 @@ func (p *PreferenceReversal) Apply(
 			NotConsideredAlternatives: *updatedAlternatives.notConsideredAlternatives,
 			ConsideredAlternatives:    *updatedAlternatives.consideredAlternatives,
 			Criteria:                  current.Criteria,
+			MethodParameters:          current.MethodParameters,
 		},
 		Props: PreferenceReversalResult{
 			ReversedPreferenceCriteria: result,
