@@ -7,20 +7,20 @@ import (
 
 const RandomCriteria = "random"
 
-type RandomCriteriaOmissionResolver struct {
+type RandomCriteriaOrderingResolver struct {
 	Generator utils.SeededValueGenerator
 }
 
-func (w *RandomCriteriaOmissionResolver) Identifier() string {
+func (w *RandomCriteriaOrderingResolver) Identifier() string {
 	return RandomCriteria
 }
 
-func (w *RandomCriteriaOmissionResolver) OrderCriteria(
+func (w *RandomCriteriaOrderingResolver) OrderCriteria(
 	params *model.DecisionMakingParams,
 	props *model.BiasProps,
 	_ *model.BiasListener,
 ) *model.Criteria {
-	parsedProps := parseRandomOmissionProps(props)
+	parsedProps := parseRandomOrderingProps(props)
 	generator := w.Generator(parsedProps.RandomSeed)
 	return shuffleCriteria(&params.Criteria, generator)
 }
@@ -29,7 +29,7 @@ type randomProps struct {
 	RandomSeed int64 `json:"randomSeed"`
 }
 
-func parseRandomOmissionProps(props *model.BiasProps) *randomProps {
+func parseRandomOrderingProps(props *model.BiasProps) *randomProps {
 	parsedProps := randomProps{}
 	utils.DecodeToStruct(*props, &parsedProps)
 	return &parsedProps

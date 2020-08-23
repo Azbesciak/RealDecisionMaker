@@ -7,20 +7,20 @@ import (
 
 const WeakestByProbabilityCriteriaFirst = "weakestByProbability"
 
-type WeakestByProbabilityCriteriaOmissionResolver struct {
+type WeakestByProbabilityCriteriaOrderingResolver struct {
 	Generator utils.SeededValueGenerator
 }
 
-func (w *WeakestByProbabilityCriteriaOmissionResolver) Identifier() string {
+func (w *WeakestByProbabilityCriteriaOrderingResolver) Identifier() string {
 	return WeakestByProbabilityCriteriaFirst
 }
 
-func (w *WeakestByProbabilityCriteriaOmissionResolver) OrderCriteria(
+func (w *WeakestByProbabilityCriteriaOrderingResolver) OrderCriteria(
 	params *model.DecisionMakingParams,
 	props *model.BiasProps,
 	listener *model.BiasListener,
 ) *model.Criteria {
-	parsedProps := parseRandomOmissionProps(props)
+	parsedProps := parseRandomOrderingProps(props)
 	generator := w.Generator(parsedProps.RandomSeed)
 	sorted := *(*listener).RankCriteriaAscending(params)
 	totalLen := len(sorted)

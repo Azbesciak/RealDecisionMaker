@@ -4,14 +4,14 @@ import "github.com/Azbesciak/RealDecisionMaker/lib/model"
 
 const StrongestCriteriaFirst = "strongest"
 
-type StrongestCriteriaOmissionResolver struct {
+type StrongestCriteriaOrderingResolver struct {
 }
 
-func (w *StrongestCriteriaOmissionResolver) Identifier() string {
+func (w *StrongestCriteriaOrderingResolver) Identifier() string {
 	return StrongestCriteriaFirst
 }
 
-func (w *StrongestCriteriaOmissionResolver) OrderCriteria(
+func (w *StrongestCriteriaOrderingResolver) OrderCriteria(
 	params *model.DecisionMakingParams,
 	_ *model.BiasProps,
 	listener *model.BiasListener,

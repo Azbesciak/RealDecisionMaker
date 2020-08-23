@@ -26,9 +26,9 @@ func TestCriteriaOmission_splitCriteria(t *testing.T) {
 }
 
 var omission = NewCriteriaOmission([]criteria_ordering.CriteriaOrderingResolver{
-	&criteria_ordering.WeakestCriteriaOmissionResolver{},
-	&criteria_ordering.StrongestCriteriaOmissionResolver{},
-	&criteria_ordering.RandomCriteriaOmissionResolver{
+	&criteria_ordering.WeakestCriteriaOrderingResolver{},
+	&criteria_ordering.StrongestCriteriaOrderingResolver{},
+	&criteria_ordering.RandomCriteriaOrderingResolver{
 		Generator: func(seed int64) utils.ValueGenerator {
 			maxVal := float64(len(criteria))
 			counter := -1
@@ -42,7 +42,7 @@ var omission = NewCriteriaOmission([]criteria_ordering.CriteriaOrderingResolver{
 			}
 		},
 	},
-	&criteria_ordering.WeakestByProbabilityCriteriaOmissionResolver{
+	&criteria_ordering.WeakestByProbabilityCriteriaOrderingResolver{
 		Generator: func(seed int64) utils.ValueGenerator {
 			maxVal := float64(len(criteria))
 			counter := -1
