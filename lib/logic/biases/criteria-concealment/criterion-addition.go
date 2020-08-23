@@ -21,13 +21,8 @@ func (c *CriteriaConcealment) addCriterion(
 	originalParams, resParams *model.DecisionMakingParams,
 	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
-	if parsedProps.CriterionConcealmentProbability > 0 {
-		generator := c.generatorSource(parsedProps.RandomSeed)
-		if parsedProps.CriterionConcealmentProbability > generator() {
-			return c.generateNewCriterion(listener, props, originalParams, resParams, generator)
-		}
-	}
-	return resParams, []AddedCriterion{}
+	generator := c.generatorSource(parsedProps.RandomSeed)
+	return c.generateNewCriterion(listener, props, originalParams, resParams, generator)
 }
 
 const baseConcealedCriterionName = "__concealedCriterion__"

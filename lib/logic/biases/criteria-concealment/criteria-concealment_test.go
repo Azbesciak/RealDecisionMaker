@@ -26,9 +26,8 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 	}
 	criteria := testUtils.GenerateCriteria(3)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
-	m := model.BiasProps(map[string]interface{}{
-		"criterionConcealmentProbability": 0.5,
-		"randomSeed":                      0,
+	m := model.BiasProps(utils.Map{
+		"randomSeed": 0,
 	})
 	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
@@ -45,7 +44,7 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 			{
 				Id:                 criterionName,
 				Type:               model.Gain,
-				AlternativesValues: model.Weights{"a": 0.5, "b": 0.6, "x": 0.7, "y": 0.8},
+				AlternativesValues: model.Weights{"a": 0.4, "b": 0.5, "x": 0.6, "y": 0.7},
 				MethodParameters:   testUtils.DummyMethodParameters{Criteria: []string{criterionName}},
 				ValuesRange:        utils.ValueRange{Min: 0, Max: 1},
 			},
@@ -69,8 +68,7 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 	criteria := testUtils.GenerateCriteria(2)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	m := model.BiasProps(utils.Map{
-		"criterionConcealmentProbability": 0.5,
-		"randomSeed":                      0,
+		"randomSeed": 0,
 	})
 	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
@@ -87,7 +85,7 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 		AddedCriteria: []AddedCriterion{{
 			Id:                 criterionName,
 			Type:               model.Gain,
-			AlternativesValues: model.Weights{"a": 1.5, "b": 1.8},
+			AlternativesValues: model.Weights{"a": 1.2, "b": 1.5},
 			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
 				criterionName},
 			},
@@ -112,9 +110,8 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 	criteria := testUtils.GenerateCriteria(2)
 	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	m := model.BiasProps(utils.Map{
-		"criterionConcealmentProbability": 0.5,
-		"randomSeed":                      0,
-		"newCriterionImportance":          1,
+		"randomSeed":             0,
+		"newCriterionImportance": 1,
 	})
 	original := &model.DecisionMakingParams{
 		NotConsideredAlternatives: notConsidered,
@@ -130,7 +127,7 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 		AddedCriteria: []AddedCriterion{{
 			Id:                 criterionName,
 			Type:               model.Gain,
-			AlternativesValues: model.Weights{"a": 4, "b": 4.2},
+			AlternativesValues: model.Weights{"a": 3.8, "b": 4},
 			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
 				criterionName},
 			},

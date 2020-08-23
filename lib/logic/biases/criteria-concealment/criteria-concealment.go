@@ -1,9 +1,8 @@
 package criteria_concealment
 
 import (
-	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
-	reference_criterion "github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
@@ -28,8 +27,7 @@ func NewCriteriaConcealment(
 }
 
 type CriteriaConcealmentParams struct {
-	CriterionConcealmentProbability float64 `json:"criterionConcealmentProbability"`
-	RandomSeed                      int64   `json:"randomSeed"`
+	RandomSeed int64 `json:"randomSeed"`
 }
 
 type CriteriaConcealmentResult struct {
@@ -48,9 +46,6 @@ func (c *CriteriaConcealment) Apply(
 	listener *model.BiasListener,
 ) *model.BiasedResult {
 	parsedProps := *parseProps(props)
-	if parsedProps.CriterionConcealmentProbability == 0 {
-		return &model.BiasedResult{DMP: current, Props: CriteriaConcealmentResult{}}
-	}
 	resParams, addedCriterion := c.addCriterion(props, parsedProps, original, current, listener)
 	return &model.BiasedResult{
 		DMP: resParams,
@@ -63,12 +58,5 @@ func (c *CriteriaConcealment) Apply(
 func parseProps(props *model.BiasProps) *CriteriaConcealmentParams {
 	parsedProps := CriteriaConcealmentParams{}
 	utils.DecodeToStruct(*props, &parsedProps)
-	parsedProps.validate()
 	return &parsedProps
-}
-
-func (params *CriteriaConcealmentParams) validate() {
-	if !utils.IsProbability(params.CriterionConcealmentProbability) {
-		panic(fmt.Errorf("'criterionConcealmentProbability' need to be in range [0,1], got %f", params.CriterionConcealmentProbability))
-	}
 }
