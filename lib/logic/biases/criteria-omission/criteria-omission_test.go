@@ -133,15 +133,15 @@ func TestCriteriaOmission_ApplyRandomDesc(t *testing.T) {
 }
 
 func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omitted []string, kept []string) {
-	division := splitCriteriaToOmit(ratio, criteria)
-	actualOmittedLen := len(*division.omitted)
-	actualKeptLen := len(*division.kept)
+	division := criteria_ordering.SplitCriteriaByOrdering(ratio, criteria)
+	actualOmittedLen := len(*division.Left)
+	actualKeptLen := len(*division.Right)
 
 	if actualOmittedLen+actualKeptLen != len(*criteria) {
 		t.Errorf("sum of kept (%d) and omitted (%d) criteria is not equal to total len (%d)", actualKeptLen, actualOmittedLen, len(*criteria))
 	}
-	testUtils.CheckCount(t, "omit", omitted, division.omitted)
-	testUtils.CheckCount(t, "keep", kept, division.kept)
+	testUtils.CheckCount(t, "omit", omitted, division.Left)
+	testUtils.CheckCount(t, "keep", kept, division.Right)
 }
 
 func checkOmissionResult(t *testing.T, actual model.BiasProps, expected CriteriaOmissionResult) {

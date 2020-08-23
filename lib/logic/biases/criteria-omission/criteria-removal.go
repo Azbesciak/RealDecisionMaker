@@ -2,7 +2,7 @@ package criteria_omission
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
-	"math"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-ordering"
 )
 
 func omitCriteria(
@@ -11,30 +11,14 @@ func omitCriteria(
 	current *model.DecisionMakingParams,
 	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, *model.Criteria) {
-	omissionPartition := splitCriteriaToOmit(parsedProps.OmittedCriteriaRatio, omissionOrderCriteria)
-	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.kept, current.MethodParameters)
-	consideredAlternatives := model.PreserveCriteriaForAlternatives(&current.ConsideredAlternatives, omissionPartition.kept)
-	notConsideredAlternatives := model.PreserveCriteriaForAlternatives(&current.NotConsideredAlternatives, omissionPartition.kept)
+	omissionPartition := criteria_ordering.SplitCriteriaByOrdering(parsedProps.OmittedCriteriaRatio, omissionOrderCriteria)
+	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.Right, current.MethodParameters)
+	consideredAlternatives := model.PreserveCriteriaForAlternatives(&current.ConsideredAlternatives, omissionPartition.Right)
+	notConsideredAlternatives := model.PreserveCriteriaForAlternatives(&current.NotConsideredAlternatives, omissionPartition.Right)
 	return &model.DecisionMakingParams{
 		NotConsideredAlternatives: *notConsideredAlternatives,
 		ConsideredAlternatives:    *consideredAlternatives,
-		Criteria:                  *omissionPartition.kept,
+		Criteria:                  *omissionPartition.Right,
 		MethodParameters:          resultMethodParameters,
-	}, omissionPartition.omitted
-}
-
-func splitCriteriaToOmit(ratio float64, sortedCriteria *model.Criteria) *criteriaOmissionPartition {
-	criteriaCount := len(*sortedCriteria)
-	toOmitCount := int(math.Floor(float64(criteriaCount) * ratio))
-	toOmit := (*sortedCriteria)[0:toOmitCount]
-	toKeep := (*sortedCriteria)[toOmitCount:]
-	return &criteriaOmissionPartition{
-		kept:    &toKeep,
-		omitted: &toOmit,
-	}
-}
-
-type criteriaOmissionPartition struct {
-	kept    *model.Criteria
-	omitted *model.Criteria
+	}, omissionPartition.Left
 }
