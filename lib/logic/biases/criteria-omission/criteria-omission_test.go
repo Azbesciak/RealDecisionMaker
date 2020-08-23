@@ -25,6 +25,30 @@ func TestCriteriaOmission_splitCriteria(t *testing.T) {
 	validateOmission(t, criteria, 0.34, []string{"1", "2"}, []string{"3", "4", "5", "6"})
 }
 
+var weakestByProb = &criteria_ordering.WeakestByProbabilityCriteriaOrderingResolver{
+	Generator: func(seed int64) utils.ValueGenerator {
+		maxVal := float64(len(criteria))
+		counter := -1
+		return func() float64 {
+			counter++
+			if counter > len(criteria) {
+				counter = 0
+			}
+			if seed == 0 {
+				return float64(counter) / maxVal
+			} else if seed == 1 {
+				return 1
+			} else {
+				actual := counter - 1
+				if actual < 0 {
+					actual = len(criteria)
+				}
+				return float64(actual) / maxVal
+			}
+		}
+	},
+}
+
 var omission = NewCriteriaOmission([]criteria_ordering.CriteriaOrderingResolver{
 	&criteria_ordering.WeakestCriteriaOrderingResolver{},
 	&criteria_ordering.StrongestCriteriaOrderingResolver{},
@@ -42,29 +66,8 @@ var omission = NewCriteriaOmission([]criteria_ordering.CriteriaOrderingResolver{
 			}
 		},
 	},
-	&criteria_ordering.WeakestByProbabilityCriteriaOrderingResolver{
-		Generator: func(seed int64) utils.ValueGenerator {
-			maxVal := float64(len(criteria))
-			counter := -1
-			return func() float64 {
-				counter++
-				if counter > len(criteria) {
-					counter = 0
-				}
-				if seed == 0 {
-					return float64(counter) / maxVal
-				} else if seed == 1 {
-					return 1
-				} else {
-					actual := counter - 1
-					if actual < 0 {
-						actual = len(criteria)
-					}
-					return float64(actual) / maxVal
-				}
-			}
-		},
-	},
+	weakestByProb,
+	&criteria_ordering.StrongestByProbabilityCriteriaOrderingResolver{WeakestByProbability: weakestByProb},
 })
 var notConsidered = []model.AlternativeWithCriteria{
 	{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
@@ -121,10 +124,22 @@ func TestCriteriaOmission_ApplyWeakestRandomDesc(t *testing.T) {
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2]}})
 }
 
+func TestCriteriaOmission_ApplyStrongestRandomDesc(t *testing.T) {
+	m := model.BiasProps(utils.Map{"ratio": 0.4, "ordering": "strongestByProbability", "randomSeed": 1})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
+}
+
 func TestCriteriaOmission_ApplyWeakestRandomTwo(t *testing.T) {
 	m := model.BiasProps(utils.Map{"ratio": 0.7, "ordering": "weakestByProbability", "randomSeed": 2})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2], criteria[0]}})
+}
+
+func TestCriteriaOmission_ApplyStrongestRandomTwo(t *testing.T) {
+	m := model.BiasProps(utils.Map{"ratio": 0.7, "ordering": "strongestByProbability", "randomSeed": 2})
+	result := omission.Apply(original, original, &m, &listener)
+	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[1], criteria[0]}})
 }
 
 func TestCriteriaOmission_ApplyRandomDesc(t *testing.T) {
