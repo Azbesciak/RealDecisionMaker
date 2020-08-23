@@ -10,16 +10,16 @@ type StrongestByProbabilityCriteriaOrderingResolver struct {
 	WeakestByProbability *WeakestByProbabilityCriteriaOrderingResolver
 }
 
-func (w *StrongestByProbabilityCriteriaOrderingResolver) Identifier() string {
+func (s *StrongestByProbabilityCriteriaOrderingResolver) Identifier() string {
 	return StrongestByProbabilityCriteriaFirst
 }
 
-func (w *StrongestByProbabilityCriteriaOrderingResolver) OrderCriteria(
+func (s *StrongestByProbabilityCriteriaOrderingResolver) OrderCriteria(
 	params *model.DecisionMakingParams,
 	props *model.BiasProps,
 	listener *model.BiasListener,
 ) *model.Criteria {
-	criteria := w.WeakestByProbability.OrderCriteria(params, props, listener)
+	criteria := s.WeakestByProbability.OrderCriteria(params, props, listener)
 	criteriaCount := len(*criteria)
 	result := make(model.Criteria, criteriaCount)
 	for i, c := range *criteria {
