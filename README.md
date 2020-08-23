@@ -52,6 +52,7 @@ To simulate these behaviors we have following biases, which implementation can b
 - [criteria omission](#criteria-omission)
 - [criteria concealment](#criteria-concealment)
 - [criteria mixing](#criteria-mixing)
+- [preference reversal](#preference-reversal)
 - [fatigue](#fatigue)
 - [anchoring](#anchoring)
 
@@ -71,15 +72,17 @@ One important assumption was to make the code stateless, so all necessary inform
 Other was to make the process clear and repeatable, so every change in the parameters is also reported for the given method.
 When the random value can occur, each occurrence can be configured with the `randomSeed` separately (default is 0). 
 
-- `PreferenceFunction` -  `string`,  name of used [preference function](#preference-methods) of [limited rationality heuristic](#limited-rationality).          
-- `Biases`             -  [`BiasesParams`](lib/model/bias.go), definitions of used biases and their params. One bias can be used multiple times. *Order matters.*       
-- `KnownAlternatives`  -  [`[]AlternativeWithCriteria`](lib/model/alternative.go), definition of all known
+- `PreferenceFunction`  -  `string`,  name of used [preference function](#preference-methods) of [limited rationality heuristic](#limited-rationality).          
+- `Biases`              -  [`BiasesParams`](lib/model/bias.go), definitions of used biases (`name`) and their params (`props`) with optional `disabled` state and `applyProbability` (default = 1, applied for sure).
+ One bias can be used multiple times. *Order matters.*       
+- `BiasApplyRandomSeed` -  `int`, seed used for random when calculating bias activation probability
+- `KnownAlternatives`   -  [`[]AlternativeWithCriteria`](lib/model/alternative.go), definition of all known
  to decision maker alternatives (so also these which are not considered in current choice, but somehow can influence on the final result)
-- `ChoseToMake`        -  [`[]Alternative`](lib/model/alternative.go), names of alternatives which are considered during this iteration             
-- `Criteria`           -  [`Criteria`](lib/model/criterion.go), definitions for the criteria;
+- `ChoseToMake`         -  [`[]Alternative`](lib/model/alternative.go), names of alternatives which are considered during this iteration             
+- `Criteria`            -  [`Criteria`](lib/model/criterion.go), definitions for the criteria;
 name and the type (`gain` [default] or `cost` [otherwise, if not gain]). Weights are defined specific for each preference function/heuristic.
  There is also optional `valuesRange` used in biases calculation (otherwise it is calculated based on criteria values)      
-- `MethodParameters`   -  [`RawMethodParameters`](lib/model/decision-maker.go), parameters for the [preference function](#preference-methods) of [limited rationality heuristic](#limited-rationality).          
+- `MethodParameters`    -  [`RawMethodParameters`](lib/model/decision-maker.go), parameters for the [preference function](#preference-methods) of [limited rationality heuristic](#limited-rationality).          
 
 Each method or bias are called in `camelCase` fashion, so when you want to call OWA (as a preference function),
  you use `preferenceFunction: "owa"`, when Weighted sum = `weightedSum` etc.
@@ -263,6 +266,22 @@ Works similarly to [aspect elimination](#aspect-elimination-heuristic), with 3 d
 ## Biases
 As humans, we often tends to see things differently, forget about something, conceal certain things etc. These ideas tries to address mentioned problems.
 
+##### Apply probability
+Each bias can be applied with some probability.
+
+##### Criteria ordering
+For biases which operates on multiple criteria in purpose to modify them there is possibility to describe
+- `ordering` in which these are used,
+- `ratio` which depends on total number of criteria, so value belongs to [0, 1]. Final value is a floor of, for example for 3 criteria and `ratio` = 0.3, no criterion is considered, whereas for `ratio` = 0.34 - only one (if min >= 1)
+- `min` and `max` is a criteria number which is going to be processed, considering `ratio` also (hard bounds). `max` cannot be lower than `min`.
+
+`ordering` can have following values:
+- `weakest` - default, criteria are sorted ascending by the influence on the final result
+- `weakestByProbability` - each criterion is processed with a probability inversely proportional to its influence (the more important, the lower probability to be took as a next)
+- `strongest` - contrary to `weakest`
+- `strongestByProbability` - contrary to `weakestByProbability`
+- `random` - criteria are processed randomly (configured via `RandomSeed` on the same level)
+
 ##### Reference criterion
 In some biases there is a need to create a new criterion. However, because of multiple preference function
  or heuristics it is hard to compute weights for each method and make it useful.
@@ -283,13 +302,7 @@ Sometimes we say that something is important for us, but in reality we don't thi
  Therefore, we are omitting certain criteria.
  
 ##### Input parameters:
-- `OmittedCriteriaRatio` - ratio of criteria to omit, in range 0 (no criteria is omitted) to 1 (all criteria are omitted).
- Omitting criteria number is a floor from the ratio, so for 3 criteria and ratio == 0.3, no criterion will be removed, but for ratio 0.34 just one.
-- `OmissionOrder` - order of criteria omission, possible values are:
-    - `weakest` - default, criteria are sorted ascending by the influence on the final result
-    - `weakestByProbability` - each criterion can be removed with a probability inversely proportional to its influence (the more important, the lower probability)
-    - `strongest` - contrary to `weakest`
-    - `random` - omission order is random (configured via `RandomSeed` on the same level)
+Same as for [criteria ordering](#criteria-ordering)
 
 As a result method is returning:
 - `OmittedCriteria` - list of criteria names which were omitted
@@ -300,8 +313,6 @@ As a result method is returning:
 Sometimes we consider some criteria, but don't reveal this fact to the audience/coordinator. These criteria are concealed.
 
 ##### Input parameters:
-- `CriterionConcealmentProbability` - probability in range [0, 1] for a criterion to be concealed
- (1 - criterion will be added in the process for sure)
 - `RandomSeed` - seed for criteria values generation
 
 Also, new criterion parametrization is allowed like described in [reference criterion](#reference-criterion).
@@ -332,6 +343,25 @@ As an output following information is returned:
 - `Component2` - second criterion used in mix
 - `NewCriterion` - created criterion
 - `Params` - added params for the preference function/heuristic for the new criterion
+
+### Preference reversal
+- [implementation](lib/logic/biases/preference-reversal)
+
+Sometimes we change our preference during the process, like we declared price as cost criterion,
+ but later we noticed that the lower price is worse for us because of others perception...
+
+##### Input parameters:
+Same as for [criteria ordering](#criteria-ordering)
+
+The method returns:
+- `ReversedPreferenceCriteria` - list of criteria which preference was reversed.
+ Because of other methods and possible conditions violations preference is changed only withing given criterion 
+ values range (`min` becomes `max`, `max` becomes `min`, rest is `max - val + min).
+ Each item is an object with:
+    - `Id` - id of criterion, which preference was changed,
+    - `Type` - gain or cost, same as for original criterion,
+    - `AlternativesValues` - values for each alternative,
+    - `ValuesRange` - criterion values boundaries
 
 ### Fatigue
 - [implementation](lib/logic/biases/fatigue)
