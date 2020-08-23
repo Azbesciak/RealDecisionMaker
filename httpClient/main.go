@@ -6,6 +6,7 @@ import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/biases/criteria-mixing"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/biases/criteria-omission"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/biases/fatigue"
+	"github.com/Azbesciak/RealDecisionMaker/lib/logic/biases/preference-reversal"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality/aspect-elimination"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality/majority"
 	"github.com/Azbesciak/RealDecisionMaker/lib/logic/limited-rationality/satisfaction"
@@ -136,7 +137,8 @@ var biases = model.BiasMap{
 		utils.RandomBasedSeedValueGenerator,
 		referenceCriterionManager,
 	),
-	criteria_omission.BiasName: criteria_omission.NewCriteriaOmission(criteriaOrdering),
+	preference_reversal.BiasName: preference_reversal.NewPreferenceReversal(criteriaOrdering),
+	criteria_omission.BiasName:   criteria_omission.NewCriteriaOmission(criteriaOrdering),
 	fatigue.BiasName: fatigue.NewFatigue(
 		utils.RandomBasedSeedValueGenerator,
 		utils.RandomBasedSeedValueGenerator,

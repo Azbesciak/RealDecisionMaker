@@ -143,5 +143,14 @@
     "currentChoice": null,
     "randomAlternativesOrdering": true
   },
-  "biases": []
+  "biases": [{
+    "name": "preferenceReversal",
+    "props": {
+      "ratio": 0.1,
+      "min": 1,
+      "max": 2,
+      "ordering": "strongestByProbability",
+      "randomSeed": 1248
+    }
+  }]
 }
