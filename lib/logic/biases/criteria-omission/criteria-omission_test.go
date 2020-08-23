@@ -2,6 +2,7 @@ package criteria_omission
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-ordering"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
@@ -23,10 +24,10 @@ func TestCriteriaOmission_splitCriteria(t *testing.T) {
 	validateOmission(t, criteria, 0.34, []string{"1", "2"}, []string{"3", "4", "5", "6"})
 }
 
-var omission = NewCriteriaOmission([]OmissionResolver{
-	&WeakestCriteriaOmissionResolver{},
-	&StrongestCriteriaOmissionResolver{},
-	&RandomCriteriaOmissionResolver{
+var omission = NewCriteriaOmission([]criteria_ordering.CriteriaOrderingResolver{
+	&criteria_ordering.WeakestCriteriaOmissionResolver{},
+	&criteria_ordering.StrongestCriteriaOmissionResolver{},
+	&criteria_ordering.RandomCriteriaOmissionResolver{
 		Generator: func(seed int64) utils.ValueGenerator {
 			maxVal := float64(len(criteria))
 			counter := -1
@@ -40,7 +41,7 @@ var omission = NewCriteriaOmission([]OmissionResolver{
 			}
 		},
 	},
-	&WeakestByProbabilityCriteriaOmissionResolver{
+	&criteria_ordering.WeakestByProbabilityCriteriaOmissionResolver{
 		Generator: func(seed int64) utils.ValueGenerator {
 			maxVal := float64(len(criteria))
 			counter := -1

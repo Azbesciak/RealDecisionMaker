@@ -3,16 +3,17 @@ package criteria_omission
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-ordering"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
 //go:generate easytags $GOFILE json:camel
 
 type CriteriaOmission struct {
-	omissionResolvers []OmissionResolver
+	omissionResolvers []criteria_ordering.CriteriaOrderingResolver
 }
 
-func NewCriteriaOmission(omissionResolvers []OmissionResolver) *CriteriaOmission {
+func NewCriteriaOmission(omissionResolvers []criteria_ordering.CriteriaOrderingResolver) *CriteriaOmission {
 	if len(omissionResolvers) == 0 {
 		panic("no criteria omission order resolvers")
 	}
@@ -34,7 +35,7 @@ func (c *CriteriaOmission) Identifier() string {
 	return BiasName
 }
 
-func (c *CriteriaOmission) omissionResolver(params *CriteriaOmissionParams) OmissionResolver {
+func (c *CriteriaOmission) omissionResolver(params *CriteriaOmissionParams) criteria_ordering.CriteriaOrderingResolver {
 	if len(params.OmissionOrder) == 0 {
 		return c.omissionResolvers[0]
 	}
@@ -60,7 +61,7 @@ func (c *CriteriaOmission) Apply(
 		return &model.BiasedResult{DMP: current, Props: CriteriaOmissionResult{}}
 	}
 	resolver := c.omissionResolver(&parsedProps)
-	sortedCriteria := resolver.CriteriaOmissionOrder(current, props, listener)
+	sortedCriteria := resolver.OrderCriteria(current, props, listener)
 	resParams, omitted := omitCriteria(sortedCriteria, &parsedProps, current, listener)
 	return &model.BiasedResult{
 		DMP:   resParams,
