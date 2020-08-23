@@ -130,7 +130,6 @@ var biases = model.BiasMap{
 	),
 	criteria_concealment.BiasName: criteria_concealment.NewCriteriaConcealment(
 		utils.RandomBasedSeedValueGenerator,
-		1.0,
 		referenceCriterionManager,
 	),
 	criteria_mixing.BiasName: criteria_mixing.NewCriteriaMixing(

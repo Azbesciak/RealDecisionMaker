@@ -314,6 +314,7 @@ Sometimes we consider some criteria, but don't reveal this fact to the audience/
 
 ##### Input parameters:
 - `RandomSeed` - seed for criteria values generation
+- `NewCriterionScaling` - `float`, option to equally shrink or widen newly created criterion values range. *Cannot be zero*
 
 Also, new criterion parametrization is allowed like described in [reference criterion](#reference-criterion).
 

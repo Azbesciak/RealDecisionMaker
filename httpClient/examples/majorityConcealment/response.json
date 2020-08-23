@@ -4,7 +4,7 @@
       "alternative": {
         "id": "dell",
         "criteria": {
-          "__concealedCriterion__": 7.9357375911724315,
+          "__concealedCriterion__": 8.122885109406917,
           "look": 8,
           "price": 7,
           "quality": 7,
@@ -24,7 +24,7 @@
       "alternative": {
         "id": "apple",
         "criteria": {
-          "__concealedCriterion__": 9.671176895764699,
+          "__concealedCriterion__": 10.205412274917638,
           "look": 6,
           "price": 10,
           "quality": 8,
@@ -44,7 +44,7 @@
       "alternative": {
         "id": "lenovo",
         "criteria": {
-          "__concealedCriterion__": 4.326063037598202,
+          "__concealedCriterion__": 3.7912756451178433,
           "look": 7,
           "price": 4,
           "quality": 6,
@@ -64,7 +64,7 @@
       "alternative": {
         "id": "asus",
         "criteria": {
-          "__concealedCriterion__": 5.469790511762678,
+          "__concealedCriterion__": 5.163748614115215,
           "look": 4,
           "price": 4,
           "quality": 5,
@@ -90,15 +90,15 @@
             "id": "__concealedCriterion__",
             "type": "gain",
             "valuesRange": {
-              "min": 4,
-              "max": 10
+              "min": 3.4000000000000004,
+              "max": 10.6
             },
             "alternativesValues": {
-              "apple": 9.671176895764699,
-              "asus": 5.469790511762678,
-              "dell": 7.9357375911724315,
-              "lenovo": 4.326063037598202,
-              "microsoft": 6.205523239794751
+              "apple": 10.205412274917638,
+              "asus": 5.163748614115215,
+              "dell": 8.122885109406917,
+              "lenovo": 3.7912756451178433,
+              "microsoft": 6.046627887753702
             },
             "methodParameters": {
               "weights": {

@@ -89,7 +89,8 @@
     "applyProbability": 0.7,
     "props": {
       "referenceCriterionType": "importanceRatio",
-      "newCriterionImportance": 1
+      "newCriterionImportance": 1,
+      "newCriterionScaling": 1.2
     }
   }]
 }
