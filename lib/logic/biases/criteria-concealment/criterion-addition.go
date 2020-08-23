@@ -22,7 +22,23 @@ func (c *CriteriaConcealment) addCriterion(
 	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
 	generator := c.generatorSource(parsedProps.RandomSeed)
-	return c.generateNewCriterion(listener, props, originalParams, resParams, generator)
+	criterionBase := c.generateNewCriterionBase(listener, parsedProps.NewCriterionScaling, props, originalParams, resParams)
+	addResult := generateCriterionValuesForAlternatives(criterionBase.newCriterion, resParams, generator)
+	addedCriterionParams := (*listener).OnCriterionAdded(criterionBase.newCriterion, criterionBase.referenceCriterion, originalParams.MethodParameters, generator)
+	finalParams := (*listener).Merge(resParams.MethodParameters, addedCriterionParams)
+	newCriteria := resParams.Criteria.Add(criterionBase.newCriterion)
+	return &model.DecisionMakingParams{
+			NotConsideredAlternatives: *addResult.notConsideredAlternatives,
+			ConsideredAlternatives:    *addResult.consideredAlternatives,
+			Criteria:                  newCriteria,
+			MethodParameters:          finalParams,
+		}, []AddedCriterion{{
+			Id:                 criterionBase.newCriterion.Id,
+			Type:               criterionBase.newCriterion.Type,
+			AlternativesValues: addResult.alternativesValues,
+			MethodParameters:   addedCriterionParams,
+			ValuesRange:        *criterionBase.newCriterion.ValuesRange,
+		}}
 }
 
 const baseConcealedCriterionName = "__concealedCriterion__"
@@ -50,40 +66,16 @@ func newConcealedCriterionNameByCount(currentlyConcealedCriteriaCount int) strin
 	}
 }
 
-func (c *CriteriaConcealment) generateNewCriterion(
-	listener *model.BiasListener,
-	props *model.BiasProps,
-	originalParams, resParams *model.DecisionMakingParams,
-	valueGenerator utils.ValueGenerator,
-) (*model.DecisionMakingParams, []AddedCriterion) {
-	criterionBase := c.generateNewCriterionBase(listener, props, originalParams, resParams)
-	addResult := generateCriterionValuesForAlternatives(criterionBase.newCriterion, resParams, valueGenerator)
-	addedCriterionParams := (*listener).OnCriterionAdded(criterionBase.newCriterion, criterionBase.referenceCriterion, originalParams.MethodParameters, valueGenerator)
-	finalParams := (*listener).Merge(resParams.MethodParameters, addedCriterionParams)
-	newCriteria := resParams.Criteria.Add(criterionBase.newCriterion)
-	return &model.DecisionMakingParams{
-			NotConsideredAlternatives: *addResult.notConsideredAlternatives,
-			ConsideredAlternatives:    *addResult.consideredAlternatives,
-			Criteria:                  newCriteria,
-			MethodParameters:          finalParams,
-		}, []AddedCriterion{{
-			Id:                 criterionBase.newCriterion.Id,
-			Type:               criterionBase.newCriterion.Type,
-			AlternativesValues: addResult.alternativesValues,
-			MethodParameters:   addedCriterionParams,
-			ValuesRange:        *criterionBase.newCriterion.ValuesRange,
-		}}
-}
-
 func (c *CriteriaConcealment) generateNewCriterionBase(
 	listener *model.BiasListener,
+	scaling float64,
 	props *model.BiasProps,
 	originalParams, currentParams *model.DecisionMakingParams,
 ) newCriterionBase {
 	refCriterionProvider := c.referenceCriterionManager.ForParams(props)
 	rankedCriteria := (*listener).RankCriteriaAscending(originalParams)
 	referenceCriterion := refCriterionProvider.Provide(rankedCriteria)
-	valRange := c.getCriterionValueRange(originalParams, referenceCriterion)
+	valRange := getCriterionValueRange(originalParams, referenceCriterion, scaling)
 	newCriterion := model.Criterion{
 		Id:          concealedCriterionName(&currentParams.Criteria),
 		Type:        model.Gain,
@@ -131,9 +123,9 @@ func assignNewCriterionToAlternatives(
 	return sortedAlternatives, alternativesValues
 }
 
-func (c *CriteriaConcealment) getCriterionValueRange(originalParams *model.DecisionMakingParams, referenceCriterion *model.Criterion) *utils.ValueRange {
+func getCriterionValueRange(originalParams *model.DecisionMakingParams, referenceCriterion *model.Criterion, scaling float64) *utils.ValueRange {
 	allAlternatives := originalParams.AllAlternatives()
-	valRange := model.CriteriaValuesRange(&allAlternatives, referenceCriterion).ScaleEqually(c.newCriterionValueScalar)
+	valRange := model.CriteriaValuesRange(&allAlternatives, referenceCriterion).ScaleEqually(scaling)
 	return valRange
 }
 

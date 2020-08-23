@@ -10,8 +10,7 @@ import (
 
 func TestCriteriaOmission_Apply(t *testing.T) {
 	omission := CriteriaConcealment{
-		newCriterionValueScalar: 1,
-		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
+		generatorSource: testUtils.CyclicRandomGenerator(3, 10),
 		referenceCriterionManager: *reference_criterion.NewReferenceCriteriaManager(
 			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
 		),
@@ -54,8 +53,7 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 
 func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 	omission := CriteriaConcealment{
-		newCriterionValueScalar: 1,
-		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
+		generatorSource: testUtils.CyclicRandomGenerator(3, 10),
 		referenceCriterionManager: *reference_criterion.NewReferenceCriteriaManager(
 			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
 		),
@@ -96,8 +94,7 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 
 func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 	omission := CriteriaConcealment{
-		newCriterionValueScalar: 1,
-		generatorSource:         testUtils.CyclicRandomGenerator(3, 10),
+		generatorSource: testUtils.CyclicRandomGenerator(3, 10),
 		referenceCriterionManager: *reference_criterion.NewReferenceCriteriaManager(
 			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
 		),
@@ -132,6 +129,48 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 				criterionName},
 			},
 			ValuesRange: utils.ValueRange{Min: 3, Max: 5},
+		}},
+	})
+}
+
+func TestCriteriaConcealment_Apply_strongest_criterionWithScaling(t *testing.T) {
+	omission := CriteriaConcealment{
+		generatorSource: testUtils.CyclicRandomGenerator(3, 10),
+		referenceCriterionManager: *reference_criterion.NewReferenceCriteriaManager(
+			[]reference_criterion.ReferenceCriterionFactory{&reference_criterion.ImportanceRatioReferenceCriterionManager{}},
+		),
+	}
+	var notConsidered []model.AlternativeWithCriteria
+	considered := []model.AlternativeWithCriteria{
+		{Id: "a", Criteria: model.Weights{"1": 0, "2": 3}},
+		{Id: "b", Criteria: model.Weights{"1": 3, "2": 5}},
+	}
+	criteria := testUtils.GenerateCriteria(2)
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
+	m := model.BiasProps(utils.Map{
+		"randomSeed":             0,
+		"newCriterionImportance": 1,
+		"newCriterionScaling":    2,
+	})
+	original := &model.DecisionMakingParams{
+		NotConsideredAlternatives: notConsidered,
+		ConsideredAlternatives:    considered,
+		Criteria:                  criteria,
+		MethodParameters: testUtils.DummyMethodParameters{
+			Criteria: []string{"1", "2"},
+		},
+	}
+	result := omission.Apply(original, original, &m, &listener)
+	criterionName := newConcealedCriterionNameByCount(0)
+	checkProps(t, result.Props, CriteriaConcealmentResult{
+		AddedCriteria: []AddedCriterion{{
+			Id:                 criterionName,
+			Type:               model.Gain,
+			AlternativesValues: model.Weights{"a": 3.6, "b": 4},
+			MethodParameters: testUtils.DummyMethodParameters{Criteria: []string{
+				criterionName},
+			},
+			ValuesRange: utils.ValueRange{Min: 2, Max: 6},
 		}},
 	})
 }

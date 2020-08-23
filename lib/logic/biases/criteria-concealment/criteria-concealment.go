@@ -10,24 +10,22 @@ import (
 
 type CriteriaConcealment struct {
 	generatorSource           utils.SeededValueGenerator
-	newCriterionValueScalar   float64
 	referenceCriterionManager reference_criterion.ReferenceCriteriaManager
 }
 
 func NewCriteriaConcealment(
 	generatorSource utils.SeededValueGenerator,
-	newCriterionValueScalar float64,
 	referenceCriterionManager reference_criterion.ReferenceCriteriaManager,
 ) *CriteriaConcealment {
 	return &CriteriaConcealment{
 		generatorSource:           generatorSource,
-		newCriterionValueScalar:   newCriterionValueScalar,
 		referenceCriterionManager: referenceCriterionManager,
 	}
 }
 
 type CriteriaConcealmentParams struct {
-	RandomSeed int64 `json:"randomSeed"`
+	RandomSeed          int64   `json:"randomSeed"`
+	NewCriterionScaling float64 `json:"newCriterionScaling"`
 }
 
 type CriteriaConcealmentResult struct {
@@ -56,7 +54,10 @@ func (c *CriteriaConcealment) Apply(
 }
 
 func parseProps(props *model.BiasProps) *CriteriaConcealmentParams {
-	parsedProps := CriteriaConcealmentParams{}
+	parsedProps := CriteriaConcealmentParams{NewCriterionScaling: 1}
 	utils.DecodeToStruct(*props, &parsedProps)
+	if parsedProps.NewCriterionScaling == 0 {
+		panic("`concealedCriterionScaling` cannot be 0")
+	}
 	return &parsedProps
 }
