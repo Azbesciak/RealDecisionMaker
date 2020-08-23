@@ -35,22 +35,6 @@ func (c *CriteriaOmission) Identifier() string {
 	return BiasName
 }
 
-func (c *CriteriaOmission) omissionResolver(params *CriteriaOmissionParams) criteria_ordering.CriteriaOrderingResolver {
-	if len(params.OmissionOrder) == 0 {
-		return c.omissionResolvers[0]
-	}
-	for _, r := range c.omissionResolvers {
-		if r.Identifier() == params.OmissionOrder {
-			return r
-		}
-	}
-	names := make([]string, len(c.omissionResolvers))
-	for i, r := range c.omissionResolvers {
-		names[i] = r.Identifier()
-	}
-	panic(fmt.Errorf("omission order resolver '%s' not found in %v", params.OmissionOrder, names))
-}
-
 func (c *CriteriaOmission) Apply(
 	_, current *model.DecisionMakingParams,
 	props *model.BiasProps,
@@ -60,7 +44,7 @@ func (c *CriteriaOmission) Apply(
 	if parsedProps.OmittedCriteriaRatio == 0 {
 		return &model.BiasedResult{DMP: current, Props: CriteriaOmissionResult{}}
 	}
-	resolver := c.omissionResolver(&parsedProps)
+	resolver := criteria_ordering.FetchOrderingResolver(&c.omissionResolvers, parsedProps.OmissionOrder)
 	sortedCriteria := resolver.OrderCriteria(current, props, listener)
 	resParams, omitted := omitCriteria(sortedCriteria, &parsedProps, current, listener)
 	return &model.BiasedResult{
