@@ -43,6 +43,14 @@ func (w *Weights) Merge(other *Weights) *Weights {
 	return &result
 }
 
+func (w *Weights) Copy() *Weights {
+	result := make(Weights, len(*w))
+	for c, weight := range *w {
+		result[c] = weight
+	}
+	return &result
+}
+
 func (w *Weights) AsKeyValue() []namedWeight {
 	criteria := make([]namedWeight, len(*w))
 	i := 0
