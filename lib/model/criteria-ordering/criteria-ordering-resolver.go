@@ -38,5 +38,5 @@ func FetchOrderingResolver(resolvers *[]CriteriaOrderingResolver, resolver *Crit
 	for i, r := range *resolvers {
 		names[i] = r.Identifier()
 	}
-	panic(fmt.Errorf("omission order resolver '%s' not found in %v", resolver, names))
+	panic(fmt.Errorf("ordering resolver '%s' not found in %v", resolver, names))
 }
