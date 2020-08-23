@@ -2,16 +2,16 @@ package criteria_omission
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
-	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-ordering"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-splitting"
 )
 
 func omitCriteria(
 	omissionOrderCriteria *model.Criteria,
-	parsedProps *CriteriaOmissionParams,
+	parsedProps *criteria_splitting.CriteriaSplitCondition,
 	current *model.DecisionMakingParams,
 	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, *model.Criteria) {
-	omissionPartition := criteria_ordering.SplitCriteriaByOrdering(parsedProps.OmittedCriteriaRatio, omissionOrderCriteria)
+	omissionPartition := parsedProps.SplitCriteriaByOrdering(omissionOrderCriteria)
 	resultMethodParameters := (*listener).OnCriteriaRemoved(omissionPartition.Right, current.MethodParameters)
 	consideredAlternatives := model.PreserveCriteriaForAlternatives(&current.ConsideredAlternatives, omissionPartition.Right)
 	notConsideredAlternatives := model.PreserveCriteriaForAlternatives(&current.NotConsideredAlternatives, omissionPartition.Right)

@@ -1,10 +1,9 @@
 package criteria_omission
 
 import (
-	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-ordering"
-	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-splitting"
 )
 
 //go:generate easytags $GOFILE json:camel
@@ -20,9 +19,9 @@ func NewCriteriaOmission(omissionResolvers []criteria_ordering.CriteriaOrderingR
 	return &CriteriaOmission{omissionResolvers: omissionResolvers}
 }
 
+// + CriteriaSplitCondition
+// + CriteriaOrdering
 type CriteriaOmissionParams struct {
-	OmittedCriteriaRatio float64 `json:"omittedCriteriaRatio"`
-	OmissionOrder        string  `json:"omissionOrder"`
 }
 
 type CriteriaOmissionResult struct {
@@ -40,28 +39,18 @@ func (c *CriteriaOmission) Apply(
 	props *model.BiasProps,
 	listener *model.BiasListener,
 ) *model.BiasedResult {
-	parsedProps := *parseProps(props)
-	if parsedProps.OmittedCriteriaRatio == 0 {
-		return &model.BiasedResult{DMP: current, Props: CriteriaOmissionResult{}}
-	}
-	resolver := criteria_ordering.FetchOrderingResolver(&c.omissionResolvers, parsedProps.OmissionOrder)
+	parsedProps, splitting := parseProps(props)
+	resolver := criteria_ordering.FetchOrderingResolver(&c.omissionResolvers, parsedProps)
 	sortedCriteria := resolver.OrderCriteria(current, props, listener)
-	resParams, omitted := omitCriteria(sortedCriteria, &parsedProps, current, listener)
+	resParams, omitted := omitCriteria(sortedCriteria, splitting, current, listener)
 	return &model.BiasedResult{
 		DMP:   resParams,
 		Props: CriteriaOmissionResult{OmittedCriteria: *omitted},
 	}
 }
 
-func parseProps(props *model.BiasProps) *CriteriaOmissionParams {
-	parsedProps := CriteriaOmissionParams{}
-	utils.DecodeToStruct(*props, &parsedProps)
-	parsedProps.validate()
-	return &parsedProps
-}
-
-func (params *CriteriaOmissionParams) validate() {
-	if !utils.IsProbability(params.OmittedCriteriaRatio) {
-		panic(fmt.Errorf("'omittedCriteriaRatio' need to be in range [0,1], got %f", params.OmittedCriteriaRatio))
-	}
+func parseProps(props *model.BiasProps) (*criteria_ordering.CriteriaOrdering, *criteria_splitting.CriteriaSplitCondition) {
+	ordering := criteria_ordering.Parse(props)
+	splittingProps := criteria_splitting.Parse(props)
+	return ordering, splittingProps
 }

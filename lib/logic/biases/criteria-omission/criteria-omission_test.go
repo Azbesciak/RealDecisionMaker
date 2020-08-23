@@ -3,6 +3,7 @@ package criteria_omission
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-ordering"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-splitting"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"testing"
@@ -85,55 +86,60 @@ var original = &model.DecisionMakingParams{
 }
 
 func TestCriteriaOmission_ApplyWeakestAsDefault(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4})
+	m := model.BiasProps(utils.Map{"ratio": 0.4})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
 }
 
 func TestCriteriaOmission_ApplyWeakest(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "weakest"})
+	m := model.BiasProps(utils.Map{"ratio": 0.4, "ordering": "weakest"})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
 }
 
 func TestCriteriaOmission_ApplyStrongest(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "strongest"})
+	m := model.BiasProps(utils.Map{"ratio": 0.4, "ordering": "strongest"})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2]}})
 }
 
 func TestCriteriaOmission_ApplyRandom(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "random"})
+	m := model.BiasProps(utils.Map{"ratio": 0.4, "ordering": "random"})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[1]}})
 }
 
 func TestCriteriaOmission_ApplyWeakestRandom(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "weakestByProbability", "randomSeed": 0})
+	m := model.BiasProps(utils.Map{"ratio": 0.4, "ordering": "weakestByProbability", "randomSeed": 0})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[0]}})
 }
 
 func TestCriteriaOmission_ApplyWeakestRandomDesc(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "weakestByProbability", "randomSeed": 1})
+	m := model.BiasProps(utils.Map{"ratio": 0.4, "ordering": "weakestByProbability", "randomSeed": 1})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2]}})
 }
 
 func TestCriteriaOmission_ApplyWeakestRandomTwo(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.7, "omissionOrder": "weakestByProbability", "randomSeed": 2})
+	m := model.BiasProps(utils.Map{"ratio": 0.7, "ordering": "weakestByProbability", "randomSeed": 2})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2], criteria[0]}})
 }
 
 func TestCriteriaOmission_ApplyRandomDesc(t *testing.T) {
-	m := model.BiasProps(utils.Map{"omittedCriteriaRatio": 0.4, "omissionOrder": "random", "randomSeed": 1})
+	m := model.BiasProps(utils.Map{"ratio": 0.4, "ordering": "random", "randomSeed": 1})
 	result := omission.Apply(original, original, &m, &listener)
 	checkOmissionResult(t, result.Props, CriteriaOmissionResult{OmittedCriteria: model.Criteria{criteria[2]}})
 }
 
 func validateOmission(t *testing.T, criteria *model.Criteria, ratio float64, omitted []string, kept []string) {
-	division := criteria_ordering.SplitCriteriaByOrdering(ratio, criteria)
+	conditions := criteria_splitting.CriteriaSplitCondition{
+		Ratio: ratio,
+		Min:   0,
+		Max:   len(*criteria),
+	}
+	division := conditions.SplitCriteriaByOrdering(criteria)
 	actualOmittedLen := len(*division.Left)
 	actualKeptLen := len(*division.Right)
 

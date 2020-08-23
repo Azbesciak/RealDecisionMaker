@@ -4,8 +4,17 @@ import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"math"
 )
+
+type CriteriaOrdering struct {
+	Ordering string `json:"ordering"`
+}
+
+func Parse(props *interface{}) *CriteriaOrdering {
+	parsedProps := CriteriaOrdering{}
+	utils.DecodeToStruct(*props, &parsedProps)
+	return &parsedProps
+}
 
 type CriteriaOrderingResolver interface {
 	utils.Identifiable
@@ -16,12 +25,12 @@ type CriteriaOrderingResolver interface {
 	) *model.Criteria
 }
 
-func FetchOrderingResolver(resolvers *[]CriteriaOrderingResolver, resolver string) CriteriaOrderingResolver {
-	if len(resolver) == 0 {
+func FetchOrderingResolver(resolvers *[]CriteriaOrderingResolver, resolver *CriteriaOrdering) CriteriaOrderingResolver {
+	if len(resolver.Ordering) == 0 {
 		return (*resolvers)[0]
 	}
 	for _, r := range *resolvers {
-		if r.Identifier() == resolver {
+		if r.Identifier() == resolver.Ordering {
 			return r
 		}
 	}
@@ -30,20 +39,4 @@ func FetchOrderingResolver(resolvers *[]CriteriaOrderingResolver, resolver strin
 		names[i] = r.Identifier()
 	}
 	panic(fmt.Errorf("omission order resolver '%s' not found in %v", resolver, names))
-}
-
-func SplitCriteriaByOrdering(ratio float64, sortedCriteria *model.Criteria) *CriteriaPartition {
-	criteriaCount := len(*sortedCriteria)
-	pivot := int(math.Floor(float64(criteriaCount) * ratio))
-	left := (*sortedCriteria)[0:pivot]
-	right := (*sortedCriteria)[pivot:]
-	return &CriteriaPartition{
-		Left:  &right,
-		Right: &left,
-	}
-}
-
-type CriteriaPartition struct {
-	Left  *model.Criteria
-	Right *model.Criteria
 }
