@@ -3,8 +3,6 @@ package criteria_concealment
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
-	"strconv"
-	"strings"
 )
 
 type AddedCriterion struct {
@@ -43,29 +41,6 @@ func (c *CriteriaConcealment) addCriterion(
 
 const baseConcealedCriterionName = "__concealedCriterion__"
 
-func concealedCriterionName(criteria *model.Criteria) string {
-	concealedCriteriaCount := countConcealedCriteria(criteria)
-	return newConcealedCriterionNameByCount(concealedCriteriaCount)
-}
-
-func countConcealedCriteria(criteria *model.Criteria) int {
-	concealedCriteriaCount := 0
-	for _, c := range *criteria {
-		if strings.HasPrefix(c.Id, baseConcealedCriterionName) {
-			concealedCriteriaCount += 1
-		}
-	}
-	return concealedCriteriaCount
-}
-
-func newConcealedCriterionNameByCount(currentlyConcealedCriteriaCount int) string {
-	if currentlyConcealedCriteriaCount == 0 {
-		return baseConcealedCriterionName
-	} else {
-		return baseConcealedCriterionName + strconv.Itoa(currentlyConcealedCriteriaCount)
-	}
-}
-
 func (c *CriteriaConcealment) generateNewCriterionBase(
 	listener *model.BiasListener,
 	scaling float64,
@@ -77,7 +52,7 @@ func (c *CriteriaConcealment) generateNewCriterionBase(
 	referenceCriterion := refCriterionProvider.Provide(rankedCriteria)
 	valRange := getCriterionValueRange(originalParams, referenceCriterion, scaling)
 	newCriterion := model.Criterion{
-		Id:          concealedCriterionName(&currentParams.Criteria),
+		Id:          currentParams.Criteria.NotUsedName(baseConcealedCriterionName),
 		Type:        model.Gain,
 		ValuesRange: valRange,
 	}

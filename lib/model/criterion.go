@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 //go:generate easytags $GOFILE json:camel
@@ -52,6 +54,29 @@ func (c *Criteria) Validate() {
 		}
 		criteriaSet[criterion.Id] = true
 	}
+}
+
+func (c *Criteria) NotUsedName(name string) string {
+	count := c.countWithPrefix(name)
+	return firstFreeName(name, count)
+}
+
+func firstFreeName(name string, count int) string {
+	if count == 0 {
+		return name
+	} else {
+		return name + strconv.Itoa(count)
+	}
+}
+
+func (c *Criteria) countWithPrefix(prefix string) int {
+	concealedCriteriaCount := 0
+	for _, cr := range *c {
+		if strings.HasPrefix(cr.Id, prefix) {
+			concealedCriteriaCount += 1
+		}
+	}
+	return concealedCriteriaCount
 }
 
 func (c *Criteria) SortByWeights(weights Weights) *WeightedCriteria {
