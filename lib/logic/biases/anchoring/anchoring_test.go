@@ -2,25 +2,15 @@ package anchoring
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/testUtils"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 	"reflect"
 	"testing"
 )
 
-func TestAnchoring_Apply(t *testing.T) {
-	type fields struct {
-		anchoringEvaluators       []AnchoringEvaluator
-		referencePointsEvaluators []ReferencePointsEvaluator
-		anchoringAppliers         []AnchoringApplier
-	}
-	type args struct {
-		current  *model.DecisionMakingParams
-		props    *model.BiasProps
-		listener *model.BiasListener
-	}
-	listener := model.BiasListener(&testUtils.DummyBiasListener{})
-	props := model.BiasProps(utils.Map{
+func generateProps(applierName string, applierParams utils.Map) *model.BiasProps {
+	biasProps := model.BiasProps(utils.Map{
 		"anchoringAlternatives": utils.Array{
 			utils.Map{"alternative": "1", "coefficient": 3},
 			utils.Map{"alternative": "4", "coefficient": 1},
@@ -37,9 +27,25 @@ func TestAnchoring_Apply(t *testing.T) {
 			"function": "ideal",
 		},
 		"applier": utils.Map{
-			"function": "inline",
+			"function": applierName,
+			"params":   applierParams,
 		},
 	})
+	return &biasProps
+}
+
+func TestAnchoring_Apply(t *testing.T) {
+	type fields struct {
+		anchoringEvaluators       []AnchoringEvaluator
+		referencePointsEvaluators []ReferencePointsEvaluator
+		anchoringAppliers         []AnchoringApplier
+	}
+	type args struct {
+		current  *model.DecisionMakingParams
+		props    *model.BiasProps
+		listener *model.BiasListener
+	}
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
 	consideredAlternatives := []model.AlternativeWithCriteria{{
 		Id: "1", Criteria: model.Weights{"a": 1, "b": 2, "c": 3},
 	}, {
@@ -60,26 +66,37 @@ func TestAnchoring_Apply(t *testing.T) {
 	methodParams := testUtils.DummyMethodParameters{
 		Criteria: []string{"a", "b", "c"},
 	}
+	anchoringFields := fields{
+		anchoringEvaluators:       []AnchoringEvaluator{&LinearAnchoringEvaluator{}, &ExpFromZeroAnchoringEvaluator{}},
+		referencePointsEvaluators: []ReferencePointsEvaluator{&IdealReferenceAlternativeEvaluator{}, &NadirReferenceAlternativeEvaluator{}},
+		anchoringAppliers: []AnchoringApplier{&InlineAnchoringApplier{}, NewNewCriterionAnchoringApplier(
+			*reference_criterion.NewReferenceCriteriaManager([]reference_criterion.ReferenceCriterionFactory{
+				&reference_criterion.ImportanceRatioReferenceCriterionManager{},
+			}),
+			func(seed int64) utils.ValueGenerator {
+				return func() float64 {
+					return 1
+				}
+			},
+		)},
+	}
+	dmpParams := model.DecisionMakingParams{
+		ConsideredAlternatives:    consideredAlternatives,
+		NotConsideredAlternatives: notConsideredCriteria,
+		Criteria:                  criteria,
+		MethodParameters:          methodParams,
+	}
 	tests := []struct {
 		name   string
 		fields fields
 		args   args
 		want   *model.BiasedResult
 	}{{
-		name: "general anchoring",
-		fields: fields{
-			anchoringEvaluators:       []AnchoringEvaluator{&LinearAnchoringEvaluator{}, &ExpFromZeroAnchoringEvaluator{}},
-			referencePointsEvaluators: []ReferencePointsEvaluator{&IdealReferenceAlternativeEvaluator{}, &NadirReferenceAlternativeEvaluator{}},
-			anchoringAppliers:         []AnchoringApplier{&InlineAnchoringApplier{}},
-		},
+		name:   "inline anchoring - not applied for not considered",
+		fields: anchoringFields,
 		args: args{
-			current: &model.DecisionMakingParams{
-				ConsideredAlternatives:    consideredAlternatives,
-				NotConsideredAlternatives: notConsideredCriteria,
-				Criteria:                  criteria,
-				MethodParameters:          methodParams,
-			},
-			props:    &props,
+			current:  &dmpParams,
+			props:    generateProps("inline", nil),
 			listener: &listener,
 		},
 		want: &model.BiasedResult{
@@ -160,6 +177,204 @@ func TestAnchoring_Apply(t *testing.T) {
 				},
 			},
 		},
+	}, {
+		name:   "inline anchoring - applied for not considered",
+		fields: anchoringFields,
+		args: args{
+			current: &dmpParams,
+			props: generateProps("inline", utils.Map{
+				"applyOnNotConsidered": true,
+			}),
+			listener: &listener,
+		},
+		want: &model.BiasedResult{
+			DMP: &model.DecisionMakingParams{
+				NotConsideredAlternatives: []model.AlternativeWithCriteria{{
+					Id: notConsideredCriteria[0].Id, Criteria: model.Weights{"a": 5, "b": 4, "c": 1},
+				}, {
+					Id: notConsideredCriteria[1].Id, Criteria: model.Weights{"a": 1, "b": 0, "c": 3},
+				}},
+				ConsideredAlternatives: []model.AlternativeWithCriteria{{
+					Id: consideredAlternatives[0].Id, Criteria: model.Weights{"a": 1, "b": 2, "c": 3},
+				}, {
+					Id: consideredAlternatives[1].Id, Criteria: model.Weights{"a": 1, "b": 0, "c": 3},
+				}, {
+					Id: consideredAlternatives[2].Id, Criteria: model.Weights{"a": 2, "b": 4, "c": 2},
+				}},
+				Criteria:         criteria,
+				MethodParameters: methodParams,
+			},
+			Props: AnchoringResult{
+				ReferencePoints: []model.AlternativeWithCriteria{{
+					Id:       "ideal",
+					Criteria: model.Weights{"a": 5, "b": 2, "c": 3},
+				}},
+				CriteriaScaling: CriteriaScaling{
+					"a": {
+						Scale:       1 / 4.0,
+						ValuesRange: utils.ValueRange{Min: 1, Max: 5},
+					},
+					"b": {
+						Scale:       1 / 4.0,
+						ValuesRange: utils.ValueRange{Min: 0, Max: 4},
+					},
+					"c": {
+						Scale:       1 / 8.0,
+						ValuesRange: utils.ValueRange{Min: 1, Max: 9},
+					},
+				},
+				//ideal a: 5, b: 2, c: 3
+				PerReferencePointsDifferences: []ReferencePointsDifference{{
+					Alternative: consideredAlternatives[0],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -2, "b": 0, "c": 0},
+					}},
+				}, {
+					Alternative: consideredAlternatives[1],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -1.5, "b": -1, "c": 0.125},
+					}},
+				}, {
+					Alternative: consideredAlternatives[2],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -0.5, "b": 0.25, "c": -0.25},
+					}},
+				}, {
+					Alternative: notConsideredCriteria[0],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": 0, "b": 0.5, "c": -1.5},
+					}},
+				}, {
+					Alternative: notConsideredCriteria[1],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -1, "b": -0.5, "c": 0.25},
+					}},
+				}},
+				ApplierResult: InlineAnchoringApplierResult{
+					AppliedDifferences: []model.AlternativeWithCriteria{{
+						Id:       consideredAlternatives[0].Id,
+						Criteria: model.Weights{"a": -0, "b": 0, "c": 0},
+					}, {
+						Id:       consideredAlternatives[1].Id,
+						Criteria: model.Weights{"a": -1, "b": 0, "c": 1},
+					}, {
+						Id:       consideredAlternatives[2].Id,
+						Criteria: model.Weights{"a": -2, "b": 1, "c": -2},
+					}, {
+						Id:       notConsideredCriteria[0].Id,
+						Criteria: model.Weights{"a": 0, "b": 0, "c": -8},
+					}, {
+						Id:       notConsideredCriteria[1].Id,
+						Criteria: model.Weights{"a": -2, "b": -1, "c": 2},
+					}},
+				},
+			},
+		},
+	}, {
+		name:   "new criterion anchoring",
+		fields: anchoringFields,
+		args: args{
+			current: &dmpParams,
+			props: generateProps("newCriterion", utils.Map{
+				"referenceCriterionType": "importanceRatio",
+				"newCriterionImportance": 0,
+			}),
+			listener: &listener,
+		},
+		want: &model.BiasedResult{
+			DMP: &model.DecisionMakingParams{
+				NotConsideredAlternatives: []model.AlternativeWithCriteria{{
+					Id: notConsideredCriteria[0].Id, Criteria: model.Weights{"a": 5, "b": 4, "c": 9, "__anchoring_criterion_ideal": 1},
+				}, {
+					Id: notConsideredCriteria[1].Id, Criteria: model.Weights{"a": 3, "b": 1, "c": 1, "__anchoring_criterion_ideal": 1.5833333333333335},
+				}},
+				ConsideredAlternatives: []model.AlternativeWithCriteria{{
+					Id: consideredAlternatives[0].Id, Criteria: model.Weights{"a": 1, "b": 2, "c": 3, "__anchoring_criterion_ideal": 1.3333333333333335},
+				}, {
+					Id: consideredAlternatives[1].Id, Criteria: model.Weights{"a": 2, "b": 0, "c": 2, "__anchoring_criterion_ideal": 1},
+				}, {
+					Id: consideredAlternatives[2].Id, Criteria: model.Weights{"a": 4, "b": 3, "c": 4, "__anchoring_criterion_ideal": 1.75},
+				}},
+				Criteria: append(criteria, model.Criterion{Id: "__anchoring_criterion_ideal", Type: model.Gain}),
+				MethodParameters: testUtils.DummyMethodParameters{
+					Criteria: append(methodParams.Criteria, "__anchoring_criterion_ideal"),
+				},
+			},
+			Props: AnchoringResult{
+				ReferencePoints: []model.AlternativeWithCriteria{{
+					Id:       "ideal",
+					Criteria: model.Weights{"a": 5, "b": 2, "c": 3},
+				}},
+				CriteriaScaling: CriteriaScaling{
+					"a": {
+						Scale:       1 / 4.0,
+						ValuesRange: utils.ValueRange{Min: 1, Max: 5},
+					},
+					"b": {
+						Scale:       1 / 4.0,
+						ValuesRange: utils.ValueRange{Min: 0, Max: 4},
+					},
+					"c": {
+						Scale:       1 / 8.0,
+						ValuesRange: utils.ValueRange{Min: 1, Max: 9},
+					},
+				},
+				//ideal a: 5, b: 2, c: 3
+				PerReferencePointsDifferences: []ReferencePointsDifference{{
+					Alternative: consideredAlternatives[0],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -2, "b": 0, "c": 0},
+					}},
+				}, {
+					Alternative: consideredAlternatives[1],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -1.5, "b": -1, "c": 0.125},
+					}},
+				}, {
+					Alternative: consideredAlternatives[2],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -0.5, "b": 0.25, "c": -0.25},
+					}},
+				}, {
+					Alternative: notConsideredCriteria[0],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": 0, "b": 0.5, "c": -1.5},
+					}},
+				}, {
+					Alternative: notConsideredCriteria[1],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -1, "b": -0.5, "c": 0.25},
+					}},
+				}},
+				ApplierResult: NewCriterionAnchoringApplierResult{
+					ReferenceCriterion: criteria[0],
+					AddedCriteria: []AddedCriterion{{
+						Id:   "__anchoring_criterion_ideal",
+						Type: model.Gain,
+						MethodParameters: testUtils.DummyMethodParameters{
+							Criteria: []string{"__anchoring_criterion_ideal"},
+						},
+						AlternativesValues: model.Weights{
+							"1": 1.3333333333333335, "2": 1, "3": 1.75, "4": 1, "5": 1.5833333333333335,
+						},
+						ValuesRange: utils.ValueRange{
+							Min: 1,
+							Max: 1.75,
+						},
+					}},
+				},
+			},
+		},
 	},
 	}
 	for _, tt := range tests {
@@ -170,7 +385,7 @@ func TestAnchoring_Apply(t *testing.T) {
 				anchoringAppliers:         tt.fields.anchoringAppliers,
 			}
 			if got := a.Apply(nil, tt.args.current, tt.args.props, tt.args.listener); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Apply():\n %v,\n want:\n %v", got, tt.want)
+				t.Errorf("Apply():\n dmp   %v \n props %v,\nwant:\n dmp   %v\n props %v", got.DMP, got.Props, tt.want.DMP, tt.want.Props)
 			}
 		})
 	}
