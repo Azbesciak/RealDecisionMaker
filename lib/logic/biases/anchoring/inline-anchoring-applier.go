@@ -15,11 +15,16 @@ func (i *InlineAnchoringApplier) Identifier() string {
 }
 
 type InlineAnchoringApplierParams struct {
-	Unbounded bool `json:"unbounded"`
+	Unbounded            bool `json:"unbounded"`
+	ApplyOnNotConsidered bool `json:"applyOnNotConsidered"`
 }
 
 func (i *InlineAnchoringApplier) BlankParams() FunctionParams {
 	return &InlineAnchoringApplierParams{}
+}
+
+type InlineAnchoringApplierResult struct {
+	AppliedDifferences []model.AlternativeWithCriteria `json:"appliedDifferences"`
 }
 
 func (i *InlineAnchoringApplier) ApplyAnchoring(
@@ -28,32 +33,50 @@ func (i *InlineAnchoringApplier) ApplyAnchoring(
 	criteriaScaling CriteriaScaling,
 	params FunctionParams,
 	listener *model.BiasListener,
-) *model.DecisionMakingParams {
+) (*model.DecisionMakingParams, AnchoringApplierResult) {
 	parsedParams := params.(*InlineAnchoringApplierParams)
 	newAlternatives := make([]model.AlternativeWithCriteria, len(*perReferencePointDiffs))
+	appliedDifferences := make([]model.AlternativeWithCriteria, len(*perReferencePointDiffs))
 	for i, p := range *perReferencePointDiffs {
-		newWeights := arithmeticAverage(p.ReferencePointsDifference)
+		newWeights := *arithmeticAverage(p.ReferencePointsDifference)
+		differences := make(model.Weights, len(criteriaScaling))
 		for c, scaling := range criteriaScaling {
 			difference := newWeights.Fetch(c)
 			value := p.Alternative.Criteria.Fetch(c)
 			newValue := value + scaling.ValuesRange.Diff()*difference
-			if !parsedParams.Unbounded {
-				if newValue > scaling.ValuesRange.Max {
-					newValue = scaling.ValuesRange.Max
-				} else if newValue < scaling.ValuesRange.Min {
-					newValue = scaling.ValuesRange.Min
-				}
-			}
-			(*newWeights)[c] = newValue
+			newValue = boundIfRequested(parsedParams.Unbounded, newValue, scaling)
+			differences[c] = newValue - value
+			newWeights[c] = newValue
 		}
-		newAlternatives[i] = *p.Alternative.WithCriteriaValues(newWeights)
+		newAlternatives[i] = *p.Alternative.WithCriteriaValues(&newWeights)
+		appliedDifferences[i] = *p.Alternative.WithCriteriaValues(&differences)
+	}
+	notConsidered := dmp.NotConsideredAlternatives
+	result := InlineAnchoringApplierResult{
+		AppliedDifferences: appliedDifferences,
+	}
+	if parsedParams.ApplyOnNotConsidered {
+		notConsidered = *model.UpdateAlternatives(&notConsidered, &newAlternatives)
+	} else {
+		result.AppliedDifferences = *model.UpdateAlternatives(&dmp.ConsideredAlternatives, &appliedDifferences)
 	}
 	return &model.DecisionMakingParams{
-		ConsideredAlternatives:    newAlternatives,
-		NotConsideredAlternatives: dmp.NotConsideredAlternatives,
+		ConsideredAlternatives:    *model.UpdateAlternatives(&dmp.ConsideredAlternatives, &newAlternatives),
+		NotConsideredAlternatives: notConsidered,
 		Criteria:                  dmp.Criteria,
 		MethodParameters:          dmp.MethodParameters,
+	}, result
+}
+
+func boundIfRequested(unbounded bool, newValue model.Weight, scaling ScaleWithValueRange) model.Weight {
+	if !unbounded {
+		if newValue > scaling.ValuesRange.Max {
+			newValue = scaling.ValuesRange.Max
+		} else if newValue < scaling.ValuesRange.Min {
+			newValue = scaling.ValuesRange.Min
+		}
 	}
+	return newValue
 }
 
 func arithmeticAverage(points []ReferencePointDifference) *model.Weights {

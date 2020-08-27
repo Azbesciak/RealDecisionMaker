@@ -26,14 +26,14 @@ type ReferencePointsDifference struct {
 }
 
 func calculateDiffsPerReferencePoint(
-	consideredAlternatives []model.AlternativeWithCriteria,
+	alternatives []model.AlternativeWithCriteria,
 	referencePoints []model.AlternativeWithCriteria,
 	criteria *model.Criteria,
 	scaleRatios CriteriaScaling,
 	loss, gain AnchoringWithParams,
 ) []ReferencePointsDifference {
-	referencePointsDiffs := make([]ReferencePointsDifference, len(consideredAlternatives))
-	for ia, a := range consideredAlternatives {
+	referencePointsDiffs := make([]ReferencePointsDifference, len(alternatives))
+	for ia, a := range alternatives {
 		refPointDiffs := make([]ReferencePointDifference, len(referencePoints))
 		for ir, r := range referencePoints {
 			refPointDiffs[ir] = calculateReferencePointDiffs(criteria, a, r, scaleRatios, loss, gain)

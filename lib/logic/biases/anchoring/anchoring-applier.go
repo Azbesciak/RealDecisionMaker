@@ -14,8 +14,10 @@ type AnchoringApplier interface {
 		criteriaScaling CriteriaScaling,
 		params FunctionParams,
 		listener *model.BiasListener,
-	) *model.DecisionMakingParams
+	) (*model.DecisionMakingParams, AnchoringApplierResult)
 }
+
+type AnchoringApplierResult = interface{}
 
 type ApplierWithParams struct {
 	fun    AnchoringApplier

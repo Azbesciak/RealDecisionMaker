@@ -133,7 +133,31 @@ func TestAnchoring_Apply(t *testing.T) {
 						ReferencePoint: "ideal",
 						Coefficients:   model.Weights{"a": -0.5, "b": 0.25, "c": -0.25},
 					}},
+				}, {
+					Alternative: notConsideredCriteria[0],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": 0, "b": 0.5, "c": -1.5},
+					}},
+				}, {
+					Alternative: notConsideredCriteria[1],
+					ReferencePointsDifference: []ReferencePointDifference{{
+						ReferencePoint: "ideal",
+						Coefficients:   model.Weights{"a": -1, "b": -0.5, "c": 0.25},
+					}},
 				}},
+				ApplierResult: InlineAnchoringApplierResult{
+					AppliedDifferences: []model.AlternativeWithCriteria{{
+						Id:       consideredAlternatives[0].Id,
+						Criteria: model.Weights{"a": -0, "b": 0, "c": 0},
+					}, {
+						Id:       consideredAlternatives[1].Id,
+						Criteria: model.Weights{"a": -1, "b": 0, "c": 1},
+					}, {
+						Id:       consideredAlternatives[2].Id,
+						Criteria: model.Weights{"a": -2, "b": 1, "c": -2},
+					}},
+				},
 			},
 		},
 	},

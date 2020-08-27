@@ -30,6 +30,7 @@ type AnchoringResult struct {
 	ReferencePoints               []model.AlternativeWithCriteria `json:"referencePoints"`
 	CriteriaScaling               CriteriaScaling                 `json:"criteriaScaling"`
 	PerReferencePointsDifferences []ReferencePointsDifference     `json:"perReferencePointsDifferences"`
+	ApplierResult                 AnchoringApplierResult          `json:"applierResult,omitempty"`
 }
 
 type Anchoring struct {
@@ -74,15 +75,16 @@ func (a *Anchoring) Apply(
 	referencePoints := a.evaluateAnchoringAlternatives(allAlternatives, parsedProps, &current.Criteria)
 	criteriaScaling := evaluatePerCriterionNormalizationScaleRatio(&current.Criteria, allAlternatives)
 	perReferencePointsDiffs := calculateDiffsPerReferencePoint(
-		current.ConsideredAlternatives, referencePoints, &current.Criteria, criteriaScaling, loss, gain,
+		allAlternatives, referencePoints, &current.Criteria, criteriaScaling, loss, gain,
 	)
-	newDmp := applier.fun.ApplyAnchoring(current, &perReferencePointsDiffs, criteriaScaling, applier.params, listener)
+	newDmp, applierResult := applier.fun.ApplyAnchoring(current, &perReferencePointsDiffs, criteriaScaling, applier.params, listener)
 	return &model.BiasedResult{
 		DMP: newDmp,
 		Props: AnchoringResult{
 			ReferencePoints:               referencePoints,
 			CriteriaScaling:               criteriaScaling,
 			PerReferencePointsDifferences: perReferencePointsDiffs,
+			ApplierResult:                 applierResult,
 		},
 	}
 }
