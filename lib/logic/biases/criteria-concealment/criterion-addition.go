@@ -52,7 +52,7 @@ func (c *CriteriaConcealment) generateNewCriterionBase(
 	referenceCriterion := refCriterionProvider.Provide(rankedCriteria)
 	valRange := getCriterionValueRange(originalParams, referenceCriterion, scaling)
 	newCriterion := model.Criterion{
-		Id:          currentParams.Criteria.NotUsedName(baseConcealedCriterionName),
+		Id:          newConcealedCriterionName(&currentParams.Criteria),
 		Type:        model.Gain,
 		ValuesRange: valRange,
 	}
@@ -60,6 +60,10 @@ func (c *CriteriaConcealment) generateNewCriterionBase(
 		referenceCriterion: referenceCriterion,
 		newCriterion:       &newCriterion,
 	}
+}
+
+func newConcealedCriterionName(criteria *model.Criteria) string {
+	return criteria.NotUsedName(baseConcealedCriterionName)
 }
 
 type newCriterionBase struct {

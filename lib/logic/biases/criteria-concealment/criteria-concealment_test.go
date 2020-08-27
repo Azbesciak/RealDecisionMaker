@@ -37,7 +37,7 @@ func TestCriteriaOmission_Apply(t *testing.T) {
 		},
 	}
 	result := omission.Apply(original, original, &m, &listener)
-	criterionName := newConcealedCriterionNameByCount(0)
+	criterionName := newConcealedCriterionName(&model.Criteria{})
 	checkProps(t, result.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{
 			{
@@ -78,7 +78,7 @@ func TestCriteriaConcealment_Apply_multiple(t *testing.T) {
 	}
 	result := omission.Apply(original, original, &m, &listener)
 	result2 := omission.Apply(original, result.DMP, &m, &listener)
-	criterionName := newConcealedCriterionNameByCount(1)
+	criterionName := newConcealedCriterionName(&model.Criteria{{Id: baseConcealedCriterionName}})
 	checkProps(t, result2.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{{
 			Id:                 criterionName,
@@ -119,7 +119,7 @@ func TestCriteriaConcealment_Apply_strongest_criterion(t *testing.T) {
 		},
 	}
 	result := omission.Apply(original, original, &m, &listener)
-	criterionName := newConcealedCriterionNameByCount(0)
+	criterionName := newConcealedCriterionName(&model.Criteria{})
 	checkProps(t, result.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{{
 			Id:                 criterionName,
@@ -161,7 +161,7 @@ func TestCriteriaConcealment_Apply_strongest_criterionWithScaling(t *testing.T) 
 		},
 	}
 	result := omission.Apply(original, original, &m, &listener)
-	criterionName := newConcealedCriterionNameByCount(0)
+	criterionName := newConcealedCriterionName(&model.Criteria{})
 	checkProps(t, result.Props, CriteriaConcealmentResult{
 		AddedCriteria: []AddedCriterion{{
 			Id:                 criterionName,
