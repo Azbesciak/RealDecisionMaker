@@ -44,7 +44,7 @@ func (i *InlineAnchoringApplier) ApplyAnchoring(
 			difference := newWeights.Fetch(c)
 			value := p.Alternative.Criteria.Fetch(c)
 			newValue := value + scaling.ValuesRange.Diff()*difference
-			newValue = boundIfRequested(parsedParams.Unbounded, newValue, scaling)
+			newValue = boundIfRequested(parsedParams.Unbounded, newValue, &scaling)
 			differences[c] = newValue - value
 			newWeights[c] = newValue
 		}
@@ -68,7 +68,7 @@ func (i *InlineAnchoringApplier) ApplyAnchoring(
 	}, result
 }
 
-func boundIfRequested(unbounded bool, newValue model.Weight, scaling ScaleWithValueRange) model.Weight {
+func boundIfRequested(unbounded bool, newValue model.Weight, scaling *ScaleWithValueRange) model.Weight {
 	if !unbounded {
 		if newValue > scaling.ValuesRange.Max {
 			newValue = scaling.ValuesRange.Max
