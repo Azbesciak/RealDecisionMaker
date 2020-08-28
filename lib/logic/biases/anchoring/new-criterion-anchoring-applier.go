@@ -9,17 +9,17 @@ import (
 
 //go:generate easytags $GOFILE json:camel
 type NewCriterionAnchoringApplier struct {
-	referenceCriterionManager reference_criterion.ReferenceCriteriaManager
 	generator                 utils.SeededValueGenerator
+	referenceCriterionManager reference_criterion.ReferenceCriteriaManager
 }
 
 func NewNewCriterionAnchoringApplier(
-	referenceCriterionManager reference_criterion.ReferenceCriteriaManager,
 	generator utils.SeededValueGenerator,
+	referenceCriterionManager reference_criterion.ReferenceCriteriaManager,
 ) *NewCriterionAnchoringApplier {
 	return &NewCriterionAnchoringApplier{
-		referenceCriterionManager: referenceCriterionManager,
 		generator:                 generator,
+		referenceCriterionManager: referenceCriterionManager,
 	}
 }
 

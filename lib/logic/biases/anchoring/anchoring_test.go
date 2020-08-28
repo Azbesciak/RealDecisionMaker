@@ -70,14 +70,14 @@ func TestAnchoring_Apply(t *testing.T) {
 		anchoringEvaluators:       []AnchoringEvaluator{&LinearAnchoringEvaluator{}, &ExpFromZeroAnchoringEvaluator{}},
 		referencePointsEvaluators: []ReferencePointsEvaluator{&IdealReferenceAlternativeEvaluator{}, &NadirReferenceAlternativeEvaluator{}},
 		anchoringAppliers: []AnchoringApplier{&InlineAnchoringApplier{}, NewNewCriterionAnchoringApplier(
-			*reference_criterion.NewReferenceCriteriaManager([]reference_criterion.ReferenceCriterionFactory{
-				&reference_criterion.ImportanceRatioReferenceCriterionManager{},
-			}),
 			func(seed int64) utils.ValueGenerator {
 				return func() float64 {
 					return 1
 				}
 			},
+			*reference_criterion.NewReferenceCriteriaManager([]reference_criterion.ReferenceCriterionFactory{
+				&reference_criterion.ImportanceRatioReferenceCriterionManager{},
+			}),
 		)},
 	}
 	dmpParams := model.DecisionMakingParams{
