@@ -126,6 +126,10 @@ var biases = model.BiasMap{
 		},
 		[]anchoring.AnchoringApplier{
 			&anchoring.InlineAnchoringApplier{},
+			anchoring.NewNewCriterionAnchoringApplier(
+				utils.RandomBasedSeedValueGenerator,
+				referenceCriterionManager,
+			),
 		},
 	),
 	criteria_concealment.BiasName: criteria_concealment.NewCriteriaConcealment(

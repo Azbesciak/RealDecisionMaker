@@ -428,8 +428,15 @@ The idea is like follows:
      the original criteria values range, but it is also possible to disable this behavior.
      When parameter `unbounded` is set to `true`, resulting criterion value can be negative or much above normal
       criterion values range, depending on the evaluation.
+     There is also a parameter `applyOnNotConsidered` - by default inline anchoring is applied only on *considered* alternatives.
+      When set to `true` it will be also applied on *not considered*.
+     This applier returns as `ApplierResult` differences between original and received criteria values. 
+    - `newCriterion` - achnoring for each reference point will be applied as a new criterion, based on the `referenceCriterion` configured via `params`.
+    New criterion value is an weighted average for influence of each criterion.
+    Applier returns new criterion params: `id`, `type` (same as reference one), `valuesRange` and `methodParameters`.
       
 Method returns following data:
 - `ReferencePoints` - evaluated reference points as alternatives with their criteria values 
 - `CriteriaScaling` - scaling for each criterion used during computations
 - `PerReferencePointsDifferences` - each alternative differences for each reference points with values already computed by the functions.
+- `ApplierResult` - results of applier, specific to the chosen one described before

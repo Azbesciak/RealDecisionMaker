@@ -270,7 +270,51 @@
               }
             ]
           }
-        ]
+        ],
+        "applierResult": {
+          "appliedDifferences": [
+            {
+              "id": "ITA",
+              "criteria": {
+                "efficiency": 0,
+                "power": -0.8024660983197638,
+                "safety": -0.7699269345214699
+              }
+            },
+            {
+              "id": "BEL",
+              "criteria": {
+                "efficiency": 1.735359034813217,
+                "power": -3.774581412693719,
+                "safety": -3.9523187346541517
+              }
+            },
+            {
+              "id": "GER",
+              "criteria": {
+                "efficiency": 0.7491270139815622,
+                "power": -2.3265805583542605,
+                "safety": 1.0345428865998958
+              }
+            },
+            {
+              "id": "AUT",
+              "criteria": {
+                "efficiency": -1.3570391847635137,
+                "power": -1.3624753335654045,
+                "safety": 1.1546066701467996
+              }
+            },
+            {
+              "id": "FRA",
+              "criteria": {
+                "efficiency": -1.2374557322107254,
+                "power": 0,
+                "safety": 0
+              }
+            }
+          ]
+        }
       }
     }
   ]
