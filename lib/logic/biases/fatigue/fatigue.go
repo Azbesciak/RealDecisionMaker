@@ -3,6 +3,7 @@ package fatigue
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-bounding"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
@@ -50,9 +51,9 @@ func (f *Fatigue) Identifier() string {
 }
 
 func (f *Fatigue) Apply(
-	original, current *model.DecisionMakingParams,
+	_, current *model.DecisionMakingParams,
 	props *model.BiasProps,
-	listener *model.BiasListener,
+	_ *model.BiasListener,
 ) *model.BiasedResult {
 	parsedProps := parseProps(props)
 	fun := f.getFatigueFunction(parsedProps)
@@ -60,16 +61,35 @@ func (f *Fatigue) Apply(
 	fatigueRatio := fun.Evaluate(funParams)
 	valueGenerator := f.valueGeneratorSource(parsedProps.RandomSeed)
 	signGenerator := f.signGeneratorSource(parsedProps.RandomSeed)
+	criteria := matchCriteriaWithBoundings(current, props)
 	consideredAlts := blurCriteriaValues(
-		current.ConsideredAlternatives, current.Criteria,
+		current.ConsideredAlternatives, criteria,
 		valueGenerator, signGenerator, fatigueRatio,
 	)
 	notConsideredAlts := blurCriteriaValues(
-		current.NotConsideredAlternatives, current.Criteria,
+		current.NotConsideredAlternatives, criteria,
 		valueGenerator, signGenerator, fatigueRatio,
 	)
 	return prepareResult(notConsideredAlts, consideredAlts, current, fatigueRatio)
+}
 
+type CriterionWithBounding struct {
+	criterion model.Criterion
+	bounding  *criteria_bounding.CriteriaInRangeBounding
+}
+
+func matchCriteriaWithBoundings(dmp *model.DecisionMakingParams, props *model.BiasProps) []CriterionWithBounding {
+	bounding := criteria_bounding.FromParams(props)
+	result := make([]CriterionWithBounding, len(dmp.Criteria))
+	alternatives := dmp.AllAlternatives()
+	for i, c := range dmp.Criteria {
+		valuesRange := model.CriteriaValuesRange(&alternatives, &c)
+		result[i] = CriterionWithBounding{
+			criterion: c,
+			bounding:  bounding.WithRange(valuesRange),
+		}
+	}
+	return result
 }
 
 func prepareResult(
@@ -95,7 +115,7 @@ func prepareResult(
 
 func blurCriteriaValues(
 	alternatives []model.AlternativeWithCriteria,
-	criteria model.Criteria,
+	criteria []CriterionWithBounding,
 	valueGenerator, signGenerator utils.ValueGenerator,
 	fatigueRatio float64,
 ) []model.AlternativeWithCriteria {
@@ -103,13 +123,15 @@ func blurCriteriaValues(
 	for i, a := range alternatives {
 		newWeights := make(model.Weights, len(criteria))
 		for _, c := range criteria {
-			currentValue := a.CriterionRawValue(&c)
+			currentValue := a.CriterionRawValue(&c.criterion)
 			eps := currentValue * valueGenerator() * fatigueRatio
 			sign := 1.0
 			if signGenerator() >= 0.5 {
 				sign = -1
 			}
-			newWeights[c.Id] = currentValue + (eps * sign)
+			blurredValue := currentValue + (eps * sign)
+			boundedBlurredValue := c.bounding.BoundValue(blurredValue)
+			newWeights[c.criterion.Id] = boundedBlurredValue
 		}
 		newAlternatives[i] = *a.WithCriteriaValues(&newWeights)
 	}

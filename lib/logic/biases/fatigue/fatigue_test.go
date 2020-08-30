@@ -57,6 +57,55 @@ func TestFatigue_Apply(t *testing.T) {
 	checkProps(t, expected, result.Props)
 }
 
+func TestFatigue_ApplyWithBounding(t *testing.T) {
+	mixing := Fatigue{
+		valueGeneratorSource: testUtils.CyclicRandomGenerator(0, 10),
+		signGeneratorSource:  testUtils.CyclicRandomGenerator(0, 2),
+		functions:            []FatigueFunction{&ConstFatigueFunction{}},
+	}
+	notConsidered := []model.AlternativeWithCriteria{
+		{Id: "x", Criteria: model.Weights{"1": 1, "2": 2, "3": 3}},
+		{Id: "y", Criteria: model.Weights{"1": 6, "2": 20, "3": 4}},
+	}
+	considered := []model.AlternativeWithCriteria{
+		{Id: "a", Criteria: model.Weights{"1": 7, "2": 3, "3": 1}},
+		{Id: "b", Criteria: model.Weights{"1": 6, "2": 5, "3": 10}},
+	}
+	criteria := model.Criteria{
+		{Id: "1", Type: model.Gain},
+		{Id: "2", Type: model.Gain},
+		{Id: "3", Type: model.Gain},
+	}
+	listener := model.BiasListener(&testUtils.DummyBiasListener{})
+	m := model.BiasProps(map[string]interface{}{
+		"function": FatConstFunc,
+		"params": map[string]interface{}{
+			"value": 4,
+		},
+		"disallowNegativeValues": true,
+		"randomSeed":             123,
+	})
+	original := &model.DecisionMakingParams{
+		NotConsideredAlternatives: notConsidered,
+		ConsideredAlternatives:    considered,
+		Criteria:                  criteria,
+		MethodParameters:          nil,
+	}
+	result := mixing.Apply(original, original, &m, &listener)
+	expected := FatigueResult{
+		EffectiveFatigueRatio: 4,
+		ConsideredAlternatives: []model.AlternativeWithCriteria{
+			{Id: "a", Criteria: model.Weights{"1": 4.2, "2": 5.4, "3": 0}},
+			{Id: "b", Criteria: model.Weights{"1": 15.6, "2": 0, "3": 34}},
+		},
+		NotConsideredAlternatives: []model.AlternativeWithCriteria{
+			{Id: "x", Criteria: model.Weights{"1": 0, "2": 8.4, "3": 0}},
+			{Id: "y", Criteria: model.Weights{"1": 6, "2": 12, "3": 7.2}},
+		},
+	}
+	checkProps(t, expected, result.Props)
+}
+
 func checkProps(t *testing.T, expected FatigueResult, actual model.BiasProps) {
 	v, ok := actual.(FatigueResult)
 	if !ok {
