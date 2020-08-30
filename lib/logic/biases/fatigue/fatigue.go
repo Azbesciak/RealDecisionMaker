@@ -30,6 +30,7 @@ type FatigueParams struct {
 	RandomSeed int64       `json:"randomSeed"`
 }
 
+// +CriteriaBounding
 type Fatigue struct {
 	valueGeneratorSource utils.SeededValueGenerator
 	signGeneratorSource  utils.SeededValueGenerator

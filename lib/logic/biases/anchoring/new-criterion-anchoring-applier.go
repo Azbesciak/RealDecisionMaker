@@ -29,6 +29,7 @@ func (n *NewCriterionAnchoringApplier) Identifier() string {
 	return NewCriterionAnchoringApplierName
 }
 
+// +RefrenceCriterion
 type NewCriterionAnchoringApplierParams struct {
 	RandomSeed int64 `json:"randomSeed"`
 }

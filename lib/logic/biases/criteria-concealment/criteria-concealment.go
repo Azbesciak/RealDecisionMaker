@@ -24,6 +24,8 @@ func NewCriteriaConcealment(
 	}
 }
 
+// +CriteriaBounding
+// +ReferenceCriterion
 type CriteriaConcealmentParams struct {
 	RandomSeed          int64   `json:"randomSeed"`
 	NewCriterionScaling float64 `json:"newCriterionScaling"`

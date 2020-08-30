@@ -14,7 +14,8 @@ type AnchoringParams struct {
 	Loss                  FunctionDefinition     `json:"loss"`
 	Gain                  FunctionDefinition     `json:"gain"`
 	ReferencePoints       FunctionDefinition     `json:"referencePoints"`
-	Applier               FunctionDefinition     `json:"applier"`
+	// +CriteriaBounding
+	Applier FunctionDefinition `json:"applier"`
 }
 
 type AnchoringAlternative struct {
