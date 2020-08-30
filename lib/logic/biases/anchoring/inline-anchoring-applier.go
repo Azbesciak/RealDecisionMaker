@@ -15,7 +15,6 @@ func (i *InlineAnchoringApplier) Identifier() string {
 }
 
 type InlineAnchoringApplierParams struct {
-	Unbounded            bool `json:"unbounded"`
 	ApplyOnNotConsidered bool `json:"applyOnNotConsidered"`
 }
 
@@ -30,21 +29,21 @@ type InlineAnchoringApplierResult struct {
 func (i *InlineAnchoringApplier) ApplyAnchoring(
 	dmp *model.DecisionMakingParams,
 	perReferencePointDiffs *[]ReferencePointsDifference,
-	criteriaScaling CriteriaScaling,
+	boundingsWithScales BoundingsWithScales,
 	params FunctionParams,
-	listener *model.BiasListener,
+	_ *model.BiasListener,
 ) (*model.DecisionMakingParams, AnchoringApplierResult) {
 	parsedParams := params.(*InlineAnchoringApplierParams)
 	newAlternatives := make([]model.AlternativeWithCriteria, len(*perReferencePointDiffs))
 	appliedDifferences := make([]model.AlternativeWithCriteria, len(*perReferencePointDiffs))
 	for i, p := range *perReferencePointDiffs {
 		newWeights := *arithmeticAverage(p.ReferencePointsDifference)
-		differences := make(model.Weights, len(criteriaScaling))
-		for c, scaling := range criteriaScaling {
+		differences := make(model.Weights, len(boundingsWithScales))
+		for c, scaling := range boundingsWithScales {
 			difference := newWeights.Fetch(c)
 			value := p.Alternative.Criteria.Fetch(c)
-			newValue := value + scaling.ValuesRange.Diff()*difference
-			newValue = boundIfRequested(parsedParams.Unbounded, newValue, &scaling)
+			newValue := value + scaling.scaling.ValuesRange.Diff()*difference
+			newValue = scaling.bounding.BoundValue(newValue)
 			differences[c] = newValue - value
 			newWeights[c] = newValue
 		}
@@ -66,17 +65,6 @@ func (i *InlineAnchoringApplier) ApplyAnchoring(
 		Criteria:                  dmp.Criteria,
 		MethodParameters:          dmp.MethodParameters,
 	}, result
-}
-
-func boundIfRequested(unbounded bool, newValue model.Weight, scaling *ScaleWithValueRange) model.Weight {
-	if !unbounded {
-		if newValue > scaling.ValuesRange.Max {
-			newValue = scaling.ValuesRange.Max
-		} else if newValue < scaling.ValuesRange.Min {
-			newValue = scaling.ValuesRange.Min
-		}
-	}
-	return newValue
 }
 
 func arithmeticAverage(points []ReferencePointDifference) *model.Weights {

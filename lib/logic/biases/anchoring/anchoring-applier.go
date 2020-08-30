@@ -11,7 +11,7 @@ type AnchoringApplier interface {
 	ApplyAnchoring(
 		dmp *model.DecisionMakingParams,
 		perReferencePointDiffs *[]ReferencePointsDifference,
-		criteriaScaling CriteriaScaling,
+		boundingsWithScales BoundingsWithScales,
 		params FunctionParams,
 		listener *model.BiasListener,
 	) (*model.DecisionMakingParams, AnchoringApplierResult)

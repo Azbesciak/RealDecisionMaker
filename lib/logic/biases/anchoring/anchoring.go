@@ -3,6 +3,7 @@ package anchoring
 import (
 	"fmt"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-bounding"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
@@ -73,11 +74,15 @@ func (a *Anchoring) Apply(
 	applier := a.getAnchoringApplier(&parsedProps.Applier)
 	allAlternatives := current.AllAlternatives()
 	referencePoints := a.evaluateAnchoringAlternatives(allAlternatives, parsedProps, &current.Criteria)
+	bounding := criteria_bounding.FromParams(&parsedProps.Applier.Params)
 	criteriaScaling := evaluatePerCriterionNormalizationScaleRatio(&current.Criteria, allAlternatives)
 	perReferencePointsDiffs := calculateDiffsPerReferencePoint(
 		allAlternatives, referencePoints, &current.Criteria, criteriaScaling, loss, gain,
 	)
-	newDmp, applierResult := applier.fun.ApplyAnchoring(current, &perReferencePointsDiffs, criteriaScaling, applier.params, listener)
+	matchedBoundingsWithScales := matchScalingWithBounding(bounding, criteriaScaling)
+	newDmp, applierResult := applier.fun.ApplyAnchoring(
+		current, &perReferencePointsDiffs, matchedBoundingsWithScales, applier.params, listener,
+	)
 	return &model.BiasedResult{
 		DMP: newDmp,
 		Props: AnchoringResult{
@@ -128,3 +133,22 @@ func fetchAnchoringAlternativesWithCriteria(alternatives *[]model.AlternativeWit
 	}
 	return &result
 }
+
+func matchScalingWithBounding(bounding *criteria_bounding.CriteriaBounding, scaling CriteriaScaling) BoundingsWithScales {
+	result := make(BoundingsWithScales, len(scaling))
+	for c, s := range scaling {
+		valuesRange := s.ValuesRange
+		result[c] = BoundingWithScale{
+			bounding: bounding.WithRange(&valuesRange),
+			scaling:  s,
+		}
+	}
+	return result
+}
+
+type BoundingWithScale struct {
+	bounding *criteria_bounding.CriteriaInRangeBounding
+	scaling  ScaleWithValueRange
+}
+
+type BoundingsWithScales = map[string]BoundingWithScale

@@ -30,13 +30,11 @@ func (n *NewCriterionAnchoringApplier) Identifier() string {
 }
 
 type NewCriterionAnchoringApplierParams struct {
-	Unbounded  bool  `json:"unbounded"`
 	RandomSeed int64 `json:"randomSeed"`
 }
 
 func (n *NewCriterionAnchoringApplier) BlankParams() FunctionParams {
 	return &utils.Map{
-		"unbounded":  false,
 		"randomSeed": 0,
 	}
 }
@@ -96,7 +94,7 @@ type NewCriterionAnchoringApplierResult struct {
 func (n *NewCriterionAnchoringApplier) ApplyAnchoring(
 	dmp *model.DecisionMakingParams,
 	perReferencePointDiffs *[]ReferencePointsDifference,
-	criteriaScaling CriteriaScaling,
+	boundingsWithScales BoundingsWithScales,
 	params FunctionParams,
 	listener *model.BiasListener,
 ) (*model.DecisionMakingParams, AnchoringApplierResult) {
@@ -114,10 +112,10 @@ func (n *NewCriterionAnchoringApplier) ApplyAnchoring(
 		methodParams:       dmp.MethodParameters,
 	}
 	normalizeCriteriaByTotalValue(criteria)
-	if scaling, ok := criteriaScaling[state.referenceCriterion.Id]; !ok {
+	if scaling, ok := boundingsWithScales[state.referenceCriterion.Id]; !ok {
 		panic(fmt.Errorf("scaling for criterion '%s' not found", state.referenceCriterion.Id))
 	} else {
-		newAlternatives := addAnchoringCriteriaToAlternatives(perReferencePointDiffs, &state, &criteria, &parsedParams, &scaling)
+		newAlternatives := addAnchoringCriteriaToAlternatives(perReferencePointDiffs, &state, &criteria, &scaling)
 		result := NewCriterionAnchoringApplierResult{
 			ReferenceCriterion: *state.referenceCriterion,
 			AddedCriteria:      state.addedCriteria,
@@ -135,10 +133,9 @@ func addAnchoringCriteriaToAlternatives(
 	perReferencePointDiffs *[]ReferencePointsDifference,
 	state *additionalCriterionAnchoringState,
 	criteria *model.WeightedCriteria,
-	parsedParams *NewCriterionAnchoringApplierParams,
-	scaling *ScaleWithValueRange,
+	bounding *BoundingWithScale,
 ) []model.AlternativeWithCriteria {
-	diff := scaling.ValuesRange.Diff() / 2
+	diff := bounding.scaling.ValuesRange.Diff() / 2
 	newAlternatives := make([]model.AlternativeWithCriteria, len(*perReferencePointDiffs))
 	for i, p := range *perReferencePointDiffs {
 		alt := p.Alternative
@@ -150,7 +147,7 @@ func addAnchoringCriteriaToAlternatives(
 				criterionValue += value * c.Weight
 			}
 			newValue := diff + diff*criterionValue
-			newValue = boundIfRequested(parsedParams.Unbounded, newValue, scaling)
+			newValue = bounding.bounding.BoundValue(newValue)
 			alt = *alt.WithCriterion(anchoringCriterion.Id, newValue)
 			anchoringCriterion.AlternativesValues[alt.Id] = newValue
 			valuesRange := &anchoringCriterion.ValuesRange

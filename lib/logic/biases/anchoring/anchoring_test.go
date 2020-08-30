@@ -96,7 +96,7 @@ func TestAnchoring_Apply(t *testing.T) {
 		fields: anchoringFields,
 		args: args{
 			current:  &dmpParams,
-			props:    generateProps("inline", nil),
+			props:    generateProps("inline", utils.Map{"allowedValuesRangeScaling": 1}),
 			listener: &listener,
 		},
 		want: &model.BiasedResult{
@@ -183,7 +183,8 @@ func TestAnchoring_Apply(t *testing.T) {
 		args: args{
 			current: &dmpParams,
 			props: generateProps("inline", utils.Map{
-				"applyOnNotConsidered": true,
+				"allowedValuesRangeScaling": 1,
+				"applyOnNotConsidered":      true,
 			}),
 			listener: &listener,
 		},
@@ -281,8 +282,9 @@ func TestAnchoring_Apply(t *testing.T) {
 		args: args{
 			current: &dmpParams,
 			props: generateProps("newCriterion", utils.Map{
-				"referenceCriterionType": "importanceRatio",
-				"newCriterionImportance": 0,
+				"referenceCriterionType":    "importanceRatio",
+				"allowedValuesRangeScaling": 1,
+				"newCriterionImportance":    0,
 			}),
 			listener: &listener,
 		},
