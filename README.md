@@ -294,6 +294,13 @@ reference criterion will be chosen based on its influence on the final result.
 - `randomWeighted` - has parameter `newCriterionRandomSeed`, criterion weight is calculated by equation `weight = minWeight/value`,
  so the most influencing one have the lowest change to be the reference criterion.
 
+##### Criteria bounding
+When we operate on criteria values, these can be mutated to the ratio not acceptable from realistic point of view, for example can exceed the possible limit or has negative value.
+We are operating in mathematical operations, so these issues should not make a difference - we need only relations and *some values*.
+However, there is a possibility for biases where new criterion is generated or existing is mutated, to 
+- limit values in some boundaries, depending on criterion values range; numeric parameter `allowedValuesRangeScaling`, which describes ratio of original value range allowed for this criterion. Negative values are equal to no limits. (default `-1`)
+- disallow negative values - then they are trimmed to 0 (`disallowNegativeValues` - `true` or `false`, default `false`)
+
 ### Criteria omission
 - [implementation](lib/logic/biases/criteria-omission)
 
@@ -317,6 +324,7 @@ Sometimes we consider some criteria, but don't reveal this fact to the audience/
 - `NewCriterionScaling` - `float`, option to equally shrink or widen newly created criterion values range. *Cannot be zero*
 
 Also, new criterion parametrization is allowed like described in [reference criterion](#reference-criterion).
+Criterion can be scaled, and therefore exceed positive values boundaries; therefore it is allowed to bound it with *criteria bounding*.
 
 The method returns:
 - `AddedCriteria` - list of added criteria (empty or 1). Each item is an object with:
@@ -378,7 +386,7 @@ When we are tired our mental abilities get weaker over time. It also influences 
 
 Output from the fatigue function is used as a coefficient in criterion value blur, which depends also on the criterion value range.
 Blur is added or subtracted from the current criterion value depending on the generated sign.
-*The result may be also negative!*
+*The result may be also negative!* or exceed acceptable limits, so we allows to use *criteria bounding* for them - applied on the bias params level.
 
 The method returns:
 - `EffectiveFatigueRatio` - output of the fatigue function
@@ -426,14 +434,14 @@ The idea is like follows:
     - `inline` - for every alternative applies averaged reference points differences directly on the alternative criteria.
      Processed differences are rescaled to the original criteria range. By default, results are trimmed to 
      the original criteria values range, but it is also possible to disable this behavior.
-     When parameter `unbounded` is set to `true`, resulting criterion value can be negative or much above normal
-      criterion values range, depending on the evaluation.
      There is also a parameter `applyOnNotConsidered` - by default inline anchoring is applied only on *considered* alternatives.
       When set to `true` it will be also applied on *not considered*.
      This applier returns as `ApplierResult` differences between original and received criteria values. 
     - `newCriterion` - achnoring for each reference point will be applied as a new criterion, based on the `referenceCriterion` configured via `params`.
     New criterion value is an weighted average for influence of each criterion.
     Applier returns new criterion params: `id`, `type` (same as reference one), `valuesRange` and `methodParameters`.
+    
+    Each applier in params accepts values for *criteria bounding*. 
       
 Method returns following data:
 - `ReferencePoints` - evaluated reference points as alternatives with their criteria values 

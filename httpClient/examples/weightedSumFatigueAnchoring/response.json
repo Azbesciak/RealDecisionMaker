@@ -70,11 +70,11 @@
         "criteria": {
           "efficiency": 9.199829387086972,
           "power": 1.6497526943166325,
-          "safety": -3.9523187346541517
+          "safety": 0
         }
       },
       "evaluation": {
-        "value": 6.89726335
+        "value": 10.84958208
       },
       "betterThanOrSameAs": []
     }
@@ -286,7 +286,7 @@
               "criteria": {
                 "efficiency": 1.735359034813217,
                 "power": -3.774581412693719,
-                "safety": -3.9523187346541517
+                "safety": 0
               }
             },
             {

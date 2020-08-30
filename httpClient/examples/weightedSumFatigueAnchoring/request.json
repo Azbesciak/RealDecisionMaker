@@ -113,7 +113,8 @@
         "applier": {
           "function": "inline",
           "params": {
-            "unbounded": true
+            "allowedValuesRangeScaling": -1,
+            "disallowNegativeValues": false
           }
         },
         "referencePoints": {
