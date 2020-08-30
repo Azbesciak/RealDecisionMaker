@@ -291,16 +291,16 @@ func TestAnchoring_Apply(t *testing.T) {
 		want: &model.BiasedResult{
 			DMP: &model.DecisionMakingParams{
 				NotConsideredAlternatives: []model.AlternativeWithCriteria{{
-					Id: notConsideredCriteria[0].Id, Criteria: model.Weights{"a": 5, "b": 4, "c": 9, "__anchoring_criterion_ideal": 1},
+					Id: notConsideredCriteria[0].Id, Criteria: model.Weights{"a": 5, "b": 4, "c": 9, "__anchoring_criterion_ideal": 1.8333333333333333},
 				}, {
-					Id: notConsideredCriteria[1].Id, Criteria: model.Weights{"a": 3, "b": 1, "c": 1, "__anchoring_criterion_ideal": 1.5833333333333335},
+					Id: notConsideredCriteria[1].Id, Criteria: model.Weights{"a": 3, "b": 1, "c": 1, "__anchoring_criterion_ideal": 2.5833333333333335},
 				}},
 				ConsideredAlternatives: []model.AlternativeWithCriteria{{
-					Id: consideredAlternatives[0].Id, Criteria: model.Weights{"a": 1, "b": 2, "c": 3, "__anchoring_criterion_ideal": 1.3333333333333335},
+					Id: consideredAlternatives[0].Id, Criteria: model.Weights{"a": 1, "b": 2, "c": 3, "__anchoring_criterion_ideal": 2.3333333333333335},
 				}, {
-					Id: consideredAlternatives[1].Id, Criteria: model.Weights{"a": 2, "b": 0, "c": 2, "__anchoring_criterion_ideal": 1},
+					Id: consideredAlternatives[1].Id, Criteria: model.Weights{"a": 2, "b": 0, "c": 2, "__anchoring_criterion_ideal": 1.9583333333333335},
 				}, {
-					Id: consideredAlternatives[2].Id, Criteria: model.Weights{"a": 4, "b": 3, "c": 4, "__anchoring_criterion_ideal": 1.75},
+					Id: consideredAlternatives[2].Id, Criteria: model.Weights{"a": 4, "b": 3, "c": 4, "__anchoring_criterion_ideal": 2.75},
 				}},
 				Criteria: append(criteria, model.Criterion{Id: "__anchoring_criterion_ideal", Type: model.Gain}),
 				MethodParameters: testUtils.DummyMethodParameters{
@@ -367,11 +367,11 @@ func TestAnchoring_Apply(t *testing.T) {
 							Criteria: []string{"__anchoring_criterion_ideal"},
 						},
 						AlternativesValues: model.Weights{
-							"1": 1.3333333333333335, "2": 1, "3": 1.75, "4": 1, "5": 1.5833333333333335,
+							"1": 2.3333333333333335, "2": 1.9583333333333335, "3": 2.75, "4": 1.8333333333333333, "5": 2.5833333333333335,
 						},
 						ValuesRange: utils.ValueRange{
-							Min: 1,
-							Max: 1.75,
+							Min: 1.8333333333333333,
+							Max: 2.75,
 						},
 					}},
 				},

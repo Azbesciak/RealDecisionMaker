@@ -146,7 +146,7 @@ func addAnchoringCriteriaToAlternatives(
 				value := r.Coefficients.Fetch(c.Id)
 				criterionValue += value * c.Weight
 			}
-			newValue := diff + diff*criterionValue
+			newValue := bounding.scaling.ValuesRange.Min + diff + diff*criterionValue
 			newValue = bounding.bounding.BoundValue(newValue)
 			alt = *alt.WithCriterion(anchoringCriterion.Id, newValue)
 			anchoringCriterion.AlternativesValues[alt.Id] = newValue
