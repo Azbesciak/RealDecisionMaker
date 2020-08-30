@@ -2,6 +2,7 @@ package criteria_concealment
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-bounding"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
 
@@ -18,10 +19,11 @@ func (c *CriteriaConcealment) addCriterion(
 	parsedProps CriteriaConcealmentParams,
 	originalParams, resParams *model.DecisionMakingParams,
 	listener *model.BiasListener,
+	bounding *criteria_bounding.CriteriaBounding,
 ) (*model.DecisionMakingParams, []AddedCriterion) {
 	generator := c.generatorSource(parsedProps.RandomSeed)
 	criterionBase := c.generateNewCriterionBase(listener, parsedProps.NewCriterionScaling, props, originalParams, resParams)
-	addResult := generateCriterionValuesForAlternatives(criterionBase.newCriterion, resParams, generator)
+	addResult := generateCriterionValuesForAlternatives(criterionBase.newCriterion, resParams, generator, bounding)
 	addedCriterionParams := (*listener).OnCriterionAdded(criterionBase.newCriterion, criterionBase.referenceCriterion, originalParams.MethodParameters, generator)
 	finalParams := (*listener).Merge(resParams.MethodParameters, addedCriterionParams)
 	newCriteria := resParams.Criteria.Add(criterionBase.newCriterion)
@@ -75,9 +77,10 @@ func generateCriterionValuesForAlternatives(
 	newCriterion *model.Criterion,
 	resParams *model.DecisionMakingParams,
 	valueGenerator utils.ValueGenerator,
+	bounding *criteria_bounding.CriteriaBounding,
 ) *addCriterionResult {
 	generator := utils.NewValueInRangeGenerator(valueGenerator, newCriterion.ValuesRange)
-	sortedAlternatives, alternativesValues := assignNewCriterionToAlternatives(resParams, generator, newCriterion)
+	sortedAlternatives, alternativesValues := assignNewCriterionToAlternatives(resParams, generator, newCriterion, bounding)
 	return &addCriterionResult{
 		notConsideredAlternatives: model.UpdateAlternatives(&resParams.NotConsideredAlternatives, sortedAlternatives),
 		consideredAlternatives:    model.UpdateAlternatives(&resParams.ConsideredAlternatives, sortedAlternatives),
@@ -89,13 +92,16 @@ func assignNewCriterionToAlternatives(
 	resParams *model.DecisionMakingParams,
 	generator utils.ValueGenerator,
 	newCriterion *model.Criterion,
+	bounding *criteria_bounding.CriteriaBounding,
 ) (*[]model.AlternativeWithCriteria, model.Weights) {
 	allAlternatives := resParams.AllAlternatives()
 	sortedAlternatives := model.SortAlternativesByName(&allAlternatives)
 	alternativesValues := make(model.Weights, len(*sortedAlternatives))
+	boundingInRange := bounding.WithRange(newCriterion.ValuesRange)
 	sortedAlternatives = model.AddCriterionToAlternatives(sortedAlternatives, newCriterion,
 		func(a *model.AlternativeWithCriteria) model.Weight {
 			newValue := generator()
+			newValue = boundingInRange.BoundValue(newValue)
 			alternativesValues[a.Id] = newValue
 			return newValue
 		})

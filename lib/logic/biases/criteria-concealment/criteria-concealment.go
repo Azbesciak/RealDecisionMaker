@@ -2,6 +2,7 @@ package criteria_concealment
 
 import (
 	"github.com/Azbesciak/RealDecisionMaker/lib/model"
+	"github.com/Azbesciak/RealDecisionMaker/lib/model/criteria-bounding"
 	"github.com/Azbesciak/RealDecisionMaker/lib/model/reference-criterion"
 	"github.com/Azbesciak/RealDecisionMaker/lib/utils"
 )
@@ -44,7 +45,8 @@ func (c *CriteriaConcealment) Apply(
 	listener *model.BiasListener,
 ) *model.BiasedResult {
 	parsedProps := *parseProps(props)
-	resParams, addedCriterion := c.addCriterion(props, parsedProps, original, current, listener)
+	bounding := criteria_bounding.FromParams(props)
+	resParams, addedCriterion := c.addCriterion(props, parsedProps, original, current, listener, bounding)
 	return &model.BiasedResult{
 		DMP: resParams,
 		Props: CriteriaConcealmentResult{
