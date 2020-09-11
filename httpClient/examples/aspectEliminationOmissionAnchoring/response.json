@@ -1,0 +1,159 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "broccoli",
+        "criteria": {
+          "nut. facts": 6,
+          "price": 4,
+          "seas. av.": 5,
+          "taste": 6
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {},
+        "thresholdsIndex": 1
+      },
+      "betterThanOrSameAs": [
+        "carrot"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "carrot",
+        "criteria": {
+          "nut. facts": 7,
+          "price": 2,
+          "seas. av.": 7,
+          "taste": 5
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {
+          "seas. av.": 5
+        },
+        "thresholdsIndex": 0
+      },
+      "betterThanOrSameAs": [
+        "broad bean"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "broad bean",
+        "criteria": {
+          "nut. facts": 10,
+          "price": 9,
+          "seas. av.": 2,
+          "taste": 8
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {
+          "price": 5
+        },
+        "thresholdsIndex": 0
+      },
+      "betterThanOrSameAs": [
+        "kidney bean"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "kidney bean",
+        "criteria": {
+          "nut. facts": 9,
+          "price": 7,
+          "seas. av.": 6,
+          "taste": 9
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {
+          "price": 5
+        },
+        "thresholdsIndex": 0
+      },
+      "betterThanOrSameAs": [
+        "cucumber"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "cucumber",
+        "criteria": {
+          "nut. facts": 4,
+          "price": 3,
+          "seas. av.": 7,
+          "taste": 4
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {
+          "nut. facts": 5
+        },
+        "thresholdsIndex": 0
+      },
+      "betterThanOrSameAs": [
+        "cauliflower"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "cauliflower",
+        "criteria": {
+          "nut. facts": 4,
+          "price": 4,
+          "seas. av.": 5,
+          "taste": 4
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {
+          "nut. facts": 5
+        },
+        "thresholdsIndex": 0
+      },
+      "betterThanOrSameAs": [
+        "eggplant"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "eggplant",
+        "criteria": {
+          "nut. facts": 3,
+          "price": 6,
+          "seas. av.": 5,
+          "taste": 2
+        }
+      },
+      "evaluation": {
+        "notSatisfiedThreshold": {
+          "nut. facts": 5
+        },
+        "thresholdsIndex": 0
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": [
+    {
+      "name": "criteriaOmission",
+      "disabled": false,
+      "applyProbability": 1,
+      "props": {
+        "omittedCriteria": [
+          {
+            "id": "smell",
+            "type": "gain",
+            "valuesRange": {
+              "min": 0,
+              "max": 10
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

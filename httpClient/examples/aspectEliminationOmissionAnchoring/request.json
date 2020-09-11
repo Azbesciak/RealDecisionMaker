@@ -1,0 +1,202 @@
+{
+  "preferenceFunction": "aspectEliminationHeuristic",
+  "knownAlternatives": [
+    {
+      "id": "spinach",
+      "criteria": {
+        "taste": 4,
+        "smell": 3,
+        "nut. facts": 7,
+        "seas. av.": 7,
+        "price": 7
+      }
+    },
+    {
+      "id": "cauliflower",
+      "criteria": {
+        "taste": 4,
+        "smell": 6,
+        "nut. facts": 4,
+        "seas. av.": 5,
+        "price": 4
+      }
+    },
+    {
+      "id": "broccoli",
+      "criteria": {
+        "taste": 6,
+        "smell": 5,
+        "nut. facts": 6,
+        "seas. av.": 5,
+        "price": 4
+      }
+    },
+    {
+      "id": "carrot",
+      "criteria": {
+        "taste": 5,
+        "smell": 4,
+        "nut. facts": 7,
+        "seas. av.": 7,
+        "price": 2
+      }
+    },
+    {
+      "id": "broad bean",
+      "criteria": {
+        "taste": 8,
+        "smell": 5,
+        "nut. facts": 10,
+        "seas. av.": 2,
+        "price": 9
+      }
+    },
+    {
+      "id": "kidney bean",
+      "criteria": {
+        "taste": 9,
+        "smell": 5,
+        "nut. facts": 9,
+        "seas. av.": 6,
+        "price": 7
+      }
+    },
+    {
+      "id": "cucumber",
+      "criteria": {
+        "taste": 4,
+        "smell": 4,
+        "nut. facts": 4,
+        "seas. av.": 7,
+        "price": 3
+      }
+    },
+    {
+      "id": "eggplant",
+      "criteria": {
+        "taste": 2,
+        "smell": 3,
+        "nut. facts": 3,
+        "seas. av.": 5,
+        "price": 6
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "taste",
+      "type": "gain",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "smell",
+      "type": "gain",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "nut. facts",
+      "type": "gain",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "seas. av.",
+      "type": "cost",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "price",
+      "type": "cost",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    }
+  ],
+  "choseToMake": [
+    "cauliflower",
+    "broccoli",
+    "carrot",
+    "broad bean",
+    "kidney bean",
+    "cucumber",
+    "eggplant"
+  ],
+  "methodParameters": {
+    "weights": {
+      "taste": 3,
+      "smell": 5,
+      "nut. facts": 9,
+      "seas. av.": 4,
+      "price": 5
+    },
+    "randomSeed": 258,
+    "function": "idealAdditiveCoefficient",
+    "params": {
+      "minValue": 0.5,
+      "maxValue": 0.9,
+      "coefficient": 0.2
+    },
+    "randomAlternativesOrdering": true
+  },
+  "biases": [
+    {
+      "name": "criteriaOmission",
+      "disabled": false,
+      "props": {
+        "ratio": 0.2,
+        "min": 1,
+        "max": 1,
+        "ordering": "random",
+        "randomSeed": 2
+      }
+    },
+    {
+      "name": "anchoring",
+      "disabled": false,
+      "props": {
+        "anchoringAlternatives": [
+          {
+            "alternative": "spinach",
+            "value": 1
+          }
+        ],
+        "loss": {
+          "function": "expFromZero",
+          "params": {
+            "alpha": 0.02,
+            "multiplier": 1
+          }
+        },
+        "gain": {
+          "function": "linear",
+          "params": {
+            "a": 0.5,
+            "b": 0.01
+          }
+        },
+        "applier": {
+          "function": "inline",
+          "params": {
+            "allowedValuesRangeScaling": 2,
+            "disallowNegativeValues": true
+          }
+        },
+        "referencePoints": {
+          "function": "ideal"
+        }
+      }
+    }
+  ]
+}
