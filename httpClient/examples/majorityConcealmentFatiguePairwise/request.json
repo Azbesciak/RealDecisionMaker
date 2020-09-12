@@ -1,0 +1,163 @@
+{
+  "preferenceFunction": "majorityHeuristic",
+  "knownAlternatives": [
+    {
+      "id": "Apple",
+      "criteria": {
+        "screen": 6,
+        "storage": 2,
+        "RAM": 3,
+        "camera": 10,
+        "price": 9
+      }
+    },
+    {
+      "id": "Samsung",
+      "criteria": {
+        "screen": 6,
+        "storage": 6,
+        "RAM": 8,
+        "camera": 7,
+        "price": 8
+      }
+    },
+    {
+      "id": "Huawei",
+      "criteria": {
+        "screen": 5,
+        "storage": 4,
+        "RAM": 6,
+        "camera": 9,
+        "price": 6
+      }
+    },
+    {
+      "id": "Xiaomi",
+      "criteria": {
+        "screen": 4,
+        "storage": 3,
+        "RAM": 4,
+        "camera": 3,
+        "price": 4
+      }
+    },
+    {
+      "id": "Sony",
+      "criteria": {
+        "screen": 5,
+        "storage": 4,
+        "RAM": 6,
+        "camera": 4,
+        "price": 8
+      }
+    },
+    {
+      "id": "LG",
+      "criteria": {
+        "screen": 3,
+        "storage": 3,
+        "RAM": 4,
+        "camera": 2,
+        "price": 5
+      }
+    },
+    {
+      "id": "OnePlus",
+      "criteria": {
+        "screen": 4,
+        "storage": 5,
+        "RAM": 6,
+        "camera": 8,
+        "price": 6
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "screen",
+      "type": "gain",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "storage",
+      "type": "gain",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "RAM",
+      "type": "gain",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "camera",
+      "type": "gain",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    },
+    {
+      "id": "price",
+      "type": "cost",
+      "valuesRange": {
+        "min": 0,
+        "max": 10
+      }
+    }
+  ],
+  "choseToMake": [
+    "Apple",
+    "Samsung"
+  ],
+  "methodParameters": {
+    "weights": {
+      "screen": 6,
+      "storage": 3,
+      "RAM": 4,
+      "camera": 5,
+      "price": 3
+    },
+    "randomSeed": 147,
+    "randomAlternativesOrdering": true,
+    "drawResolution": "allow"
+  },
+  "biasApplyRandomSeed": 666,
+  "biases": [
+    {
+      "name": "criteriaConcealment",
+      "disabled": false,
+      "applyProbability": 1,
+      "props": {
+        "referenceCriterionType": "importanceRatio",
+        "newCriterionImportance": 0,
+        "newCriterionScaling": 1.5,
+        "allowedValuesRangeScaling": 0.75,
+        "randomSeed": 1023,
+        "disallowNegativeValues": true
+      }
+    },
+    {
+      "name": "fatigue",
+      "props": {
+        "function": "expFromZero",
+        "params": {
+          "alpha": 0.002,
+          "multiplier": 2,
+          "queryNumber": 21
+        },
+        "randomSeed": 12345678,
+        "allowedValuesRangeScaling": 2,
+        "disallowNegativeValues": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+<html lang="pl">
+<body>
+<pre id="container"></pre>
+</body>
+<script>
+    const apiRoot = "http://localhost:8080"
+    const comparisons = [
+        ["Samsung", "Apple"],
+        ["Huawei", "Xiaomi"],
+        ["Sony", "LG"],
+        ["Sony", "Huawei"],
+        ["Huawei", "OnePlus"],
+        ["OnePlus", "Sony"],
+        ["Samsung", "Huawei"],
+        ["LG", "Samsung"],
+        ["Apple", "Huawei"],
+        ["Apple", "Samsung"]
+    ];
+
+    function prepareQuery(choseToMake, queryNumber) {
+        return {
+            "preferenceFunction": "majorityHeuristic",
+            "knownAlternatives": [
+                {
+                    "id": "Apple",
+                    "criteria": {
+                        "screen": 6,
+                        "storage": 2,
+                        "RAM": 3,
+                        "camera": 10,
+                        "price": 9
+                    }
+                },
+                {
+                    "id": "Samsung",
+                    "criteria": {
+                        "screen": 6,
+                        "storage": 6,
+                        "RAM": 8,
+                        "camera": 7,
+                        "price": 8
+                    }
+                },
+                {
+                    "id": "Huawei",
+                    "criteria": {
+                        "screen": 5,
+                        "storage": 4,
+                        "RAM": 6,
+                        "camera": 9,
+                        "price": 6
+                    }
+                },
+                {
+                    "id": "Xiaomi",
+                    "criteria": {
+                        "screen": 4,
+                        "storage": 3,
+                        "RAM": 4,
+                        "camera": 3,
+                        "price": 4
+                    }
+                },
+                {
+                    "id": "Sony",
+                    "criteria": {
+                        "screen": 5,
+                        "storage": 4,
+                        "RAM": 6,
+                        "camera": 4,
+                        "price": 8
+                    }
+                },
+                {
+                    "id": "LG",
+                    "criteria": {
+                        "screen": 3,
+                        "storage": 3,
+                        "RAM": 4,
+                        "camera": 2,
+                        "price": 5
+                    }
+                },
+                {
+                    "id": "OnePlus",
+                    "criteria": {
+                        "screen": 4,
+                        "storage": 5,
+                        "RAM": 6,
+                        "camera": 8,
+                        "price": 6
+                    }
+                }
+            ],
+            "criteria": [
+                {
+                    "id": "screen",
+                    "type": "gain",
+                    "valuesRange": {
+                        "min": 0,
+                        "max": 10
+                    }
+                },
+                {
+                    "id": "storage",
+                    "type": "gain",
+                    "valuesRange": {
+                        "min": 0,
+                        "max": 10
+                    }
+                },
+                {
+                    "id": "RAM",
+                    "type": "gain",
+                    "valuesRange": {
+                        "min": 0,
+                        "max": 10
+                    }
+                },
+                {
+                    "id": "camera",
+                    "type": "gain",
+                    "valuesRange": {
+                        "min": 0,
+                        "max": 10
+                    }
+                },
+                {
+                    "id": "price",
+                    "type": "cost",
+                    "valuesRange": {
+                        "min": 0,
+                        "max": 10
+                    }
+                }
+            ],
+            choseToMake,
+            "methodParameters": {
+                "weights": {
+                    "screen": 6,
+                    "storage": 3,
+                    "RAM": 4,
+                    "camera": 5,
+                    "price": 3
+                },
+                "randomSeed": 147,
+                "randomAlternativesOrdering": true,
+                "drawResolution": "allow"
+            },
+            "biasApplyRandomSeed": 666,
+            "biases": [
+                {
+                    "name": "criteriaConcealment",
+                    "disabled": false,
+                    "applyProbability": 1,
+                    "props": {
+                        "referenceCriterionType": "importanceRatio",
+                        "newCriterionImportance": 0,
+                        "newCriterionScaling": 1.5,
+                        "allowedValuesRangeScaling": 0.75,
+                        "randomSeed": 1023,
+                        "disallowNegativeValues": true
+                    }
+                },
+                {
+                    "name": "fatigue",
+                    "props": {
+                        "function": "expFromZero",
+                        "params": {
+                            "alpha": 0.002,
+                            "multiplier": 2,
+                            "queryNumber": queryNumber
+                        },
+                        "randomSeed": 12345678,
+                        "allowedValuesRangeScaling": 2,
+                        "disallowNegativeValues": true
+                    }
+                }
+            ]
+        }
+    }
+
+    function calculateTemplate(input, comparison) {
+        const fields = ["screen", "storage", "RAM", "camera", "price", "__concealedCriterion__"];
+        const round = val => Math.round(val * 100) / 100;
+        const currentComparison = comparisons[comparison];
+        const values = input.result.map(v =>
+            [v.alternative.id, ...fields.map(f => round(v.alternative.criteria[f])), round(v.evaluation.value)]
+                .map(c => `$${c}$`).join(" & ")
+        ).join(" \\\\\\hline\n\t");
+        return `\\begin{table}[!htb]
+    \\begin{center}
+    \\caption{Comparison \\#${comparison + 1} in Example~2: \\textit{${currentComparison[0]}} vs \\textit{${currentComparison[1]}}}
+    \\label{tab:example2:comparison${comparison + 1}:${currentComparison.map(a => a.toLowerCase()).join("_")}}
+    \\begin{tabu}{c|[2pt]c|c|c|c|c|c|[2pt]c}
+         & $screen\\uparrow$ & $storage\\uparrow$ & $RAM\\uparrow$ & $cam.\\uparrow$  & $price\\downarrow$ & $add.~pro.\\uparrow$ & $eval.\\uparrow$ \\\\\\tabucline[2pt]{-}
+\t${values}
+    \\end{tabu}
+    \\end{center}
+\\end{table}`;
+    }
+
+    const queryOffset = 21;
+
+    function evaluate(comparison) {
+        if (comparison >= comparisons.length)
+            return;
+        console.log("OFFSET", queryOffset + comparison)
+        const value = prepareQuery(comparisons[comparison], queryOffset + comparison);
+        if (comparison === 9)
+            console.log(JSON.stringify(value, null, " "))
+
+        fetch(apiRoot + "/api/decide", {
+            method: "POST",
+            body: JSON.stringify(value)
+        }).then(b => b.json()).then(input => {
+            document.querySelector("#container").innerHTML += calculateTemplate(input, comparison) + "\n\n";
+            evaluate(comparison + 1);
+        });
+    }
+
+    evaluate(0);
+</script>
+</html>

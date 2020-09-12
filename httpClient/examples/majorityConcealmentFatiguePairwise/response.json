@@ -1,0 +1,166 @@
+{
+  "result": [
+    {
+      "alternative": {
+        "id": "Samsung",
+        "criteria": {
+          "RAM": 8.139340128754066,
+          "__concealedCriterion__": 8.054683803648798,
+          "camera": 6.424320041623474,
+          "price": 8.273121172913244,
+          "screen": 5.612244963520629,
+          "storage": 6.187912439528003
+        }
+      },
+      "evaluation": {
+        "value": 11.420552082507221,
+        "comparedWith": "",
+        "comparedAlternativeValue": 0
+      },
+      "betterThanOrSameAs": [
+        "Apple"
+      ]
+    },
+    {
+      "alternative": {
+        "id": "Apple",
+        "criteria": {
+          "RAM": 3.0913168083593807,
+          "__concealedCriterion__": 5.8570784141654615,
+          "camera": 9.25758614088948,
+          "price": 8.48163851193201,
+          "screen": 6.0343599007811575,
+          "storage": 2.009453477631851
+        }
+      },
+      "evaluation": {
+        "value": 11,
+        "comparedWith": "Samsung",
+        "comparedAlternativeValue": 11.420552082507221
+      },
+      "betterThanOrSameAs": []
+    }
+  ],
+  "biases": [
+    {
+      "name": "criteriaConcealment",
+      "disabled": false,
+      "applyProbability": 1,
+      "props": {
+        "addedCriteria": [
+          {
+            "id": "__concealedCriterion__",
+            "type": "gain",
+            "valuesRange": {
+              "min": -2.5,
+              "max": 12.5
+            },
+            "alternativesValues": {
+              "Apple": 5.633397822459157,
+              "Huawei": 4.124276938015393,
+              "LG": 4.6349471195786425,
+              "OnePlus": 2.841969541702073,
+              "Samsung": 8.004332654792455,
+              "Sony": 4.214043172691951,
+              "Xiaomi": 0
+            },
+            "methodParameters": {
+              "weights": {
+                "__concealedCriterion__": 1.4205520825072213
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "fatigue",
+      "disabled": false,
+      "applyProbability": 1,
+      "props": {
+        "effectiveFatigueRatio": 0.08578895750152649,
+        "consideredAlternatives": [
+          {
+            "id": "Apple",
+            "criteria": {
+              "RAM": 3.0913168083593807,
+              "__concealedCriterion__": 5.8570784141654615,
+              "camera": 9.25758614088948,
+              "price": 8.48163851193201,
+              "screen": 6.0343599007811575,
+              "storage": 2.009453477631851
+            }
+          },
+          {
+            "id": "Samsung",
+            "criteria": {
+              "RAM": 8.139340128754066,
+              "__concealedCriterion__": 8.054683803648798,
+              "camera": 6.424320041623474,
+              "price": 8.273121172913244,
+              "screen": 5.612244963520629,
+              "storage": 6.187912439528003
+            }
+          }
+        ],
+        "notConsideredAlternatives": [
+          {
+            "id": "Huawei",
+            "criteria": {
+              "RAM": 6.18444244925926,
+              "__concealedCriterion__": 3.863124968377335,
+              "camera": 9.294328227995901,
+              "price": 5.5493305022618244,
+              "screen": 4.725230950929899,
+              "storage": 3.665396167250069
+            }
+          },
+          {
+            "id": "Xiaomi",
+            "criteria": {
+              "RAM": 3.73476404184778,
+              "__concealedCriterion__": 0,
+              "camera": 3.0361575959983726,
+              "price": 3.729181647659053,
+              "screen": 3.680238972151384,
+              "storage": 2.831938029027463
+            }
+          },
+          {
+            "id": "Sony",
+            "criteria": {
+              "RAM": 5.733349866120399,
+              "__concealedCriterion__": 3.882398116829882,
+              "camera": 3.7533381808777926,
+              "price": 7.413373957695448,
+              "screen": 4.671874189838358,
+              "storage": 3.691429906464072
+            }
+          },
+          {
+            "id": "LG",
+            "criteria": {
+              "RAM": 3.6820463877410026,
+              "__concealedCriterion__": 4.281349524395281,
+              "camera": 1.8608080773213644,
+              "price": 5.016033044209691,
+              "screen": 3.072826865428325,
+              "storage": 2.7904432126316596
+            }
+          },
+          {
+            "id": "OnePlus",
+            "criteria": {
+              "RAM": 6.074194806096183,
+              "__concealedCriterion__": 2.898703105653311,
+              "camera": 7.539280470042239,
+              "price": 6.211643955455062,
+              "screen": 4.015750263824308,
+              "storage": 5.19095077637755
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
