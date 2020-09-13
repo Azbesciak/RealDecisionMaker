@@ -57,7 +57,7 @@ func isBetter(criterion *model.Criterion, a, b valueWithCoefficient) bool {
 		}
 	} else {
 		// division replacement
-		aVal, bVal := a.value*b.value, b.value*a.coefficient
+		aVal, bVal := a.value*b.coefficient, b.value*a.coefficient
 		if aVal == bVal {
 			return a.value >= b.value
 		} else {
