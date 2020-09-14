@@ -1,5 +1,5 @@
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200830140334-4144e361f2b4 h1:wVpZkRUcsT/ZdshFiA1x24K8i74jFoXS0bBl76ZX4dE=
-github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200830140334-4144e361f2b4/go.mod h1:6vIlkBvDu25g54Ga0Vvp04sxvBM848DCA0rKH0l5ajE=
+github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200913101259-ca28aad3eea7 h1:SE+1KOyb3LUnPGc0xN+ho0EHZdrKH5kXQCExi4wIqE4=
+github.com/Azbesciak/RealDecisionMaker/lib v0.0.0-20200913101259-ca28aad3eea7/go.mod h1:6vIlkBvDu25g54Ga0Vvp04sxvBM848DCA0rKH0l5ajE=
 github.com/alecthomas/jsonschema v0.0.0-20200217214135-7152f22193c9 h1:h+KAZEUnNceFhqyH46BgwH4lk8m6pdR/3x3h7IPn7VA=
 github.com/alecthomas/jsonschema v0.0.0-20200217214135-7152f22193c9/go.mod h1:/n6+1/DWPltRLWL/VKyUxg6tzsl5kHUCcraimt4vr60=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
