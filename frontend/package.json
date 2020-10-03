@@ -41,6 +41,6 @@
   "proxy": "http://localhost:8080",
   "devDependencies": {
     "@types/react-d3-graph": "^2.3.1",
-    "node-sass": "^4.13.1"
+    "node-sass": "^4.14.1"
   }
 }
