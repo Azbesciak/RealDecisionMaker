@@ -1,6 +1,8 @@
 # RealDecisionMaker
 Simulator of the real human-like decision maker.
 
+> There is also the PDF of the master's thesis [available in the repository](./Modeling_Realistic_Human_like_Machine_Decision_Maker.pdf), and an announcement of that on [the PUT website](https://sin.put.poznan.pl/theses/details/t46352).
+
 # Why and what
 In a real life we, as a Decision Makers (DM), are often trying to make the best possible decision - at least we say so.
 However, world is not so simple; we are lazy, often tired (or think so, which is not always equal)
